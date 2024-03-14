@@ -1,0 +1,3980 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="IRIS" version="26" zv="IRIS for UNIX (Apple Mac OS X for x86-64) 2022.1.2 (Build 574_0_22407U)" ts="2024-03-14 14:16:21">
+<Class name="HS.Local.zimpl.fhirpro.API.Installer">
+<TimeChanged>66913,48545.643547</TimeChanged>
+<TimeCreated>66871,51551.476007</TimeCreated>
+
+<Method name="Install">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	set tInstallation = $listbuild("ZIMPLFHIRPRO:HS.Local.zimpl.fhirpro.API.Production")
+	
+	for tIter = 1:1:$listlength(tInstallation) {
+		
+		set tNamespace	= $piece($listget(tInstallation, tIter), ":", 1)
+		set tProduction	= $piece($listget(tInstallation, tIter), ":", 2)
+		set tAddMapping	= $piece($listget(tInstallation, tIter), ":", 3)
+		
+		do ..AddNamespace(tNamespace, tProduction, +tAddMapping)
+	}
+	
+	write !,"Finished. Continue with configuration per README.md",!
+	
+	return $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="AddNamespace">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>pNamespace,pProduction,pAddMappings:%Boolean=1</FormalSpec>
+<Implementation><![CDATA[
+	if '##class(%SYS.Namespace).Exists(pNamespace) {
+		
+		write "Creating a Foundation Namespace for the new production in "_pNamespace,!
+		
+		set tOption("Production")=pProduction
+		set tSC=##class(HS.Util.Installer.Foundation).Install(pNamespace,.tOption)
+		
+	} else {
+		write "Namespace "_pNamespace_" already exists, continuing...",!
+	}
+	
+	if pAddMappings {
+		write !,"Add the Mappings needed to access registry tables such as OIDMap and services.",!
+		do ..AddMappings(pNamespace)
+	}
+	
+	return $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="AddMappings">
+<Description>
+Add the Mappings needed to access registry tables such as OIDMap</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>pNamespace</FormalSpec>
+<Implementation><![CDATA[	write ##class(HS.Sync.Utils).Mapping(pNamespace,1)
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="HS.Local.zimpl.fhirpro.API.StreamFHIR">
+<Super>%CSP.StreamServer</Super>
+<TimeChanged>66861,50538.120451</TimeChanged>
+<TimeCreated>66795,44675.015796</TimeCreated>
+
+<Parameter name="BusinessService">
+<Description>
+Dispatching Business Service</Description>
+<Default>HS.Local.zimpl.fhirpro.API.TestService</Default>
+</Parameter>
+
+<Method name="OnPreHTTP">
+<Description><![CDATA[
+The <method>OnPostHTTP()</method> is called by the CSP dispatcher before the HTTP
+headers have been sent.  Here, we check that the incoming STREAMOID value is valid,
+then we set the appropriate content type and content length values into the %response
+object (see <class>%CSP.Request</class>), in preparation for sending the image data
+in the <method>OnPage()</method>.]]></Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	set tMPIID = $get(%request.Data("MPIID",1))
+	
+	if (tMPIID'="") {
+		set %request.Data("STREAMOID",1) = ..GetStreamOID(tMPIID)
+	}
+			
+	return ##super()
+]]></Implementation>
+</Method>
+
+<Method name="OnPostHTTP">
+<Description><![CDATA[
+Event handler for <b>POSTPAGE</b> event: this is invoked after the data
+for the CSP page has been sent to the browser from the the InterSystems IRIS server.]]></Description>
+<ClassMethod>1</ClassMethod>
+<ServerOnly>1</ServerOnly>
+<Implementation><![CDATA[
+	if $get(%request.Data("STREAMOID",1)) '="" {
+		do ##class(%CSP.BinaryStream).%Delete(%request.Data("STREAMOID",1))
+	}
+	
+	return $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="GetStreamOID">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>pMPIID</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	#dim tInteropRequest = ##class(HS.FHIRServer.Interop.Request).%New()
+	#dim tFHIRDataRequest = ##class(HS.FHIRServer.API.Data.Request).%New()
+	
+	set tFHIRDataRequest.RequestMethod = "GET"
+	set tFHIRDataRequest.RequestPath = "/Patient/"_ pMPIID _"/$everything"
+	set tFHIRDataRequest.RequestFormatCode = "JSON"
+	set tFHIRDataRequest.ResponseFormatCode = "JSON"
+	
+	set tInteropRequest.Request = tFHIRDataRequest
+	
+	set tSc=##class(Ens.Director).CreateBusinessService(..#BusinessService,.tService)
+	set tsc = tService.OnProcessInput(tInteropRequest, .tResponse)
+	
+	set tCSPStream = ##class(%CSP.BinaryStream).%New()
+	do tCSPStream.CopyFrom(##class(HS.SDA3.QuickStream).%OpenId(tResponse.QuickStreamId))
+	do tCSPStream.SetAttribute("ContentType","text/json")
+	do tCSPStream.SetAttribute("Content-Disposition","inline; filename="_pMPIID_".json")
+	do tCSPStream.SetAttribute("CharSet","UTF-8")
+	
+	do tCSPStream.%Save()
+	
+	return ##class(%CSP.StreamServer).Encrypt(tCSPStream.%Oid())
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="HS.Local.zimpl.fhirpro.API.StreamSDA">
+<Super>%CSP.StreamServer</Super>
+<TimeChanged>66861,51039.593784</TimeChanged>
+<TimeCreated>66795,44326.999864</TimeCreated>
+
+<Parameter name="BusinessService">
+<Description>
+Dispatching Business Service</Description>
+<Default>HS.Local.zimpl.fhirpro.API.TestService</Default>
+</Parameter>
+
+<Method name="OnPreHTTP">
+<Description><![CDATA[
+The <method>OnPostHTTP()</method> is called by the CSP dispatcher before the HTTP
+headers have been sent.  Here, we check that the incoming STREAMOID value is valid,
+then we set the appropriate content type and content length values into the %response
+object (see <class>%CSP.Request</class>), in preparation for sending the image data
+in the <method>OnPage()</method>.]]></Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	set tMPIID = $get(%request.Data("MPIID",1))
+	set tMRN = $get(%request.Data("MRN",1))
+	set tAA = $get(%request.Data("AA",1))
+	
+	if $get(%request.Data("Filter",1))'="" {
+		set %request.Data("STREAMOID",1) = ..GetSDAStreamOID(tMPIID, tMRN, tAA)
+	}
+	
+	if (tMPIID'="")||((tMRN'="") && (tAA'="")) {
+		set %request.Data("STREAMOID",1) = ..GetSDAStreamOIDEnc(tMPIID, tMRN, tAA)
+	}
+	
+	return ##super()
+]]></Implementation>
+</Method>
+
+<Method name="OnPostHTTP">
+<Description><![CDATA[
+Event handler for <b>POSTPAGE</b> event: this is invoked after the data
+for the CSP page has been sent to the browser from the the InterSystems IRIS server.]]></Description>
+<ClassMethod>1</ClassMethod>
+<ServerOnly>1</ServerOnly>
+<Implementation><![CDATA[
+	if $get(%request.Data("STREAMOID",1)) '="" {
+		do ##class(%CSP.BinaryStream).%Delete(%request.Data("STREAMOID",1))
+	}
+	
+	return $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="GetSDAStreamOID">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>pMPIID="",pMRN="",pAA=""</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	#dim tRequest as HS.Message.SearchAndFetchRequest = ##class(HS.Message.SearchAndFetchRequest).%New()
+	#dim tStreamHandle = ""
+	
+	set tRequest.MPIID = pMPIID
+	set tRequest.MRN = pMRN
+	set tRequest.AssigningAuthority = pAA
+	
+	set tSc=##class(Ens.Director).CreateBusinessService(..#BusinessService,.tService)
+	set tSc = tService.OnProcessInput(tRequest, .tResponse)
+	
+	if $IsObject(tResponse) {
+		set tCSPStream = ##class(%CSP.BinaryStream).%New()
+		do tCSPStream.CopyFrom(tResponse.XMLData)
+		do tCSPStream.SetAttribute("ContentType","text/xml")
+		do tCSPStream.SetAttribute("Content-Disposition","inline; filename="_pMPIID_".xml")
+		do tCSPStream.SetAttribute("CharSet","UTF-8")
+		
+		do tCSPStream.%Save()
+		
+		set tStreamHandle = ##class(%CSP.StreamServer).Encrypt(tCSPStream.%Oid())
+	}
+	
+	return tStreamHandle
+]]></Implementation>
+</Method>
+
+<Method name="GetSDAStreamOIDEnc">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>pMPIID="",pMRN="",pAA=""</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	#dim tRequest as HS.Message.SearchAndFetchRequest = ##class(HS.Message.SearchAndFetchRequest).%New()
+	#dim tStreamHandle = ""
+	
+	set tRequest.MPIID = pMPIID
+	set tRequest.MRN = pMRN
+	set tRequest.AssigningAuthority = pAA
+	
+	set tFilter = ##class(HS.Types.Filters).%New()
+	do tFilter.InfoTypes.Insert("ENC")
+	set tRequest.Filters = tFilter
+	
+	set tSc=##class(Ens.Director).CreateBusinessService(..#BusinessService,.tService)
+	set tSc = tService.OnProcessInput(tRequest, .tResponse)
+	
+	if $IsObject(tResponse) {
+		set tCSPStream = ##class(%CSP.BinaryStream).%New()
+		do tCSPStream.CopyFrom(tResponse.XMLData)
+		do tCSPStream.SetAttribute("ContentType","text/xml")
+		do tCSPStream.SetAttribute("Content-Disposition","inline; filename="_pMPIID_".xml")
+		do tCSPStream.SetAttribute("CharSet","UTF-8")
+		
+		do tCSPStream.%Save()
+		
+		set tStreamHandle = ##class(%CSP.StreamServer).Encrypt(tCSPStream.%Oid())
+	}
+	
+	return tStreamHandle
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="HS.Local.zimpl.fhirpro.API.TestService">
+<Super>HS.Test.Service</Super>
+<TimeChanged>66861,51229.379736</TimeChanged>
+<TimeCreated>66794,59582.199084</TimeCreated>
+
+<Property name="FHIRRESTOperations">
+<Type>Ens.DataType.ConfigName</Type>
+<InitialExpression>"HS.FHIRServer.Interop.HTTPOperation"</InitialExpression>
+</Property>
+
+<Method name="OnProcessInput">
+<FormalSpec><![CDATA[pInput:%RegisteredObject,*pOutput:%RegisteredObject,&pHint:%String]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	If pInput.%IsA("HS.FHIRServer.Interop.Request"){
+		return ..SendRequestSync(..FHIRRESTOperations,pInput,.pOutput)
+		
+	} else {
+		return ##super(pInput, .pOutput, .pHint)
+	}
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="HS.Local.zimpl.fhirpro.Production">
+<ProcedureBlock>0</ProcedureBlock>
+<Super>Ens.Production</Super>
+<TimeChanged>66913,49929.402636</TimeChanged>
+<TimeCreated>66794,45594.944906</TimeCreated>
+
+<XData name="ProductionDefinition">
+<Data><![CDATA[
+<Production Name="HS.Local.zimpl.fhirpro.Production" TestingEnabled="true" LogGeneralTraceEvents="false">
+  <Description></Description>
+  <ActorPoolSize>1</ActorPoolSize>
+  <Item Name="HS.Util.Trace.Operations" Category="" ClassName="HS.Util.Trace.Operations" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
+  </Item>
+  <Item Name="GATEWAY" Category="" ClassName="HS.Gateway.Access.RemoteOperations" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
+    <Setting Target="Host" Name="ServiceName">dembp18bthomas.local:HSACCESS</Setting>
+    <Setting Target="Host" Name="ReplyCodeActions">E=C</Setting>
+    <Setting Target="Host" Name="TraceOperations">*FULL*</Setting>
+  </Item>
+  <Item Name="HS.Local.zimpl.fhirpro.API.TestService" Category="" ClassName="HS.Local.zimpl.fhirpro.API.TestService" PoolSize="0" Enabled="true" Foreground="false" Comment="" LogTraceEvents="true" Schedule="">
+    <Setting Target="Host" Name="FHIRRESTOperations">HS.FHIRServer.Interop.HTTPOperation</Setting>
+  </Item>
+  <Item Name="HS.FHIRServer.Interop.HTTPOperation" Category="" ClassName="HS.FHIRServer.Interop.HTTPOperation" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
+    <Setting Target="Host" Name="ServiceName">FHIR.Service.R4</Setting>
+    <Setting Target="Host" Name="TraceOperations">*FULL*</Setting>
+  </Item>
+</Production>
+]]></Data>
+</XData>
+</Class>
+
+
+<Class name="HS.Local.zimpl.fhirpro.UI.CodeSystemImporter">
+<Description>
+Must be run in the REGISTRY Namespace</Description>
+<Super>%CSP.Page</Super>
+<TimeChanged>66851,61470.997726</TimeChanged>
+<TimeCreated>66620,42497.456469</TimeCreated>
+
+<Method name="CodeSystemExists">
+<ClassMethod>1</ClassMethod>
+<CodeMode>expression</CodeMode>
+<FormalSpec>pCode</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[##class(HS.Data.OIDMap).CodeTypeIndexExists(pCode)
+]]></Implementation>
+</Method>
+
+<Method name="JS">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	&html<
+	<script type="text/javascript">
+	
+	function guessDelimiter(line) {
+		var delim = [";", ",", "\t", "|"];
+		delimCount = new Object();
+		
+		delim.forEach((element) => {
+		    delimCount[line.split(element).length] = element;
+		});
+		
+		var bestGuess = Object.keys(delimCount).sort(function(a, b){return b-a})[0];
+		console.log('delimiter assumed to be: '+delimCount[bestGuess]);
+		
+		return delimCount[bestGuess]
+	}
+	
+	function readURL(input) {
+	  if (input.files && input.files[0]) {
+		  
+		$('#Workspace').show()
+		  
+	    var fr = new FileReader();
+	    fr.onload = function () {
+		    exampleLinesAry = this.result.split(/\n/g);
+		    exampleLinesCount = exampleLinesAry.length;
+		    $('#LineCount').html(exampleLinesAry.length);
+		    exampleLine = exampleLinesAry[0];
+		    exampleLine2 = exampleLinesAry[1];
+		    exampleLine3 = exampleLinesAry[2];
+		    
+		    delimiter = guessDelimiter(exampleLine);
+		    $('#delim').val(delimiter);
+		    
+			document.getElementById('contents').innerHTML = exampleLine+"\n"+exampleLine2+"\n"+exampleLine3;
+			
+			updateTable();
+			//console.log(exampleLine);
+		};
+		fr.readAsText(input.files[0]);
+  }
+}
+
+function updateTable() {
+	var delim=$('#delim').val();
+	
+	var line = exampleLine.split(delim);
+	var line2 = exampleLine2.split(delim);
+	var line3 = exampleLine3.split(delim);
+	
+	var table = document.getElementById('previewTable');
+	table.replaceChildren();
+	
+	var header = table.createTHead();
+  	var row = header.insertRow(0);
+	for(var i=0;i<line.length;i++) {
+		var cell = row.insertCell();
+		cell.appendChild(document.createTextNode(i+1));
+	}
+	
+	var body = table.createTBody();
+	var row = body.insertRow();
+	for(var i=0;i<line.length;i++) {
+		var cell = row.insertCell();
+		cell.appendChild(document.createTextNode(line[i]));
+	}
+	
+	var row = body.insertRow();
+	for(var i=0;i<line.length;i++) {
+		var cell = row.insertCell();
+		cell.appendChild(document.createTextNode(line2[i]));
+	}
+	
+	var row = body.insertRow();
+	for(var i=0;i<line.length;i++) {
+		var cell = row.insertCell();
+		cell.appendChild(document.createTextNode(line3[i]));
+	}
+	
+	$('#code').empty();
+	$('#descr').empty();
+	$('#code').append('<option>Code value column</option>');
+	$('#descr').append('<option>Description value column</option>');
+	for(var i=0;i<line.length;i++) {
+		$('#code').append('<option value='+(i+1)+'>'+'column '+(i+1)+'</option>');
+		$('#descr').append('<option value='+(i+1)+'>'+'column '+(i+1)+'</option>');
+	}
+}
+
+function lookupCodeSystem(name) {
+	
+	$('#CodeSystemWarning').empty();
+	$('#CodeSystemOK').empty();
+	
+	var exists = #(##class(%CSP.Page).HyperEventCall(..%ClassName(1)_".CodeSystemExists", "name", 0))#;
+	console.log('Lookup for: '+name +'='+ exists);
+	
+	if(parseInt(exists)===1) {
+		$('#CodeSystemWarning').html('Warning: existing CodeSystem will be updated.')
+	} else {
+		$('#CodeSystemOK').html('OK: CodeSystem will be created.')
+	}
+						
+}
+function markCodePreview() {
+	var Idx = parseInt($('#code').find(":selected").val());
+	
+	$("#previewTable td").removeClass("code");
+	$("#previewTable td").filter(":nth-child("+Idx+")").addClass("code");
+}
+function markDescrPreview() {
+	var Idx = parseInt($('#descr').find(":selected").val());
+	
+	$("#previewTable td").removeClass("descr");
+	$("#previewTable td").filter(":nth-child("+Idx+")").addClass("descr");
+}
+
+$(document).ready(function(){
+  $("#form").submit(function(event){
+    //event.preventDefault();
+    //alert("Submit prevented");
+  });
+});
+	</script>>
+	return ""
+]]></Implementation>
+</Method>
+
+<Method name="CSS">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	&html<
+	<style>
+#TopNav {background: linear-gradient(180deg, rgba(164,226,222,1) 0%, rgba(214,255,253,1) 100%); border-bottom: 1px solid teal; padding: 0.5em 1em;}
+#LeftNav {padding: 1em;	background: #e4e8e8;}
+#Workspace {padding: 1em; background:#f9ffff80; display:none;}
+
+#CodeSystemWarning {font-style: italic; color: red; padding-left: 1em;}
+#CodeSystemOK {font-style: italic; color: green; padding-left: 1em;}
+
+.code {background-color:#ff00004f !important;}
+.descr {background-color:#0000ff26 !important;}
+#validcol::placeholder {color: lightgrey;}
+
+.card-footer {font-style:italic; color:gray;}
+.table thead {font-weight: bolder;}
+.container-fluid {--bs-gutter-x:0;}
+</style>
+	>
+	return ""
+]]></Implementation>
+</Method>
+
+<Method name="OnPage">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	/// Bootstrap Layout helper: https://www.layoutit.com/build
+	
+	&html<
+<!DOCTYPE html>
+<head>
+	<title>CodeSystemImporter</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+	<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+	<script src="/csp/broker/cspxmlhttp.js"></script>
+
+	#(..JS())#
+	#(..CSS())#
+
+</head>
+<body>
+
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12">
+			<!--nav id="TopNav" class="navbar navbar-expand-lg navbar-light bg-light">
+				 
+				 <a class="navbar-brand" href="#">[HSFHIRToolkit]</a>
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+					<ul class="navbar-nav">
+						<li class="nav-item active">
+							 <a class="nav-link" href="#">Link <span class="sr-only">(current)</span></a>
+						</li>
+						<li class="nav-item">
+							 <a class="nav-link" href="#">Link</a>
+						</li>
+						<li class="nav-item dropdown">
+							 <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown">Dropdown link</a>
+							<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+								 <a class="dropdown-item" href="#">Action</a> <a class="dropdown-item" href="#">Another action</a> <a class="dropdown-item" href="#">Something else here</a>
+								<div class="dropdown-divider">
+								</div> <a class="dropdown-item" href="#">Separated link</a>
+							</div>
+						</li>
+					</ul>
+					<form class="form-inline">
+						<input class="form-control mr-sm-2" type="text" /> 
+						<button class="btn btn-primary my-2 my-sm-0" type="submit">
+							Search
+						</button>
+					</form>
+					<ul class="navbar-nav ml-md-auto">
+						<li class="nav-item active">
+							 <a class="nav-link" href="#">Link <span class="sr-only">(current)</span></a>
+						</li>
+						<li class="nav-item dropdown">
+							 <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown">Dropdown link</a>
+							<div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+								 <a class="dropdown-item" href="#">Action</a> <a class="dropdown-item" href="#">Another action</a> <a class="dropdown-item" href="#">Something else here</a>
+								<div class="dropdown-divider">
+								</div> <a class="dropdown-item" href="#">Separated link</a>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</nav-->
+			<div id="Main" class="row vh-100">
+				<div id="LeftNav" class="col-md-3">
+					<form id="form" autocomplete="off" method="POST" action="/csp/healthshare/hsregistry/HS.Local.zimpl.fhirpro.UI.CodeSystemProcessor.cls" enctype="multipart/form-data" target="_blank" accept-charset="utf-8">
+					<div class="input-group mb-1">
+					  <span class="input-group-text">CodeSystem Name</span>
+					  <input id="codeSystem" name="codeSystem" class="form-control" type="text" onchange="lookupCodeSystem(this.value);" required/>
+					</div>
+					<small id="CodeSystemWarning"></small>
+					<small id="CodeSystemOK"></small>
+					
+					<div class="mb-3 mt-2">
+					  <!--label for="file" class="form-label">Choose CSV File</label-->
+					  <input id="file" name="file" class="form-control" type="file" onchange="readURL(this);" required>
+					</div>
+					<div class="input-group mb-1">
+					  <span class="input-group-text">delimiter</span>
+					  <input id="delim" name="delim" class="form-control-sm" type="text" onchange="updateTable();" required/>
+					</div>
+					<div class="input-group mb-1">
+					  <span class="input-group-text code">code</span>
+					  <select id="code" name="code" class="form-select" onchange="markCodePreview();" required></select>
+			  		</div>
+					<div class="input-group mb-1">
+					  <span class="input-group-text descr">description</span>
+					  <select id="descr" name="descr" class="form-select" onchange="markDescrPreview();" required></select>
+			  		</div>
+			  		<div class="input-group mb-1">
+					  <span class="input-group-text">valid when</span>
+					  <input name="selector" class="form-control" type="text" id="validcol" onchange="" placeholder="({#1} '= 0)"/>
+			  		</div>
+			  		  <div class="col-12">
+						<input class="btn btn-primary" type="submit" />
+					  </div>
+
+			  		</form>
+			  		
+				</div>
+				<div id="Workspace" class="col-md-9">
+					<div class="card mb-3 mt-3">
+						<h5 class="card-header">Original contents</h5>
+						<div class="card-body">
+						
+	   						<pre id="contents" class="card-text"></pre>
+	   						
+						</div>
+						<div class="card-footer">showing first 3 lines of <span id="LineCount">...</span></div>
+					</div>
+					<div class="card">
+						<h5 class="card-header">Tabular preview</h5>
+						<div class="card-body">
+						
+						  <table id="previewTable" class="table table-striped-columns"></table>
+							
+						</div>
+						<div class="card-footer"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+      
+</body>
+</html>
+	>
+	
+	return $$$OK
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="HS.Local.zimpl.fhirpro.UI.CodeSystemProcessor">
+<Super>%CSP.Page</Super>
+<TimeChanged>66851,61485.321731</TimeChanged>
+<TimeCreated>66592,54400.735324</TimeCreated>
+
+<Method name="OnPage">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	#dim TF = 1
+	#dim file as %CSP.BinaryStream
+	set codeSystem = $get(%request.Data("codeSystem",1))
+	set delim = $get(%request.Data("delim",1))
+	set codeCol = $get(%request.Data("code",1))
+	set descrCol = $get(%request.Data("descr",1))
+	set selector = $get(%request.Data("selector",1))
+	set file = $get(%request.MimeData("file",1))
+	
+	
+	//w file.CharSetSet("UTF8")_"<BR>"
+	//w file.ContentTypeSet("application/octet-stream")
+	
+	w "selector: "_selector_"<br>"
+	
+	//return 1
+	
+	if (codeSystem'="") && (delim'="") &&(codeCol'="") && (descrCol'="") && (file'="") {
+		
+		// Create an entry in the OIDMap for the CodeSystem (if not exists!)
+		
+		set tSc = ##class(HS.Data.OIDMap).FileOID(codeSystem, "CodeSystem", codeSystem, "HSFHIRToolkit Generated")
+		&html<#(tSc)# CodeSystem #(codeSystem)# added to the OIDMap. Please manually edit the description, OID and URL as needed.<br>>
+		
+		while 'file.AtEnd {
+			set TF=1
+			set line = file.ReadLine()
+			set cnt = $get(cnt)+1
+			
+			set tCode = $piece(line, delim, codeCol)
+			set tDescr = $piece(line, delim, descrCol)
+			set tDescr = $ZCVT(tDescr, "I", "UTF8")
+			
+			if (selector'="") {
+				set sCol = $piece(selector, "{#", 2)
+				set sCol = $piece(sCol, "}")
+				
+				set sVal = $piece(line, delim, sCol)
+				set sOpr = $piece(selector, "}" ,2)
+				
+				continue:(sVal="")||(sOpr="")
+				
+				xecute "set TF="_sVal_sOpr
+				if 'TF {
+					write "SKIPPING "_tCode_"<BR>"
+					continue
+				}
+				
+				
+			}
+			set tSc = ##class(HS.Registry.Codes).AddEditCode(codeSystem,tCode,tDescr)
+			&html<#(tCode)#:#(tDescr)#:#(tSc)#<br>>
+			quit:'tSc
+			//quit:cnt=100
+			
+		}	
+		
+		
+		
+		
+	}
+	
+	
+	
+	return $$$OK
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="HS.Local.zimpl.fhirpro.UI.DTLViewer">
+<Description>
+Subclass this class to include your customizations
+
+Application for searching documenting Data Transformations</Description>
+<Super>HS.Local.zimpl.fhirpro.UI.Super</Super>
+<TimeChanged>66851,65617.028118</TimeChanged>
+<TimeCreated>65973,50553.860112</TimeCreated>
+
+<UDLText name="T">
+<Content><![CDATA[/* Customizable Parameters for Subclass ------------------------------------>*/
+]]></Content>
+</UDLText>
+
+<Parameter name="PageTitleDTLList">
+<Default>System DTL Viewer</Default>
+</Parameter>
+
+<Parameter name="SpecificationLink">
+<Description><![CDATA[
+Option link to the specification. Use html tags to create the link and description.
+Example: "<a href=""https://simplifier.net/organization/koordinationsstellemii"" target=_blank>simplifier.net/koordinationsstellemii</a>"]]></Description>
+</Parameter>
+
+<Parameter name="PackageNameList">
+<Description>
+Comma-delimited list of Package names to look for DTLs</Description>
+<Default>HS.FHIR.DTL.,HS.Gateway.,HS.Hub.</Default>
+</Parameter>
+
+<UDLText name="T">
+<Content><![CDATA[/*<------------------------------------ Customizable Parameters for Subclass */
+]]></Content>
+</UDLText>
+
+<Parameter name="SuperClass">
+<Default>HS.Local.zimpl.fhirpro.UI.DTLViewer</Default>
+</Parameter>
+
+<Parameter name="WIPString">
+<Description>
+Use of a Work-In-Progress (WIPString) in DTL comments or elsewhere will be displayed as a hint when found</Description>
+<Default>TODO:</Default>
+</Parameter>
+
+<Parameter name="XDataForXSL">
+<Description>
+Format: ClassName:XDataName</Description>
+<Default>HS.Local.zimpl.fhirpro.UI.DTLViewerXSL:XSL</Default>
+</Parameter>
+
+<Parameter name="XSLTCallbackHandlerClass">
+<Description>
+Name of callback handler for isc:evaluate() functions</Description>
+<Default>HS.Local.zimpl.fhirpro.UI.Utils.XSLTCallbackHandler</Default>
+</Parameter>
+
+<Parameter name="InternalDelim">
+<Description>
+Delimiter used by the application for bundling searchterms.
+Should be something that is never contained in the DTL content and therefore searchable</Description>
+<Default><![CDATA[!$%&)]]></Default>
+</Parameter>
+
+<Method name="OnPage">
+<Description><![CDATA[
+Viewed with the DTL parameter it will show the documentation for that DTL
+else a list of available DTLs within the <parameter>PackageName</parameter> are displayed ]]></Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	
+	#dim tDTLClass
+	#dim tSc as %Status
+	
+	#dim tSelectedGroup = $piece(%request.PageName, ".cls")
+	#dim tSelectedPackage = $get(%request.Data("package",1), $listget($listfromstring(..#PackageNameList),1))
+	#dim tDTLName = $get(%request.Data("DTL",1))
+	#dim tSearchParam = $get(%request.Data("search",1))
+	#dim tSuperClass = ..#SuperClass
+	
+	if (tDTLName '= "") {
+		
+		do ..ShowDTL(tDTLName)
+		
+	} else {	// Show list of available DTLs for the PackageName (Class Parameter)
+		#dim tDTLStream as %Stream.TmpCharacter
+		#dim tFoundTODO,tTODOSpan,tTODOTitle
+	
+		&html<<!DOCTYPE HTML>
+		<html>
+			<head>
+				<title>#(..#PageTitleDTLList)#</title>
+				#(..MetaTags())#
+				
+				<script src="/csp/broker/cspxmlhttp.js"></script>
+				<script type="text/javascript">
+				function exportDTLs() {
+					var tExportSuggestion = '#($replace(##class(%File).NormalizeFilename($system.Util.InstallDirectory()_"/UserDocumentation"), "\", "\\"))#';
+					var serverExportDir = window.prompt('Enter a folder on the server for the export:',tExportSuggestion);
+					var package = $("#PackageName").val();
+					var searchTerm = $("#Search").val();
+					if (serverExportDir !== null && serverExportDir !== "") {
+						var tSc = #(##class(%CSP.Page).HyperEventCall(..%ClassName(1)_".Export", "package,searchTerm,serverExportDir", 1))#;
+						if (tSc!==null) {alert('Problem writing files?')} else {alert('Export to server finished.')}
+					}
+				}
+				function openPage(chgGroup) {
+					var groupPage = $("#GroupPage").val();
+					var package = $("#PackageName").val();
+					var searchTerm = $("#Search").val();
+					var query = (chgGroup ? 'package='+package : '') + '&search='+searchTerm;
+					window.open(groupPage+'.cls?'+query, '_self');
+				}
+				</script>
+				
+				#(..LinkJS("jquery-3.7.1.min.js"))#
+				#(..LinkJS("jquery.dataTables.min.js"))#
+				#(..LinkCSS("jquery.dataTables.min.css"))#
+				#(..LinkCSS("DTLViewer.css"))#
+				
+			</head>
+			
+			<body>
+				<h2>#(..#PageTitleDTLList)#</h2>
+				>
+				if (..#SpecificationLink'="") {
+					&html<<h6 class="specLink">Specification:#(..#SpecificationLink)#</h6>>
+				}
+				&html<
+				<ul>
+					<li><b>Page:</b>
+						<select id="GroupPage" onchange="openPage(false)">>
+							&sql(select list(ID) into :tGroupList from %Dictionary.CompiledClass where Super = :tSuperClass)
+							
+							set tGroupList = $listfromstring(tGroupList)_$listbuild(tSuperClass)
+							set tGroupList = $listtostring(tGroupList)
+							
+							for tGroupIter = 1:1:$length($get(tGroupList), ",") {
+								set tGroupOption = $piece(tGroupList, ",", tGroupIter)
+								set tSelected = $select((tGroupOption = tSelectedGroup):" selected", 1:"")
+								&html<<option value="#(tGroupOption)#"#(tSelected)#>#($parameter(tGroupOption, "PageTitleDTLList"))#</option>>
+							}
+					
+						&html<</select></li>
+					<li><b>Package:</b> 
+						<select id="PackageName" onchange="openPage(true)">>
+						
+						for tPackageIter = 1:1:$length(..#PackageNameList, ",") {
+							set tPackageOption = $piece(..#PackageNameList, ",", tPackageIter)
+							set tSelected = $select((tPackageOption = tSelectedPackage):" selected", 1:"")
+							&html<<option value="#(tPackageOption)#"#(tSelected)#>#(tPackageOption)#</option>>	
+						}
+							
+						&html<</select></li>
+					<li><label>Search in DTLs: <input id="Search" value="#(tSearchParam)#" title="Case-sensitive search in DTL content"></label></li>
+				</ul>
+			
+				<table id="DTLList" class="display hover" data-page-length='50'>
+					<thead>
+					<tr>
+						<th>Classname</th>
+						<th>Source Object Type</th>
+						<th>Target Object Type</th>
+					</tr>
+					</thead>
+					<tbody>
+				>
+		
+				set tRS = ##class(%ResultSet).%New()
+				do tRS.Prepare("select Name as tDTLClass,ClassCompileError,ClassDefinitionError from %Dictionary.CompiledClass "_
+								"where Name like ? and PrimarySuper like '%Ens.DataTransformDTL%'")
+				do tRS.Execute(tSelectedPackage_"%")
+				
+				while tRS.Next() {
+					
+					set tDTLClass = tRS.Data("tDTLClass")
+					kill tFoundTerms
+					
+					set tDTLStream = ..GetXData(tDTLClass, "DTL", 1)
+					set tSearchTerms = ..#WIPString _ $select(tSearchParam'="": ..#InternalDelim_tSearchParam, 1:"")
+					do ..SearchStream(tDTLStream, tSearchTerms, .tFoundTerms)
+					
+					continue:((tSearchParam'="") && '$get(tFoundTerms(tSearchParam)))
+					
+					// If there is a compiler error on the DTL, that will be shown instead of any possible TODO:
+					if (tRS.Data("ClassCompileError")'="") {
+						set tWarning = "<span title='"_##class(%CSP.Page).EscapeHTML(tRS.Data("ClassCompileError"))_"' class='warning'>CompileError</span>"
+						
+					} elseif ($get(tFoundTerms(..#WIPString))) {
+						set tWarning = "<span title='""TODO:"" found in DTL' class='warning'>TODO</span>"
+						
+					} else {
+						set tWarning = ""
+					}
+					
+					#dim tSourceType	= $classmethod(tDTLClass, "GetSourceType")
+					#dim tSourceDocType	= $classmethod(tDTLClass, "GetSourceDocType")
+					#dim tTargetType	= $classmethod(tDTLClass, "GetTargetType")
+					#dim tTargetDocType	= $classmethod(tDTLClass, "GetTargetDocType")
+					
+					&html<
+					<tr onclick="window.open('?DTL=#(tDTLClass)#', '_blank');" style="cursor:pointer;">
+						<td>#(tDTLClass)#</td>
+						<td>#(tSourceType)#>
+						if (tSourceDocType'="") {
+							&html<<span class="docType">#(tSourceDocType)#</span>>
+						}
+				&html<</td>
+						<td>#(tTargetType)#>
+						if (tTargetDocType'="") {
+							&html<<span class="docType">#(tTargetDocType)#</span>>
+						}
+				&html<#(tWarning)# </td> 
+					</tr>
+					>
+				}
+		
+		&html<</tbody></table>
+				<script type="text/javascript">
+				$(document).ready(function(){
+					$('#DTLList').DataTable({
+					  "language": {
+					    "search": "Filter records:"
+					  }});
+					$("#Search").select();
+					$("#Search").on('keyup', function (e) {
+					    if (e.key === 'Enter' || e.keyCode === 13) {
+						    var package = $("#PackageName").val();
+						    var search = $("#Search").val();
+					        window.open('?package='+package+'&search='+search,'_self');
+					    }
+					});
+				});
+				
+				</script>
+				<button onclick="exportDTLs()">Export DTL Documentation</button>
+			</body>
+		</html>>
+		
+	}
+	
+	return $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="SearchStream">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>pStream,pSearchTerms,*pFoundTerms=""</FormalSpec>
+<Implementation><![CDATA[
+	do pStream.Rewind()
+	while 'pStream.AtEnd {
+		set tChunk = pStream.Read()
+		
+		for tTermIter = 1:1:$length(pSearchTerms, ..#InternalDelim) {
+			set tSearchTerm = $piece(pSearchTerms, ..#InternalDelim, tTermIter)
+			if (tChunk [ tSearchTerm) {
+				set pFoundTerms(tSearchTerm)=1
+			}
+		}
+	}
+	
+	return $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="ShowDTL">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>pDTLClassName,pOutputToDevice:%Boolean=1,pOutputStream:%FileCharacterStream</FormalSpec>
+<Implementation><![CDATA[
+	
+		/*  For client-side transformations...
+		if '$$$ISERR(tSc) {
+			&html<<?xml version="1.0" encoding="UTF-8"?>
+			<?xml-stylesheet type="text/xsl" href="#(..#StyleSheet)#.cls?DTL=#(tDTLName)#" ?>
+			#(tXML.Read())#>
+			
+		} else {
+			&html<#(tSc)#>
+		}
+		*/
+	#dim tException,tParams,tPort,tSc,tXML,tXSL		
+		
+	try {
+		
+		$$$ThrowOnError(##class(Ens.Util.URLStream).GetURLStream("xdata://"_pDTLClassName_":DTL",.tXML))
+		
+		set pOutputStream = ##class(%FileCharacterStream).%New()
+		set tPort = $Get(%request.CgiEnvs("SERVER_PORT"))
+		set tParams("URL") = "'"_$Select(%request.Secure = 1: "https://", 1:"http://")_$Get(%request.CgiEnvs("SERVER_NAME"), "localhost")_$Select(tPort '= "" : ":"_tPort, 1:"")_%request.URL_"'"
+			
+		#dim tTransformer = ##class(HS.Util.XSLTTransformer).%New()
+		set tTransformer.CallbackHandler = $classmethod(..#XSLTCallbackHandlerClass, "%New")
+		
+		$$$ThrowOnError(tTransformer.Transform(tXML, "xdata://"_..#XDataForXSL, .pOutputStream, .tParams))
+		
+		do ..ReplaceCollateralFolder(.pOutputStream)
+		
+		if pOutputToDevice {
+			set tSc = pOutputStream.OutputToDevice()
+		}
+	
+	} catch tException {
+		
+		&html<#($get(sc))#>
+		
+		&html<<hr>>
+		
+		&html<#(tException.AsStatus())#>
+		
+	}
+]]></Implementation>
+</Method>
+
+<Method name="ReplaceCollateralFolder">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&pStream:%Stream.TmpCharacter]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set tStream  = ##class(%Stream.TmpCharacter).%New()
+	while 'pStream.AtEnd {
+		
+		do tStream.Write($replace(pStream.ReadLine(), "[COLLATERALFOLDER]", ..#COLLATERALFOLDER))
+	}
+	
+	set pStream = tStream
+	
+	return $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="Export">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>pPackage,pSearchTerm,pTargetDirectory</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	#dim tStream as %Stream.GlobalBinary
+	#dim tDTLClass
+	#dim tCollateral,tCollateralFilename,tCopyFrom,tLine,tSc
+	
+	do ##class(%File).CreateDirectoryChain(pTargetDirectory)
+	
+	for tCollateral = "jquery-3.7.1.min.js","jquery.dataTables.min.js","jquery.dataTables.min.css","DTLViewer.css","images/" {
+		set tCollateralFilename = ##class(%File).NormalizeFilename(pTargetDirectory_"/"_tCollateral)
+		set tCopyFrom = ##class(%File).NormalizeFilename($system.Util.InstallDirectory()_..#COLLATERALFOLDER_tCollateral)
+		
+		if tCollateral["/" {
+			// copy directory
+			do ##class(%File).CopyDir(tCopyFrom,tCollateralFilename)
+		} else {
+			// copy file
+			set tSc = ##class(%File).CopyFile(tCopyFrom,tCollateralFilename)
+		}
+	}
+	
+	set tIndex = ##class(%Stream.FileCharacter).%New()
+	set tIndex.Filename = ##class(%File).NormalizeFilename(pTargetDirectory_"/index.html")
+	do tIndex.Write("<html><head>"_
+				"<script src=""jquery-3.3.1.slim.min.js"" type=""text/javascript"" language=""javascript""></script>"_
+				"<script src=""jquery.dataTables.min.js"" type=""text/javascript"" language=""javascript""></script>"_
+				"<link href=""jquery.dataTables.min.css"" rel=""stylesheet"" />"_
+				"<link href=""DocsDtls.css"" rel=""stylesheet"" />"_
+					"</head><body>")
+					
+	do tIndex.Write("<h2>"_..#PageTitleDTLList_"</h2><ul><li>Exported:"_$zdt($h, 3)_"</li></ul>")
+	
+	do tIndex.Write("<table id=""DTLList"" class=""display"" data-page-length=""50"">"_
+					"<thead>"_"<tr>"_
+						"<th>Classname</th>"_"<th>Source Object Type</th>"_"<th>Target Object Type</th>"_
+					"</tr>"_"</thead>"_
+					"<tbody>")
+	
+	
+	set tRS = ##class(%ResultSet).%New()
+	do tRS.Prepare("select Name as tDTLClass,ClassCompileError,ClassDefinitionError from %Dictionary.CompiledClass "_
+								"where Name like ? and PrimarySuper like '%Ens.DataTransformDTL%'")
+	do tRS.Execute(pPackage_"%")
+	
+	while tRS.Next() {
+		
+		set tSearchParam = pSearchTerm
+		set tDTLClass = tRS.Data("tDTLClass")
+		kill tFoundTerms
+		
+		set tDTLStream = ..GetXData(tDTLClass, "DTL", 1)
+		set tSearchTerms = ..#WIPString _ $select(tSearchParam'="": ..#InternalDelim_tSearchParam, 1:"")
+		do ..SearchStream(tDTLStream, tSearchTerms, .tFoundTerms)
+					
+		continue:((tSearchParam'="") && '$get(tFoundTerms(tSearchParam)))
+		
+		// If there is a compiler error on the DTL, that will be shown instead of any possible TODO:
+		if (tRS.Data("ClassCompileError")'="") {
+			set tWarning = "<span title='"_##class(%CSP.Page).EscapeHTML(tRS.Data("ClassCompileError"))_"' class='warning'>CompileError</span>"
+			
+		} elseif ($get(tFoundTerms(..#WIPString))) {
+			set tWarning = "<span title='""TODO:"" found in DTL' class='warning'>TODO</span>"
+			
+		} else {
+			set tWarning = ""
+		}
+				
+			
+		#dim tSourceType	= $classmethod(tDTLClass, "GetSourceType")
+		#dim tSourceDocType	= $classmethod(tDTLClass, "GetSourceDocType")
+		#dim tTargetType	= $classmethod(tDTLClass, "GetTargetType")
+		#dim tTargetDocType	= $classmethod(tDTLClass, "GetTargetDocType")
+		
+		do tIndex.Write("<tr onclick=""window.open('"_tDTLClass_".html?DTL="_tDTLClass_"', '_blank');"" style=""cursor:pointer;"">"_
+						"<td>"_tDTLClass_"</td>"_
+						"<td>"_tSourceType_$select(tSourceDocType'="":"<span class=""docType"">"_tSourceDocType_"</span>", 1:"")_"</td>"_
+						"<td>"_tTargetType_$select(tTargetDocType'="":"<span class=""docType"">"_tTargetDocType_"</span>", 1:"")_
+								tWarning_"</td>"_
+						"</tr>")
+		
+		do ..ShowDTL(tDTLClass,0,.tStream)
+		
+		set tFile = ##class(%Stream.FileCharacter).%New()
+		set tFile.Filename = ##class(%File).NormalizeFilename(pTargetDirectory_"/"_tDTLClass_".html")
+		
+		while 'tStream.AtEnd {
+			
+			set tLine = tStream.ReadLine()
+			
+			if (tLine [ ..#COLLATERALFOLDER) {
+				
+				for tCollateralIter = 1:1:$length(tLine, ..#COLLATERALFOLDER) {
+				
+					set tCollateral = $piece($piece(tLine, ..#COLLATERALFOLDER, tCollateralIter), """")
+					continue:(tCollateral'[".js")&&(tCollateral'[".css")
+					
+					set tCollateralFilename = ##class(%File).NormalizeFilename(pTargetDirectory_"/"_tCollateral)
+					if '##class(%File).Exists(tCollateralFilename) {
+						
+						set tCopyFrom = ##class(%File).NormalizeFilename($system.Util.InstallDirectory()_..#COLLATERALFOLDER_tCollateral)
+						set tSc = ##class(%File).CopyFile(tCopyFrom,tCollateralFilename)
+					}
+				}
+				set tLine = $replace(tLine, ..#COLLATERALFOLDER, "")
+			}
+			
+			do tFile.Write(tLine)
+		}
+		
+		do tFile.%Save()
+		
+		set tFile = ""
+		set tStream = ""
+	}
+	
+	do tIndex.Write("</tbody></table>"_
+					"<script type=""text/javascript"">"_
+						"$(document).ready(function(){"_
+						"$('#DTLList').DataTable({"_
+							"""language"": {"_
+							"""search"": ""Filter records:"""_
+						"}});"_
+						"});"_
+					"</script>"_
+					"</body></html>")
+					
+	do tIndex.%Save()	
+	
+	return $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="GetXData">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>pClassName,pXDataName,pStripCRLF=0</FormalSpec>
+<ReturnType>%Stream.TmpCharacter</ReturnType>
+<Implementation><![CDATA[
+	#dim tXDataDef = ##class(%Dictionary.XDataDefinition).IDKEYOpen(pClassName, pXDataName)
+	#dim tStream = ##class(%Stream.TmpCharacter).%New()
+	#dim tData as %String
+	
+	if pStripCRLF {
+	
+		set tData = tXDataDef.Data.Read()
+		set tData = $replace(tData, $char(13,10), "")
+		set tData = $replace(tData, $char(9), "")
+		do tStream.Write(tData)
+		
+	} else {
+		do tStream.CopyFrom(tXDataDef.Data)
+	}
+	
+	do tStream.Rewind()
+
+	return tStream
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="HS.Local.zimpl.fhirpro.UI.DTLViewerXSL">
+<TimeChanged>66851,64026.640264</TimeChanged>
+<TimeCreated>65974,41381.577167</TimeCreated>
+
+<XData name="XSL">
+<Data><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:isc="http://extension-functions.intersystems.com" >
+<xsl:output method="html" version="5.0" encoding="UTF-8" indent="yes"/>
+<xsl:template match="/">
+<html>
+<head>
+<link rel="icon" type="image/x-icon" href="favicon.ico" />
+<meta http-equiv="cache-control" content="no-cache, must-revalidate, post-check=0, pre-check=0"/>
+<meta http-equiv="cache-control" content="max-age=0"/>
+<meta http-equiv="expires" content="0"/>
+<meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT"/>
+<meta http-equiv="pragma" content="no-cache"/>
+				
+<script src="[COLLATERALFOLDER]jquery-3.7.1.min.js" type="text/javascript" ></script>
+<script src="[COLLATERALFOLDER]simple-tree-table.js" type="text/javascript"></script>
+<link href="[COLLATERALFOLDER]DTLViewer.css" rel="stylesheet" />
+</head>
+<body>
+<h2 id="HeaderTitle" />
+<a id="DTLEditor" target="_blank">edit</a>
+<div class="content">				
+<div>
+<ul>
+<li>
+<b>Source:</b>&#160;<xsl:value-of select="/transform/@sourceClass" />
+<xsl:if test="/transform/@sourceDocType">
+<span class="docType"><xsl:value-of select="/transform/@sourceDocType" /></span>
+</xsl:if>
+</li>
+<li>
+<b>Target:</b>&#160;<xsl:value-of select="/transform/@targetClass" />
+<xsl:if test="/transform/@targetDocType">
+<span class="docType"><xsl:value-of select="/transform/@targetDocType" /></span>
+</xsl:if>
+</li>
+<li>
+<pre class="comment">
+<!-- TODO: link currently has to be at the end of the description without any whitespace following it. Make this more flexible? -->
+<xsl:call-template name="main_description_link">
+<xsl:with-param name="description" select="/transform/annotation" />
+</xsl:call-template>
+</pre>
+</li>
+</ul>
+</div>
+<div class="contentTable">
+<table id="ActionTable">
+<thead>
+<tr>
+<th>
+Action<br/>
+<span id="collapser" style="cursor:pointer;" class="simple-tree-table-icon">-</span>
+<span id="expander" style="cursor:pointer;" class="simple-tree-table-icon">+</span>
+</th>
+<th>Condition</th>
+<th>Property (Target)</th>
+<th>Value (Source)</th>
+<th class="tableColDescr">Description</th>
+</tr>
+</thead>
+<tbody>
+<xsl:apply-templates select="/transform/*" />
+</tbody>
+</table>
+</div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#ActionTable').simpleTreeTable({
+		expander: $('#expander'),
+		collapser: $('#collapser'),
+		margin:0.75
+		});
+	var dtl = window.location.search.split('DTL=')[1];
+	$('#HeaderTitle').text(dtl);
+	$('#DTLEditor').attr('href', 'EnsPortal.DTLEditor.zen?DT='+dtl+'.dtl');
+	$(document).attr('title', '[DTL] '+dtl);
+	if(window.location.protocol == 'file:') {$("#DTLEditor").remove()}
+});
+</script>
+</body>
+</html>
+</xsl:template>
+
+<xsl:template match="comment">
+<xsl:variable name="nodeId"><xsl:number level="multiple" format="1" count="*" /></xsl:variable>
+<xsl:variable name="parentId">
+<xsl:call-template name="substring-before-last">
+<xsl:with-param name="string1" select="$nodeId" />
+<xsl:with-param name="string2" select="'.'" />
+</xsl:call-template>
+</xsl:variable>
+<tr data-node-id="{$nodeId}" data-node-pid="{$parentId}">
+<xsl:attribute name="class">level<xsl:value-of select="count(ancestor::*)-count(ancestor::true|ancestor::false|ancestor::case)" /></xsl:attribute>
+<td><xsl:value-of select="name(.)"/></td>
+<td colspan="4"><pre class="comment"><xsl:value-of select="annotation"/></pre></td>
+</tr>
+</xsl:template>
+		
+<xsl:template match="trace">
+<xsl:variable name="nodeId"><xsl:number level="multiple" format="1" count="*" /></xsl:variable>
+<xsl:variable name="parentId">
+<xsl:call-template name="substring-before-last">
+<xsl:with-param name="string1" select="$nodeId" />
+<xsl:with-param name="string2" select="'.'" />
+</xsl:call-template>
+</xsl:variable>
+<tr data-node-id="{$nodeId}" data-node-pid="{$parentId}">
+<xsl:attribute name="class">level<xsl:value-of select="count(ancestor::*)-count(ancestor::true|ancestor::false|ancestor::case)" /></xsl:attribute>
+<td><xsl:value-of select="name(.)"/></td>
+<td colspan="2"></td>
+<td><span class="code"><xsl:value-of select="@value"/></span></td>
+<td><span class="comment"><xsl:value-of select="annotation"/></span></td>
+</tr>
+</xsl:template>		
+
+<xsl:template match="assign">
+<xsl:variable name="nodeId"><xsl:number level="multiple" format="1" count="*" /></xsl:variable>
+<xsl:variable name="parentId">
+<xsl:call-template name="substring-before-last">
+<xsl:with-param name="string1" select="$nodeId" />
+<xsl:with-param name="string2" select="'.'" />
+</xsl:call-template>
+</xsl:variable>
+<tr data-node-id="{$nodeId}" data-node-pid="{$parentId}">
+<xsl:attribute name="class">level<xsl:value-of select="count(ancestor::*)-count(ancestor::true|ancestor::false|ancestor::case)" /></xsl:attribute>
+<xsl:if test="@disabled">
+<xsl:attribute name="class">disabled</xsl:attribute>
+<xsl:attribute name="title">disabled</xsl:attribute>
+</xsl:if>
+<td><xsl:value-of select="@action" /> <!--(<i><xsl:value-of select="name(.)"/></i>)--></td>
+<td/>
+<td><span class="code"><xsl:value-of select="@property"/>
+<!-- workaround to save a column.  Instead of showing the key separately, it is appended to the target property -->
+<xsl:if test="@key">
+	@<xsl:value-of select="@key" />
+</xsl:if>
+</span></td>
+<td><span class="code"><xsl:value-of select="@value"/></span></td>
+<td><span class="comment"><xsl:value-of select="annotation"/></span></td>
+</tr>
+</xsl:template>
+	
+<xsl:template match="subtransform">
+<xsl:variable name="nodeId"><xsl:number level="multiple" format="1" count="*" /></xsl:variable>
+<xsl:variable name="parentId">
+<xsl:call-template name="substring-before-last">
+<xsl:with-param name="string1" select="$nodeId" />
+<xsl:with-param name="string2" select="'.'" />
+</xsl:call-template>
+</xsl:variable>
+<tr data-node-id="{$nodeId}" data-node-pid="{$parentId}">
+<xsl:attribute name="class">level<xsl:value-of select="count(ancestor::*)-count(ancestor::true|ancestor::false|ancestor::case)" /></xsl:attribute>
+<xsl:if test="@disabled">
+<xsl:attribute name="class">disabled</xsl:attribute>
+<xsl:attribute name="title">disabled</xsl:attribute>
+</xsl:if>
+<td><xsl:value-of select="name(.)"/></td>
+<td title="ClassName of subtransform (not a condition)"><a href="?DTL={@class}" class="code"><xsl:value-of select="@class"/></a></td>
+<td>
+<span class="code"><xsl:value-of select="@targetObj"/></span>
+<xsl:if test="isc:evaluate('getDtlTargetDoctype', @class)">
+<span class="docType"><xsl:value-of select="isc:evaluate('getDtlTargetDoctype', @class)"/></span>
+</xsl:if>
+</td>
+<td>
+<span class="code"><xsl:value-of select="@sourceObj"/></span>
+<xsl:if test="isc:evaluate('getDtlSourceDoctype', @class)">
+<span class="docType"><xsl:value-of select="isc:evaluate('getDtlSourceDoctype', @class)"/></span>
+</xsl:if>
+</td>
+<td><span class="comment"><xsl:value-of select="annotation"/></span></td>
+</tr>
+</xsl:template>
+	
+<xsl:template match="if">
+<xsl:variable name="nodeId"><xsl:number level="multiple" format="1" count="*" /></xsl:variable>
+<xsl:variable name="parentId">
+<xsl:call-template name="substring-before-last">
+<xsl:with-param name="string1" select="$nodeId" />
+<xsl:with-param name="string2" select="'.'" />
+</xsl:call-template>
+</xsl:variable>
+<tr data-node-id="{$nodeId}" data-node-pid="{$parentId}">
+<xsl:attribute name="class">level<xsl:value-of select="count(ancestor::*)-count(ancestor::true|ancestor::false|ancestor::case)" /></xsl:attribute>
+<xsl:if test="@disabled">
+<xsl:attribute name="class">disabled</xsl:attribute>
+<xsl:attribute name="title">disabled</xsl:attribute>
+</xsl:if>
+<td><xsl:value-of select="name(.)"/></td>
+<td colspan="3"><span class="code"><xsl:value-of select="@condition"/></span></td>
+<td><span class="comment"><xsl:value-of select="annotation"/></span></td>
+</tr>
+<xsl:apply-templates />
+</xsl:template>
+	
+<xsl:template match="true|false">
+<xsl:variable name="nodeId"><xsl:number level="multiple" format="1" count="*" /></xsl:variable>
+<xsl:variable name="parentId">
+<xsl:call-template name="substring-before-last">
+<xsl:with-param name="string1" select="$nodeId" />
+<xsl:with-param name="string2" select="'.'" />
+</xsl:call-template>
+</xsl:variable>
+<tr data-node-id="{$nodeId}" data-node-pid="{$parentId}">
+<xsl:attribute name="class">level<xsl:value-of select="count(ancestor::*)-count(ancestor::true|ancestor::false|ancestor::case)" /></xsl:attribute>
+<td/>
+<td colspan="4"><xsl:value-of select="name(.)"/></td>
+</tr>
+<xsl:apply-templates />
+</xsl:template>
+	
+<xsl:template match="foreach">
+<xsl:variable name="nodeId"><xsl:number level="multiple" format="1" count="*" /></xsl:variable>
+<xsl:variable name="parentId">
+<xsl:call-template name="substring-before-last">
+<xsl:with-param name="string1" select="$nodeId" />
+<xsl:with-param name="string2" select="'.'" />
+</xsl:call-template>
+</xsl:variable>
+<tr data-node-id="{$nodeId}" data-node-pid="{$parentId}">
+<xsl:attribute name="class">level<xsl:value-of select="count(ancestor::*)-count(ancestor::true|ancestor::false|ancestor::case)" /></xsl:attribute>
+<xsl:if test="@disabled">
+<xsl:attribute name="class">disabled</xsl:attribute>
+<xsl:attribute name="title">disabled</xsl:attribute>
+</xsl:if>
+<td><xsl:value-of select="name(.)"/></td>
+<td></td>
+<td><span class="code"><xsl:value-of select="@property"/></span></td>
+<td><span class="code"><span class="group">key&lt;</span><xsl:value-of select="@key" /><span class="group">&gt;</span></span></td>
+<td><span class="comment"><xsl:value-of select="annotation"/></span></td>
+</tr>
+<xsl:apply-templates />
+</xsl:template>
+	
+<xsl:template match="switch">
+<xsl:variable name="nodeId"><xsl:number level="multiple" format="1" count="*" /></xsl:variable>
+<xsl:variable name="parentId">
+<xsl:call-template name="substring-before-last">
+<xsl:with-param name="string1" select="$nodeId" />
+<xsl:with-param name="string2" select="'.'" />
+</xsl:call-template>
+</xsl:variable>
+<tr data-node-id="{$nodeId}" data-node-pid="{$parentId}">
+<xsl:attribute name="class">level<xsl:value-of select="count(ancestor::*)-count(ancestor::true|ancestor::false|ancestor::case)" /></xsl:attribute>
+<xsl:if test="@disabled">
+<xsl:attribute name="class">disabled</xsl:attribute>
+<xsl:attribute name="title">disabled</xsl:attribute>
+</xsl:if>
+<td><xsl:value-of select="name(.)"/></td>
+<td/>
+<td/>
+<td/>
+<td><span class="comment"><xsl:value-of select="annotation"/></span></td>
+</tr>
+<xsl:apply-templates />
+</xsl:template>
+	
+<xsl:template match="case">
+<xsl:variable name="nodeId"><xsl:number level="multiple" format="1" count="*" /></xsl:variable>
+<xsl:variable name="parentId">
+<xsl:call-template name="substring-before-last">
+<xsl:with-param name="string1" select="$nodeId" />
+<xsl:with-param name="string2" select="'.'" />
+</xsl:call-template>
+</xsl:variable>
+<tr data-node-id="{$nodeId}" data-node-pid="{$parentId}">
+<xsl:attribute name="class">level<xsl:value-of select="count(ancestor::*)-count(ancestor::true|ancestor::false|ancestor::case)" /></xsl:attribute>
+<xsl:if test="@disabled">
+<xsl:attribute name="class">disabled</xsl:attribute>
+<xsl:attribute name="title">disabled</xsl:attribute>
+</xsl:if>
+<td><xsl:value-of select="name(.)"/></td>
+<td><span class="code"><xsl:value-of select="@condition"/></span></td>
+<td/>
+<td/>
+<td><span class="comment"><xsl:value-of select="annotation"/></span></td>
+</tr>
+<xsl:apply-templates />
+</xsl:template>
+
+<xsl:template match="default">
+<xsl:variable name="nodeId"><xsl:number level="multiple" format="1" count="*" /></xsl:variable>
+<xsl:variable name="parentId">
+<xsl:call-template name="substring-before-last">
+<xsl:with-param name="string1" select="$nodeId" />
+<xsl:with-param name="string2" select="'.'" />
+</xsl:call-template>
+</xsl:variable>
+<tr data-node-id="{$nodeId}" data-node-pid="{$parentId}">
+<xsl:attribute name="class">level<xsl:value-of select="count(ancestor::*)-count(ancestor::true|ancestor::false|ancestor::case)" /></xsl:attribute>
+<xsl:if test="@disabled">
+<xsl:attribute name="class">disabled</xsl:attribute>
+<xsl:attribute name="title">disabled</xsl:attribute>
+</xsl:if>
+<td><xsl:value-of select="name(.)"/></td>
+<td><span class="code"><xsl:value-of select="@condition"/></span></td>
+<td/>
+<td/>
+<td><span class="comment"><xsl:value-of select="annotation"/></span></td>
+</tr>
+<xsl:apply-templates />
+</xsl:template>
+		
+<xsl:template match="group">
+<xsl:variable name="nodeId"><xsl:number level="multiple" count="*" /></xsl:variable>
+<xsl:variable name="parentId">
+<xsl:call-template name="substring-before-last">
+<xsl:with-param name="string1" select="$nodeId" />
+<xsl:with-param name="string2" select="'.'" />
+</xsl:call-template>
+</xsl:variable>
+<tr data-node-id="{$nodeId}" data-node-pid="{$parentId}">
+<xsl:attribute name="class">level<xsl:value-of select="count(ancestor::*)-count(ancestor::true|ancestor::false|ancestor::case)" /></xsl:attribute>
+<xsl:if test="@disabled">
+<xsl:attribute name="class">disabled</xsl:attribute>
+<xsl:attribute name="title">disabled</xsl:attribute>
+</xsl:if>
+<td><span class="group"><xsl:value-of select="name(.)"/></span></td>
+<td colspan="4"><span class="group"><xsl:value-of select="annotation"/></span></td>
+</tr>
+<xsl:apply-templates />
+</xsl:template>
+
+<xsl:template match="break">
+<xsl:variable name="nodeId"><xsl:number level="multiple" format="1" count="*" /></xsl:variable>
+<xsl:variable name="parentId">
+<xsl:call-template name="substring-before-last">
+<xsl:with-param name="string1" select="$nodeId" />
+<xsl:with-param name="string2" select="'.'" />
+</xsl:call-template>
+</xsl:variable>
+<tr data-node-id="{$nodeId}" data-node-pid="{$parentId}">
+<xsl:attribute name="class">level<xsl:value-of select="count(ancestor::*)-count(ancestor::true|ancestor::false|ancestor::case)" /></xsl:attribute>
+<xsl:if test="@disabled">
+<xsl:attribute name="class">disabled</xsl:attribute>
+<xsl:attribute name="title">disabled</xsl:attribute>
+</xsl:if>
+<td><xsl:value-of select="name(.)"/></td>
+<td/>
+<td/>
+<td/>
+<td><span class="comment"><xsl:value-of select="annotation"/></span></td>
+</tr>
+<xsl:apply-templates />
+</xsl:template>
+	
+<xsl:template match="annotation">
+</xsl:template>
+	
+<xsl:template match="code">
+<xsl:variable name="nodeId"><xsl:number level="multiple" format="1" count="*" /></xsl:variable>
+<xsl:variable name="parentId">
+<xsl:call-template name="substring-before-last">
+<xsl:with-param name="string1" select="$nodeId" />
+<xsl:with-param name="string2" select="'.'" />
+</xsl:call-template>
+</xsl:variable>
+<tr data-node-id="{$nodeId}" data-node-pid="{$parentId}">
+<xsl:attribute name="class">level<xsl:value-of select="count(ancestor::*)-count(ancestor::true|ancestor::false|ancestor::case)" /></xsl:attribute>
+<xsl:if test="@disabled">
+<xsl:attribute name="class">disabled</xsl:attribute>
+<xsl:attribute name="title">disabled</xsl:attribute>
+</xsl:if>
+<td><xsl:value-of select="@action" /><xsl:value-of select="name(.)"/></td>
+<td></td>
+<td colspan="2"><span class="code"><xsl:value-of select="current()"/></span></td>
+<td><span class="comment"><xsl:value-of select="annotation"/></span></td>
+</tr>
+</xsl:template>
+
+<xsl:template match="*">
+<xsl:message terminate="no">
+	WARNING: Unmatched element: <xsl:value-of select="name()"/>
+</xsl:message>
+<p>WARNING: Unmatched element: <xsl:value-of select="name()"/></p>
+<xsl:apply-templates />
+</xsl:template>
+	
+	<!-- Credits to https://stackoverflow.com/questions/1119449/removing-the-last-characters-in-an-xslt-string/1119666#1119666 -->
+<xsl:template name="substring-before-last">
+<xsl:param name="string1" select="''" />
+<xsl:param name="string2" select="''" />
+<xsl:if test="$string1 != '' and $string2 != ''">
+<xsl:variable name="head" select="substring-before($string1, $string2)" />
+<xsl:variable name="tail" select="substring-after($string1, $string2)" />
+<xsl:value-of select="$head" />
+<xsl:if test="contains($tail, $string2)">
+<xsl:value-of select="$string2" />
+<xsl:call-template name="substring-before-last">
+<xsl:with-param name="string1" select="$tail" />
+<xsl:with-param name="string2" select="$string2" />
+</xsl:call-template>
+</xsl:if>
+</xsl:if>
+</xsl:template>
+
+<!-- TODO: link currently has to be at the end of the description without anything (also whitespace) following it. Make this more flexible? -->
+<xsl:template name="main_description_link">
+<xsl:param name="description" select="''" />
+<xsl:choose>
+<xsl:when test="contains($description, 'https://')">
+<xsl:value-of select="substring-before($description, 'https://')"/>
+<a href="https://{substring-after($description, 'https://')}" target="_blank">https://<xsl:value-of select="substring-after($description, 'https://')"/></a>
+</xsl:when>
+<xsl:otherwise>
+<xsl:value-of select="$description" />
+</xsl:otherwise>
+</xsl:choose>
+</xsl:template>
+	
+</xsl:stylesheet>
+]]></Data>
+</XData>
+</Class>
+
+
+<Class name="HS.Local.zimpl.fhirpro.UI.Datasource">
+<Super>HS.Local.zimpl.fhirpro.UI.Super</Super>
+<TimeChanged>66871,54862.461146</TimeChanged>
+<TimeCreated>66805,48752.471654</TimeCreated>
+
+<Method name="OnPage">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	&html<<!DOCTYPE HTML>
+<html>	
+<head>
+#(..MetaTags())#
+#(..LinkJS("jquery-3.7.1.min.js"))#
+#(..XDataJS("BeautifyJS"))#
+#(..XDataJS("StorageHandler"))#
+#(..DefaultStyle())#
+
+<script type="text/javascript">
+$(document).ready(function(){
+	listStorages();
+	
+	let mpiid = getMpiid();
+	if (mpiid !== null) {
+		showCurrent(getMpiid());	
+	}
+	
+	$('textarea').on('mousedown', function(){
+		$('#CurrentMPIID').html('NEW');
+		$('#CurrentSource').html('textarea');
+		$('#ButtonCopysessionStorage').css({ display: 'unset' });
+		$('#ButtonCopylocalStorage').css({ display: 'unset' });
+	});
+	
+	$("a").hover(function(){
+		$(this).css("text-decoration", "underline");
+		}, function(){
+		$(this).css("text-decoration", "none");
+	});
+	$(".wastebasket").hover(function(){
+		$(this).css("filter", "drop-shadow(0 0 2px red)");
+		}, function(){
+		$(this).css("filter", "none");
+	});
+	
+	// use localStorage to remeber the AA option setting
+});
+</script>
+
+<script type="text/javascript">
+async function fetchData()
+{
+	let pMPIID = $('#mpiid').val();
+	let querystr = '?MPIID='+pMPIID;
+	
+	if (pMPIID == "") {
+		querystr = '?MRN='+$('#mrn').val()+'&AA='+$('#aa').val();
+	} 
+	
+	//// Get SDA and place in a textarea						
+	const sda = await fetch('#(..#SDAStreamServer)#'+querystr)
+							.then(response => response.text()
+								.then(status = response.status));
+	
+	if (parseInt(status) !== 200) {
+		$('#PreviewSDA').val('Fetch failed with status code '+status);
+		console.log(status);
+		return
+	}
+	
+	const sdapretty = vkbeautify.xml(sda, ' ');
+	
+	if (pMPIID == "") {
+		parser = new DOMParser();
+		xmlDoc = parser.parseFromString(sda,"text/xml");
+		pMPIID = xmlDoc.getElementsByTagName('Patient')[0].getElementsByTagName('MPIID')[0].childNodes[0].nodeValue;
+	
+	} 
+	
+	//// Get FHIR
+	const fhir = await fetch('#(..#FHIRStreamServer)#?MPIID='+pMPIID)
+							.then(response => response.json());
+	const fhirpretty = vkbeautify.json(JSON.stringify(fhir), ' ');
+	
+	setCurrent('sessionStorage',pMPIID);
+	
+	setFhirData(fhirpretty);
+	setSdaData(sdapretty);
+	
+	listStorages();
+	showCurrent(pMPIID);
+}
+function listStorages() {
+	
+	// remove any storage items from display before drawing them (again)
+	$('dd').remove();
+	
+	let key = new String();
+	
+	["localStorage","sessionStorage"].forEach(function(storageType){
+		for (var i = 0; i < this[storageType].length; i++){
+			
+			// don't display other session variables
+			if ((this[storageType].key(i) == "mpiid") || (this[storageType].key(i) == "storageType")) {
+				continue;
+			}
+		
+			key = this[storageType].key(i).split("#")[1];
+			
+			// ensure an mpiid is only listed once per storageType
+			if ($('#'+storageType+'List [data-value='+key+']').length) {
+				continue;
+			}
+			
+			// Create a description list element
+			var dd = $('<dd/>', {
+				"data-value":key, 
+				}).appendTo('#'+storageType+'List');
+				
+			// Add the text
+			$('<a/>', {
+				"html":key,
+				"click":function(){setCurrent(storageType, $(this).parent().attr('data-value'))}
+				}).prependTo(dd);
+			
+			// Add a wastebasket
+			$('<a/>', {
+				"html":"&#128465;&#65039;", "class":"wastebasket",
+				"click":function(){deleteItem(storageType, $(this).parent().attr('data-value'))}
+				}).prependTo(dd);
+				
+			}
+	});		
+}
+function setCurrent(storageType, mpiid) {
+	
+	console.log("setCurrent(" + storageType +','+ mpiid +')');
+	setStorage(storageType);
+	setMpiid(mpiid);
+	
+	var parentWindow = window.parent;
+	parentWindow.setCurrentItemInTitle(mpiid);
+	
+	showCurrent(mpiid);
+}
+function showCurrent(mpiid) {
+	console.log('showCurrent('+mpiid+')');
+	
+	if (mpiid !== "undefined") {
+		let storage = getStorage();
+		let storageType = sessionStorage.getItem("storageType");
+		
+		$('#PreviewSDA').val(storage.getItem('SDA#'+mpiid));
+		$('#PreviewFHIR').val(storage.getItem('FHIR#'+mpiid));
+		$('#CurrentMPIID').html(mpiid);
+		$('#CurrentSource').html(storageType);
+		
+		$('#ButtonCopysessionStorage').css({ display: storageType == "sessionStorage" ? 'none' : 'unset' });
+		$('#ButtonCopylocalStorage').css({ display: storageType == "localStorage" ? 'none' : 'unset' });
+		
+		$('#localStorageList dd').removeClass("active");
+		$('#sessionStorageList dd').removeClass("active")
+		$('#'+storageType+'List [data-value='+mpiid+']').addClass("active");
+	}
+}
+function deleteItem(storageType, id) {
+	if (confirm('Delete '+id+' from '+storageType+'?')) {
+		if (id=='*') {
+			this[storageType].clear()
+		} else {
+			this[storageType].removeItem('SDA#'+id);
+			this[storageType].removeItem('FHIR#'+id);
+		}
+		setCurrent('sessionStorage');
+		listStorages();
+		//location.reload();
+	}
+}
+function copyToLocalStorage() {
+	
+	let name = prompt('Please give it a name', getMpiid() );
+	if (name!== null) {
+		name = name.replace(' ','_');
+		localStorage.setItem('FHIR#'+name, $('#PreviewFHIR').val());
+		localStorage.setItem('SDA#'+name, $('#PreviewSDA').val());
+		location.reload();
+	}
+}
+function copyToSessionStorage() {
+
+	let name = prompt('Please give it a name', getMpiid());
+	if (name!== null) {
+		name = name.replace(' ','_');
+		setMpiid(name);
+		sessionStorage.setItem('FHIR#'+name, $('#PreviewFHIR').val());
+		sessionStorage.setItem('SDA#'+name, $('#PreviewSDA').val());
+		setStorage('sessionStorage');
+		location.reload();
+	}
+}
+function beautifyJS() {
+	$('#PreviewFHIR').val( vkbeautify.json($('#PreviewFHIR').val(), ' ') );
+}
+
+function beautifyXML() {
+	$('#PreviewSDA').val( vkbeautify.xml($('#PreviewSDA').val(), ' ') );
+}
+</script>
+<style> /* for overrides */
+body {padding:1em;}
+#PreviewTable {width:96%;}
+textarea {
+	width: 99%;
+	height: 50vh;
+}
+th {
+	text-align: left;
+}
+td {
+	vertical-align: top;
+}
+dt {
+	font-weight: bold;
+}
+dd {
+	cursor: pointer;
+	font-weight: normal;
+	margin-left:1em;
+}
+dl {
+	margin: 0;
+}
+.wastebasket {
+	font-size: small;
+	padding: 0 0.2em;
+	cursor: pointer;
+	text-decoration: none !important;
+}
+.disclaimer {
+	font-size: small;
+	font-style: italic;
+}
+#DataNew, #DataStored {
+	xmargin-bottom: 1em;
+	xpadding-bottom: 1em;
+	width: fit-content;
+	display: inline-block;
+	vertical-align: top;
+	xmargin-right: 7em;
+}
+#DataSources {
+	justify-content: flex-start;
+	display: flex;
+	padding-bottom:1em;
+}
+#DataSources div {
+	padding-left: 3em;
+}
+#CurrentItem {
+	border: 1px solid #bfbfbf;
+	padding: 1em !important;
+	border-radius: 0.7em 0;
+	background: white;
+	width: fit-content;
+	height: fit-content;
+}
+.active {
+	color: #00b5afb8;
+	filter: drop-shadow(0 0 2px white);
+}
+</style>
+</head>
+<body>
+<div id="DataSources">
+
+	<div id="CurrentItem">
+		<b>current:</b> <span id="CurrentMPIID"></span>
+		<br />
+		<b>source:</b> <span id="CurrentSource"></span>
+		<br />
+		<button id="ButtonCopylocalStorage" onclick="copyToLocalStorage()">Copy to localStorage</button>
+		<button id="ButtonCopysessionStorage" onclick="copyToSessionStorage()">Copy to sessionStorage</button>
+	</div>
+
+	<div id="DataStored">
+		<dl id="StorageList">
+			<dt id="sessionStorageList" data-value="sessionStorage" title="Cached only for browser session">
+				<a class="wastebasket" onclick="deleteItem('sessionStorage', '*')">&#128465;&#65039;</a>
+				Session Items
+			</dt>
+		</dl>
+	</div>
+
+	<div id="DataStored">
+		<dl id="StorageList">
+			<dt id="localStorageList" data-value="localStorage">
+				<a class="wastebasket" onclick="deleteItem('localStorage', '*')">&#128465;&#65039;</a>
+				Stored Items
+			</dt>
+		</dl>
+	</div>
+	
+		<div id="DataNew">
+		<input id="mrn" name="mrn" placeholder="mrn...">
+		#(..AssigningAuthSelect())#
+			<br/> -- or -- <br/>
+		<input id="mpiid" name="mpiid" placeholder="mpiid...">
+			<br/>
+		<button onclick="fetchData()" style="float:right;">Fetch</button>
+		
+	</div>
+
+</div>
+	
+<table id="PreviewTable">
+	<colgroup>
+		<col span="1" style="width:48%;">
+		<col span="1" style="width:1%;">
+		<col span="1" style="width:48%;">
+	</colgroup>
+	
+	<tr>
+		<th>SDA Preview
+			<button onclick="beautifyXML()" style="width:3em; float:right;">&lt;&gt;</button>
+		</th>
+		<th></th>
+		<th>FHIR Preview
+			<button onclick="beautifyJS()" style="width:3em; float:right;">{}</button>
+		</th>
+	</tr>
+	
+	<tr> 
+		<td>
+			<textarea id="PreviewSDA"></textarea>
+		</td>
+		<td>
+			
+			
+		</td>
+		<td>
+			<textarea id="PreviewFHIR"></textarea>
+		</td>
+	</tr>
+
+</table>
+	
+</body>
+</html>>
+	
+	return $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="AssigningAuthSelect">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	set tSQL = "select Code,Name from HS_AssignAuth.Config where identifiertype='MR'"
+	set tRS = ##class(%ResultSet).%New()
+	do tRS.Prepare(tSQL)
+	do tRS.Execute()
+	
+	&html<<select id="aa" name="aa">>
+	
+	while tRS.Next() {
+		&html<<option value="#(tRS.Data("Code"))#">#(tRS.Data("Name"))#</option>>
+	}
+	
+	&html<</select>>
+	
+	return ""
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="HS.Local.zimpl.fhirpro.UI.FHIRNetwork">
+<Super>HS.Local.zimpl.fhirpro.UI.Super</Super>
+<TimeChanged>66913,41208.755402</TimeChanged>
+<TimeCreated>66210,84594.926448</TimeCreated>
+
+<Method name="OnPage">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	
+	&html<<!DOCTYPE html>
+<html>
+<head>
+	<title>FHIR Bundle Visualizer</title>
+	#(..LinkJS("jquery-3.7.1.min.js"))#
+	#(..LinkJS("vis-network.min.js"))#
+	#(..XDataJS("StorageHandler"))#
+	
+	<script type="text/javascript">
+	    
+	function parse() {	
+		
+		let tMpiid = getMpiid();
+		if (tMpiid == "") {
+			console.log("No MPIID found in current session. Search for a patient first.");
+			return
+		}
+
+		let tFHIR = getFhirData();
+		if (tFHIR == "") {
+			console.log("No FHIR data found in localStorage. Search for a patient first.");
+			return
+		}
+
+		unfocusInspector();
+		cleanSession();
+		
+		bundle=JSON.parse(tFHIR);
+		bundle.entry.forEach(processEntry);
+	}
+
+	function cleanSession() {
+		edges.clear();
+		nodes.clear();
+		$('.unhideButton').remove();
+	}
+	
+	function processEntry(entry) {
+		//console.log(entry.resource.resourceType);
+		var resourceId = entry.resource.resourceType+'/'+entry.resource.id;
+		var resourceType = entry.resource.resourceType;
+		var label = '<b>'+resourceType+'</b>';
+		var display = '';
+		
+		if(typeof entry.resource.name!=='undefined') {
+			display = entry.resource.name;
+			
+			if(typeof display==='object') {
+				var prefix	= entry.resource.name[0].prefix || '';
+				var given	= entry.resource.name[0].given || '';
+				var family	= entry.resource.name[0].family || '';
+				display = prefix +' '+ given.toString().replace(',',' ') +' '+ family;
+			}
+			
+		} else if(typeof entry.resource.type!=='undefined') {
+			if((typeof entry.resource.type==='object') && (typeof entry.resource.type.coding!=='undefined')) {
+				display = entry.resource.type.coding[0].display || entry.resource.type.coding[0].code;
+				
+			} else if(Array.isArray(entry.resource.type)){
+				display = entry.resource.type[0].coding[0].display || entry.resource.type[0].coding[0].code;
+				console.log('typeof entry.resource.type for '+label+'= Array');
+			}
+			
+		} else if(typeof entry.resource.code!=='undefined') {
+			display = entry.resource.code.coding[0].display || entry.resource.code.coding[0].code;
+	
+		} else {
+			display = entry.resource.status;
+		}
+		label = label +'\n'+ '<i>'+display+'</i>';
+		
+		
+		createNode(resourceId, entry.resource.resourceType, label);
+		console.log('createNode',resourceId, entry.resource.resourceType);
+		fhirResource[resourceId] = entry.resource;
+		traverse(entry.resource, entry.resource.resourceType, entry.resource.id);
+	}
+
+	function traverse(jsonObj, nodetype, nodeid, parent) {
+		if( jsonObj !== null && typeof jsonObj == "object" ) {
+			Object.entries(jsonObj).forEach(([key, value]) => {
+				// key is either an array index or object key
+				if(key=="reference"){
+					createEdge(nodetype+'/'+nodeid, value, parent);
+					console.log('createEdge',nodetype,nodeid,value,parent);
+				}
+				traverse(value, nodetype, nodeid, key);
+			});
+		}
+		else {
+			// jsonObj is a number or string
+		}
+	}
+	function createNode(resourceId,resourceType,label) {
+		let rscColor = color(resourceType);
+		nodes.add({id:resourceId, label:label, title:resourceType, color:color(resourceType)});
+	}
+
+	function color(rscType) {
+		if (typeof colors==='undefined') {
+			console.log('generating color palette');
+			
+			colors = new Array();
+	
+			/** Palette https://codepen.io/chorijan/pen/azVzPO **/
+			colors['Patient']			= '#48CFAD'; // mint
+			colors['Location']			= '#A0CECB'; // teal
+			colors['Organization']		= '#FFCE54'; // sunflower
+			colors['Encounter']			= '#A0D468'; // grass
+			colors['DiagnosticReport']	= '#8067B7'; // plum
+			colors['ServiceRequest']	= '#AC92EC'; // lavender
+			colors['Observation']		= '#4FC1E9'; // aqua
+			colors['Specimen']			= '#F5F7FA'; // light gray
+			colors['MedicationStatement']= '#D8334A'; // ruby
+			colors['Medication']		= '#ED5565'; // grapefruit
+			colors['Practitioner']		= '#5D9CEC'; // blue jeans
+			colors['DocumentReference']	= '#E8CE4D'; // straw
+			colors['Substance']			= '#FC6E51'; // bittersweet
+			colors['Composition']		= '#EC87C0'; // pink rose
+		}
+		
+		return colors[rscType]
+	}
+
+	function createEdge(from,to,label) {
+		edges.add({from:from, to:to, label:'<i>'+label+'</i>'});
+	}
+	function createUnhideButton(fhirResourceId) {
+		var button = document.createElement('button');
+		button.innerText='unhide '+fhirResourceId;
+		button.setAttribute('fhirresourceid',fhirResourceId);
+		button.setAttribute('id','unhide'+fhirResourceId);
+		button.setAttribute('class','unhideButton');
+		button.onclick=function() {
+			nodes.add({id:this.getAttribute('fhirresourceid'), label:this.getAttribute('fhirresourceid').split('/')[0]});
+			document.getElementById('unhide'+fhirResourceId).remove()
+		};
+		document.getElementById('HiddenResourceTray').appendChild(button);
+	}
+	function focusInspector(nodeId) {
+		document.getElementById('resourceJSON').innerText = JSON.stringify(fhirResource[nodeId], null, 4);
+		document.getElementById('HideResourceButton').setAttribute('fhirresourceid', nodeId);
+		$("#VisNetworkPane").animate({width:"59%"});
+		$("#ResourceInspector").show('fast');
+		$("#ResourceInspector").animate({width:"39%"});
+		network.moveTo({scale:2.5,});
+		network.focus(nodeId);
+	}
+	function unfocusInspector() {
+		//console.log('unfocusInspector');
+		$("#ResourceInspector").hide('fast');
+		$("#VisNetworkPane").animate({width:"100%"});
+		network.moveTo({
+			position: {x:0, y:0},
+			scale: 1
+		});
+		network.fit();
+		network.stopSimulation();
+	}
+	function fetchFhir(flocation) {
+		let headers = new Headers();
+		headers.set('Authorization', 'Basic ' + btoa('_system' + ":" + 'SYS'));
+
+		fetch(flocation, {
+			method:'GET',
+			headers: headers})
+		.then(response => response.json())
+		.then(data => {
+			document.getElementById('BundleText').value = JSON.stringify(data);
+			parse();
+		})
+		.catch(error => console.error(error))
+	}
+	//$(document).ready(function()
+	window.addEventListener("load", () => {
+		$('#Loading').toggle(true)
+		//console.log('document ready');
+		
+		fhirResource = new Array();
+		
+		// create an array with nodes
+		nodes = new vis.DataSet();
+
+		// create an array with edges
+		edges = new vis.DataSet();
+
+		// create a network
+		container = document.getElementById("VisNetworkPane");
+		data = {
+			nodes: nodes,
+			edges: edges,
+		};
+		options = {
+			nodes: {
+				shape:'box',
+				font: {
+    			    multi: 'html'
+				}
+			},
+			edges: {
+				arrows:{to:true},
+				font: {
+    			    multi: 'html',
+    			    ital: {
+						color: 'silver',
+						size: 12, // px
+						face: 'arial',
+						vadjust: 0,
+						mod: 'italic',
+					}
+				}
+			},
+			physics: {
+				forceAtlas2Based: {
+					gravitationalConstant: -26,
+					centralGravity: 0.005,
+					springLength: 230,
+					springConstant: 0.18,
+				},
+				maxVelocity: 50,
+				solver: "forceAtlas2Based",
+				timestep: 0.15,
+				stabilization: {
+					enabled: true,
+					iterations: 1000,
+					updateInterval: 25,
+				},
+			},
+			/*physics: {
+				/*springLength and springConstant*
+				repulsion: {
+					centralGravity: 0.2,
+					springLength: 400,
+					springConstant: 1.05,
+					nodeDistance: 200,
+					damping: 0.09
+				},
+				stabilization: {
+					enabled: true,
+					iterations: 20,
+					updateInterval: 100,
+					onlyDynamicEdges: false,
+					fit: true
+			    },
+			    barnesHut: {
+					springConstant: 0.05,
+					avoidOverlap: 0.3
+				}
+			}*/
+			
+		};
+		network = new vis.Network(container, data, options);
+
+		network.on('click', function (event, properties, senderId) {
+			//console.log('onclick',event);
+			if(event.nodes[0] === undefined) {
+				unfocusInspector();
+			} else {
+				focusInspector(event.nodes[0]);
+			}
+		});
+		
+		
+		network.on("zoom",function(){
+			minScale = 0.5;
+			maxScale = 2;
+			canvasWidth = network.canvas.frame.clientWidth;
+			canvasHeight = network.canvas.frame.clientHeight;
+			maxOffsetLeft = (canvasWidth / 3);
+			maxOffsetRight = (canvasWidth / -3);
+			maxOffsetUp = (canvasHeight / 3);
+			maxOffsetDown = (canvasHeight / -3);
+
+			pos = network.getViewPosition();
+			currScale = network.getScale();
+			//console.log('zoom','scale:',network.getScale(),'pos:',network.getViewPosition());
+			
+			// Limit scale and position
+			network.moveTo({
+				position: {
+						x:(pos.x < maxOffsetRight) ? maxOffsetRight
+							: (pos.x > maxOffsetLeft) ? maxOffsetLeft 
+							: pos.x,
+						y:(pos.y < maxOffsetDown) ? maxOffsetDown
+							: (pos.x > maxOffsetUp) ? maxOffsetUp
+							: pos.x
+				}, 
+				scale:(currScale < minScale ) ? minScale
+						: (currScale > maxScale ) ? maxScale
+						: currScale
+				});
+		});
+		
+		$("#ResourceInspector").hide('fast');
+		parse();
+	});
+	</script>
+
+	<style type="text/css">
+		html,body,#VizualizerPanel {height:100%; width:100%; font-family:Helvetica, Arial, sans-serif;}
+		#VisNetworkPane,#ResourceInspector {display:inline-block;}
+		#ResourceInspector {overflow:auto; border-left:1px silver dashed; height:90%; background-color:whitesmoke;}
+		#VisNetworkPane {vertical-align:top; width:100%; height:100%;}
+		#ConfigureBundleControl span {padding:0.5em; background:linear-gradient(180deg, rgba(164,226,222,1) 0%, rgba(214,255,253,1) 100%); cursor:pointer;}
+		#ConfigureBundlePane {padding:1em; background:rgba(214,255,253,1); width:fit-content;}
+		#BundleText {width:800px; height:20em;}
+		.nodeLabel {font-weight:bolder}
+		.nodeType {font-size:smaller}
+		#Loading {
+			width: 100%;
+			height: 100%;
+			background: #ffffffde;
+			position: absolute;
+			z-index: 100;
+		}
+		#Loading img {
+			margin-left: calc(50vw - 60px);
+			width: 60px;
+			margin-top: calc(50vh - 60px);
+		}
+	</style>
+</head>
+<body>
+  	<div id="VizualizerPanel">
+  		<div id="HiddenResourceTray"></div>
+  		<div id="VisNetworkPane"></div>
+  		<div id="ResourceInspector">
+  			<button id="HideResourceButton" 
+  					onclick="nodes.remove({id:this.getAttribute('fhirresourceid')}); 
+  							createUnhideButton(this.getAttribute('fhirresourceid'));
+  							unfocusInspector();">
+  				hide this resource on map
+			</button>
+		    <pre id="resourceJSON"></pre>
+  		</div>
+  	</div>
+</body>
+</html>>
+
+	return $$$OK
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="HS.Local.zimpl.fhirpro.UI.FHIRTimeline">
+<Super>HS.Local.zimpl.fhirpro.UI.Super</Super>
+<TimeChanged>66871,61115.65191</TimeChanged>
+<TimeCreated>66799,63415.805692</TimeCreated>
+
+<Method name="OnPage">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	&html<<!DOCTYPE HTML>
+<html>
+<head>
+  <title>HSFHIRToolkit | FHIR timeline</title>
+	#(..LinkJS("jquery-3.7.1.min.js"))#
+	#(..XDataJS("StorageHandler"))#
+	#(..LinkJS("vis-timeline-graph2d.min.js"))#
+	#(..LinkCSS("vis-timeline-graph2d.min.css"))#
+	#(..DefaultStyle())#
+  <style type="text/css">
+#patientData {
+	margin-bottom: 1em;
+	background-color: white;
+	width: fit-content;
+	padding: 0.1em 1em 1em 1em;
+	margin-top: 1em;
+	margin-left: 1em;
+	border: 1px solid #bfbfbf;
+	border-radius: 1em 0 1em 0;
+	font-size: smaller;
+	display: inline-block;
+}
+.hint {
+	text-align: right;
+	font-style: italic;
+	color: #adadad;
+	display: inline-block;
+	width: 80%;
+}
+#visualization, #patientData {
+	visibility: hidden;
+}
+.vis-panel.vis-left {
+	background-color: #f7f7f7;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23d5ddf6' fill-opacity='0.7' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
+}
+    #patientData h3 {
+	color: gray;
+	margin: 0;
+	font-weight: lighter;
+	font-style: italic;
+}
+	#PatientName {
+		text-shadow: 0.1px 0.1px 1px gray;
+		font-weight: lighter;
+	}
+	#buttonRefit {
+		float: right;
+		margin-top: 1em;
+	}
+	#visualization {
+		background-color: white;
+		}
+	/* backgrounds for groups --disabled for now -- */
+	.Encounters {xbackground-color:#A0D468;}
+	.Conditions {xbackground-color:white;}
+	.Procedures {xbackground-color:white;}
+	.Observations {xbackground-color:#4FC1E9;}
+	.Medications {xbackground-color:#ED5565;}
+	.Vaccinations {xbackground-color:white;}
+	
+  </style>
+  
+</head>
+<body>
+
+<div id="patientData">
+	<svg id="buttonRefit" fill="#9c9c9c" height="20px" width="20px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+	 viewBox="0 0 489.533 489.533" xml:space="preserve">
+		<g><path d="M268.175,488.161c98.2-11,176.9-89.5,188.1-187.7c14.7-128.4-85.1-237.7-210.2-239.1v-57.6c0-3.2-4-4.9-6.7-2.9
+				l-118.6,87.1c-2,1.5-2,4.4,0,5.9l118.6,87.1c2.7,2,6.7,0.2,6.7-2.9v-57.5c87.9,1.4,158.3,76.2,152.3,165.6
+				c-5.1,76.9-67.8,139.3-144.7,144.2c-81.5,5.2-150.8-53-163.2-130c-2.3-14.3-14.8-24.7-29.2-24.7c-17.9,0-31.9,15.9-29.1,33.6
+				C49.575,418.961,150.875,501.261,268.175,488.161z"/></g>
+		</svg>
+	<h2 id="PatientName" />
+	<h3 id="PatientDemogs" />
+	<h3 id="PatientIds" />
+</div>
+<div class="hint">details in developer console</div>
+<div id="visualization"></div>
+
+<script type="text/javascript">
+
+    $(document).ready(function() {
+        parse();
+    });
+
+// Create a DataSet (allows two way data-binding)
+// https://visjs.github.io/vis-timeline/docs/timeline/
+	var timeline = new vis.Timeline(document.getElementById('visualization'));
+	
+	// Configuration for the Timeline
+	var options = {
+		// option groupOrder can be a property name or a sort function
+		// the sort function must compare two groups and return a value
+		//     > 0 when a > b
+		//     < 0 when a < b
+		//       0 when a == b
+		order: function (a,b) {
+			return b.id - a.id
+		},
+		groupOrder: function (a, b) {
+			return a.value - b.value;
+		},
+		editable: false,
+		configure: false, //displays configurable options on the webpage
+		locale: 'de',
+		min:'2010-01-01',
+		max:'2030-12-31',
+		orientation:'both',
+		zoomMin: 1000 * 60 * 60 * 6, // quarter-hour (ms)
+ 		zoomMax: 1000 * 60 * 60 * 24 * 31 * 24, // about 24 months in milliseconds
+		groupTemplate: function (group) {
+			var container = document.createElement("div");
+			var label = document.createElement("span");
+			label.innerHTML = group.content + " ";
+			container.insertAdjacentElement("afterBegin", label);
+			var hide = document.createElement("button");
+			hide.innerHTML = "hide";
+			hide.style.fontSize = "small";
+			hide.addEventListener("click", function () {
+			  groups.update({ id: group.id, visible: false });
+			});
+			container.insertAdjacentElement("beforeEnd", hide);
+			return container;
+  		},
+  		onInitialDrawComplete: () => {
+	  		timeline.redraw();
+	  		fitTimeline();
+	  	},
+	  	onTimeout: {
+			timeoutMs: 200,
+			callback: function (callback) {
+			  var didUserCancel;
+			  var didUserCancel = confirm(
+			    "Too many items loaded! Would you like to continue rendering (this might take a while)?"
+			  );
+			  callback(didUserCancel);
+			},
+		},
+	};
+
+	var groups = new vis.DataSet([
+		{
+			id:'Encounter',
+			value:0,
+			content:'Encounters',
+			subgroupStack:false,
+			className: 'Encounters'
+		},
+		{
+			id:'Condition',
+			value:1,
+			content:'Conditions',
+			subgroupStack:false,
+			className: 'Conditions'
+		},
+		{
+			id:'Procedure',
+			value:2,
+			content:'Procedures',
+			subgroupStack:false,
+			className: 'Procedures'
+		},
+		{
+			id:'Observation',
+			value:3,
+			content:'Observations',
+			subgroupStack:false,
+			className: 'Observations'
+		},
+		{
+			id:'Medication',
+			value:4,
+			content:'Medications',
+			subgroupStack:false,
+			className: 'Medications'
+		},
+		{
+			id:'Vaccination',
+			value:5,
+			content:'Vaccinations',
+			subgroupStack:false,
+			className: 'Vaccinations'
+		},
+		
+	]);
+	
+	timeline.setOptions(options);
+	timeline.setGroups(groups);
+	
+	// fhirRef[timeline.item.id]=entry.resource.id
+	var fhirRef = new Array();
+	
+	// fhirResource[entry.resource.id]=entry.resource
+	var fhirResource = new Array();
+	
+	document.getElementById("buttonRefit").onclick = function () {
+		groups.forEach(function (group) {
+    		groups.update({ id:group.id, visible:true });
+  		});
+		fitTimeline();
+	}
+
+
+function parse() {
+	
+	let tMpiid = getMpiid();
+	if (tMpiid == "") {
+		console.log("No MPIID found in current session. Search for a patient first.");
+		return
+	}
+	
+	let tFHIR = getFhirData();
+	if (tFHIR == "") {
+		console.log("No FHIR data found in sessionStorage. Search for a patient first.");
+		return
+	}
+	
+	document.getElementById('patientData').style.visibility='visible';
+	document.getElementById('visualization').style.visibility='visible' 
+	
+	//bundle=JSON.parse(document.getElementById('FHIRBundle').value);
+	bundle=JSON.parse(tFHIR);
+	
+	items = new Array();
+	
+	bundle.entry.forEach(processEntry);
+	
+	items2 = new vis.DataSet(items);
+	
+	timeline.setItems(items2);
+	
+
+	// workaround for onInitialDrawComplete bug
+	this.timeline.on("currentTimeTick", (prop) => {
+        // Do something here
+        fitTimeline();
+        timeline.redraw();
+        // After fired the first time we un-subscribed
+        this.timeline.off("currentTimeTick")
+    })
+	
+	timeline.on('select', function (selectedObj) {
+				// for timeline debugging:
+				//  console.log('selectedObj:',selectedObj);
+			if (selectedObj.items.length > 0) {
+				// for timeline debugging:
+				//  console.log('timeline.itemSet.getItemById("'+selectedObj.items+'").data :' , timeline.itemSet.getItemById(selectedObj.items).data);
+				console.log('fhirResource[fhirRef["'+selectedObj.items[0]+'"]] :', fhirResource[fhirRef[selectedObj.items[0]]]);
+				var selection = timeline.getSelection();
+	  			timeline.focus(selection);
+  			}
+		});
+		
+	//timeline.focus(1);
+	
+	
+	
+}
+
+function fitTimeline()
+{
+	// console.log('refit');
+	timeline.fit({duration: 500, easingFunction: 'easeInOutQuint'});
+}
+
+function calculateAge(birthdate) {
+    const birthdateObj = new Date(birthdate);
+
+    // Get the current date
+    const currentDate = new Date();
+
+    // Calculate the difference in years
+    let age = currentDate.getFullYear() - birthdateObj.getFullYear();
+
+    // Check if the birthday has occurred this year
+    const hasBirthdayOccurred = (
+        currentDate.getMonth() > birthdateObj.getMonth() ||
+        (currentDate.getMonth() === birthdateObj.getMonth() && currentDate.getDate() >= birthdateObj.getDate())
+    );
+
+    // If birthday hasn't occurred, subtract 1 from the age
+    if (!hasBirthdayOccurred) {
+        age--;
+    }
+
+    return age;
+}
+
+/// caches each resource for display in console
+function cacheEntry(entry) {
+	if (fhirResource[entry.resource.id] !== undefined) {
+		console.log('<WARNING> Duplicate resource ID found in ',
+					'1. '+fhirResource[entry.resource.id].resourceType+'/'+entry.resource.id,
+					'2. '+entry.resource.resourceType+'/'+entry.resource.id
+					);
+	}
+	
+	fhirResource[entry.resource.id]=entry.resource;
+}
+
+function processEntry(entry) {
+	cacheEntry(entry);
+	
+	const resource = entry.resource;
+	let tItemId = items.length+1;
+	let tItem = {id:tItemId, group:resource.resourceType};
+	
+	fhirRef[tItemId]=resource.id;
+	
+	if (resource.resourceType == 'Patient') {
+		
+		document.getElementById('PatientName').innerHTML = resource.name[0].family + ', ' + resource.name[0].given;
+		document.getElementById('PatientDemogs').innerHTML = calculateAge(resource.birthDate) + ' Jahre, ' + resource.gender;
+		
+		identifiersString = new String;
+		resource.identifier.forEach(getIdentifiersString);
+		document.getElementById('PatientIds').innerHTML = identifiersString;
+		
+	} else if (resource.resourceType == 'Encounter') {
+		
+		tItem.start = resource.period.start;
+		if (tItem.start === undefined) return;
+		if (resource.period.end !== undefined) {
+			tItem.end = resource.period.end;
+		}
+		
+		let subgroup = (resource.type === undefined) ? 'Einrichtungskontakt' : resource.type[0].coding[0].display;
+		
+		if (subgroup=='Einrichtungskontakt') {
+			tItem.content = 'Fall #'+resource.identifier[0].value + ' status:'+resource.status;
+			tItem.title = 'resource id:'+resource.id;
+			
+		} else if (subgroup=='Abteilungskontakt') {
+			
+			tItem.content = '[AK] '+ (resource.serviceType ? resource.serviceType.coding[0].display : '');
+			tItem.title = 'resource id:'+resource.id;
+			
+		} else if (subgroup=='Versorgungsstellenkontakt') {
+			locationsString = new String;
+			if(resource.location) resource.location.forEach(getLocationsString);
+			tItem.content = '[VK] ' + locationsString;	
+			tItem.title = 'resource id:'+resource.id;
+		}
+		
+		if (tItem.start == tItem.end) {
+			delete tItem.end;
+			tItem.content = 'Konsil/OP';
+			tItem.title = 'Konsil/OP';
+		}				
+		
+		items.push(tItem);
+		
+	} else if (resource.resourceType == 'Condition') {
+		
+		tItem.start = resource.recordedDate;
+		tItem.group = 'Condition';
+		tItem.content = resource.code.coding[0].display;
+		tItem.title = '[' + resource.code.coding[0].code + '] ' + resource.code.coding[0].display;
+		
+		items.push(tItem);
+		
+	} else if (resource.resourceType == 'Procedure') {
+		
+		tItem.start = resource.performedDateTime;
+		tItem.group = 'Procedure';
+		tItem.content = resource.code.coding[0].display;
+		tItem.title = '[' + resource.code.coding[0].code + '] ' + resource.code.coding[0].display;
+		
+		items.push(tItem);
+		
+	} else if (resource.resourceType == 'Observation') {
+		
+		tItem.start = resource.effectiveDateTime;
+		tItem.group = 'Observation';
+		tItem.content = getObservationString(resource);
+		tItem.title = '[' + resource.code.coding[0].code + '] ' + resource.code.coding[0].display;
+		
+		items.push(tItem);
+		
+	} else if (resource.resourceType == 'MedicationStatement') {
+		if (resource.effectivePeriod !== undefined) {
+			tItem.start = resource.effectivePeriod.start;
+			tItem.end = resource.effectivePeriod.end;
+		
+		} else if (resource.effectiveDateTime !== undefined) {
+			tItem.start = resource.effectiveDateTime;
+			
+		} else {
+			console.log('No Timestamp, skipping resource:',resource);
+			return
+		}
+		
+		tItem.group = 'Medication';
+		tItem.content = '[MS]'+resource.medicationReference.display;
+		tItem.title = resource.resourceType;
+		
+		items.push(tItem);
+	
+	} else if (resource.resourceType == 'MedicationAdministration') {
+		if (resource.effectivePeriod !== undefined) {
+			tItem.start = resource.effectivePeriod.start;
+			tItem.end = resource.effectivePeriod.end;
+		
+		} else if (resource.effectiveDateTime !== undefined) {
+			tItem.start = resource.effectiveDateTime;
+			
+		} else {
+			console.log('No Timestamp, skipping resource:',resource);
+			return
+		}
+		
+		tItem.group = 'Medication';
+		tItem.content = '[MA]'+resource.medicationReference.display;
+		tItem.title = resource.resourceType;
+		
+		items.push(tItem);
+	
+	} else if (resource.resourceType == 'OperationOutcome') {
+		console.log('<WARNING> Issues were found!',resource);
+	}
+	
+	
+}
+
+function getObservationString(resource) {
+	
+	let prefix = new String;
+	let value = new String;
+	let unit = new String;
+	let content = new String;
+	
+	// value is either a singleton in valueQuantity or a component (example: blood pressure)
+	if (resource.valueQuantity !== undefined) {
+		
+		prefix	= '[' + resource.category[0].coding[0].code + '] ';
+		
+		if (resource.valueQuantity.unit !== undefined) {
+			value	= resource.code.coding[0].display +' '+ resource.valueQuantity.value;
+			unit	= ' ' +  resource.valueQuantity.unit;
+			content	= prefix + value + unit;
+			
+		} else {
+			
+			value	= resource.valueQuantity.value;
+			unit	= resource.code.coding[0].display;
+			content	= prefix + unit +': '+ value;
+		
+		}
+	
+		
+	} else if (resource.component !== undefined) {
+		
+		// presuming BP here
+		prefix	= '[' + resource.category[0].coding[0].code + '] ';
+		let systolicIdx = (resource.component[0].code.coding[0].code == '8480-6') ? 0 : 1;
+		let diastolicIdx = (resource.component[0].code.coding[0].code == '8462-4') ? 0 : 1;
+		value	= resource.component[systolicIdx].valueQuantity.value +'/'+ resource.component[diastolicIdx].valueQuantity.value;
+		unit = ' mmHg';
+		content	= prefix + value + unit;
+		
+	} else if (resource.valueString !== undefined) {
+		
+		prefix	= '[' + resource.category[0].coding[0].code + '] ';
+		value	= resource.code.coding[0].display +': '+ resource.valueString;
+		content	= prefix + value;
+		
+	} else {
+		
+		console.log('Observation value not found in:', resource);
+	}
+	
+	
+	return content
+	
+}	
+
+function getIdentifiersString(identifier) {
+	identifiersString += identifier.type.coding[0].code + ':' +	identifier.value + '; ';
+}
+  
+function getLocationsString(location)
+{
+	if (location.physicalType) {
+		locationsString += location.physicalType.coding[0].display + ' ' + location.location.display + '; ';
+	}
+}
+  
+</script>
+</body>
+</html>
+	
+	>
+	
+	return $$$OK
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="HS.Local.zimpl.fhirpro.UI.Index">
+<Super>HS.Local.zimpl.fhirpro.UI.Super</Super>
+<TimeChanged>66913,49558.131796</TimeChanged>
+<TimeCreated>66801,45339.001021</TimeCreated>
+
+<Method name="OnPage">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	&html<<!DOCTYPE HTML>
+<html>
+<head>
+	<title>zimpl:FHIR Profiling Toolkit</title>
+	#(..MetaTags())#
+	#(..LinkJS("jquery-3.7.1.min.js"))#
+	#(..XDataJS("StorageHandler"))#
+	#(..DefaultStyle())#
+	<style>
+/* MENU CONTAINER ----- */
+	.side_menu {
+		background-color: #f7f7f7;
+		/*background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23d5ddf6' fill-opacity='0.7' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");*/
+		border-right: 2px ridge lightgray;
+		height: 100vh;
+		left: 0;
+		position: fixed;
+		top: 1em;
+		width: 42px;
+	}
+	.side_menu .container {
+		padding: 0 0.5em;
+	}
+
+/* STAGGER LIST ----- */
+
+	.list_load {
+		list-style: none;
+		padding: 0;
+	}
+	.list_item {
+		margin-bottom: 0.75em;
+		-webkit-transition: all 200ms ease-in-out;
+		transition: all 200ms ease-in-out;
+		filter: opacity(0.3);
+	}
+	.list_item a {
+		color: #fff;
+		display: block;
+		padding: 5px 10px;
+		text-decoration: none;
+	}
+	.list_item a:hover {
+		background: rgba(255,255,255,.2);
+	}
+	
+	#StorageList dd {
+		margin-left: 1em;
+	}
+    .inactive {
+		filter: invert(50%);
+	}
+	.active {
+		filter: drop-shadow(0px 0px 2px #333695);
+	}
+	.spacer_box {
+		height: 2px;
+		background: #7f7f7f;
+		border-radius: 3px;
+	}
+	#TopBanner {
+	top: 0;
+	height: 22px;
+	position: fixed;
+	z-index: 100;
+	width: 100%;
+	background: linear-gradient(45deg, #333695b8, #00b5afb8);
+	border-bottom: 2px silver ridge;
+	font-size: 0.7em;
+	font-style: italic;
+	padding-left: 2em;
+	color: whitesmoke;
+}
+	#PageDescr {
+	float: right;
+	margin-right: 3em;
+	color: darkslategray;
+}
+#PageName {
+	font-weight: bold;
+	border-left: 1px solid whitesmoke;
+	padding-left: 1em;
+	margin-left: 1em;
+}
+	</style>
+	<script type="text/javascript">
+	$(document).ready(function(){
+		setCurrentItemInTitle(getMpiid());
+		$('.list_item').on('click', function(){toggle(this.id)});
+	});
+
+
+	iframePages = {
+		"Compare_SDA3_to_FHIR":"HS.Local.zimpl.fhirpro.UI.SDA3uFHIRViewer.cls",
+		"Configure_Datasource":"HS.Local.zimpl.fhirpro.UI.Datasource.cls",
+		"FHIR_Network":"HS.Local.zimpl.fhirpro.UI.FHIRNetwork.cls",
+		"FHIR_Timeline":"HS.Local.zimpl.fhirpro.UI.FHIRTimeline.cls",
+		"Management_Portal":"EnsPortal.ProductionConfig.zen?$NAMESPACE=ZIMPLFHIRPRO&ts="+Date.now(), //Fixes caching issues in iframe?
+		"FHIR_Tester_Inbound_to_Outbound":"HS.Local.Impl.Test.FHIR.UnitTest.cls",
+		"DTL_Viewer":"HS.Local.zimpl.fhirpro.UI.DTLViewer.cls",
+		"CodeSystem_Importer":"HS.Local.zimpl.fhirpro.UI.CodeSystemImporter.cls"
+	};
+
+	
+	function toggle(activeElementId) {
+		console.log('toggle ' + activeElementId);
+		$('.list_item').removeClass('active');
+		$('#'+activeElementId).addClass('active');
+		
+		$('#MainFrame').attr('src',iframePages[activeElementId]);
+		
+		if (activeElementId === 'Management_Portal') {
+			$('#MainFrame').css('background-color','white')
+		} else {
+			$('#MainFrame').css('background-color','none')
+		}
+		
+		$('#PageName').html(activeElementId.replace(/\_/gi, " "));
+		setCurrentItemInTitle(getMpiid());
+	}
+	function setCurrentItemInTitle(mpiid) {
+		$('#CurrentItem').html(' [' + mpiid + ']');
+	}
+	</script>
+	
+</head>
+<body>
+
+<div id="TopBanner">
+	
+	<span id="SysDescr">Instance: #($P($zu(86),"*",2)_" ["_$get(^%SYS("SystemMode"))_"] ")#</span>
+	<span id="PageName">Configure Datasource</span>
+	<span id="CurrentItem"></span>
+	<span id="PageDescr">zimpl:FHIR Profiling Toolkit for HealthShare</span>
+	
+</div>
+
+<iframe id="MainFrame" src="HS.Local.zimpl.fhirpro.UI.Datasource.cls"></iframe>
+
+<div class="side_menu">
+	<div class="container">
+		<ul class="list_load">
+			<li class="list_item active" id="Configure_Datasource">
+				<svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<title>Einstellungen</title>
+					<path fill-rule="evenodd" clip-rule="evenodd" d="M12 8.25C9.92894 8.25 8.25 9.92893 8.25 12C8.25 14.0711 9.92894 15.75 12 15.75C14.0711 15.75 15.75 14.0711 15.75 12C15.75 9.92893 14.0711 8.25 12 8.25ZM9.75 12C9.75 10.7574 10.7574 9.75 12 9.75C13.2426 9.75 14.25 10.7574 14.25 12C14.25 13.2426 13.2426 14.25 12 14.25C10.7574 14.25 9.75 13.2426 9.75 12Z" fill="#1C274C"/>
+					<path fill-rule="evenodd" clip-rule="evenodd" d="M11.9747 1.25C11.5303 1.24999 11.1592 1.24999 10.8546 1.27077C10.5375 1.29241 10.238 1.33905 9.94761 1.45933C9.27379 1.73844 8.73843 2.27379 8.45932 2.94762C8.31402 3.29842 8.27467 3.66812 8.25964 4.06996C8.24756 4.39299 8.08454 4.66251 7.84395 4.80141C7.60337 4.94031 7.28845 4.94673 7.00266 4.79568C6.64714 4.60777 6.30729 4.45699 5.93083 4.40743C5.20773 4.31223 4.47642 4.50819 3.89779 4.95219C3.64843 5.14353 3.45827 5.3796 3.28099 5.6434C3.11068 5.89681 2.92517 6.21815 2.70294 6.60307L2.67769 6.64681C2.45545 7.03172 2.26993 7.35304 2.13562 7.62723C1.99581 7.91267 1.88644 8.19539 1.84541 8.50701C1.75021 9.23012 1.94617 9.96142 2.39016 10.5401C2.62128 10.8412 2.92173 11.0602 3.26217 11.2741C3.53595 11.4461 3.68788 11.7221 3.68786 12C3.68785 12.2778 3.53592 12.5538 3.26217 12.7258C2.92169 12.9397 2.62121 13.1587 2.39007 13.4599C1.94607 14.0385 1.75012 14.7698 1.84531 15.4929C1.88634 15.8045 1.99571 16.0873 2.13552 16.3727C2.26983 16.6469 2.45535 16.9682 2.67758 17.3531L2.70284 17.3969C2.92507 17.7818 3.11058 18.1031 3.28089 18.3565C3.45817 18.6203 3.64833 18.8564 3.89769 19.0477C4.47632 19.4917 5.20763 19.6877 5.93073 19.5925C6.30717 19.5429 6.647 19.3922 7.0025 19.2043C7.28833 19.0532 7.60329 19.0596 7.8439 19.1986C8.08452 19.3375 8.24756 19.607 8.25964 19.9301C8.27467 20.3319 8.31403 20.7016 8.45932 21.0524C8.73843 21.7262 9.27379 22.2616 9.94761 22.5407C10.238 22.661 10.5375 22.7076 10.8546 22.7292C11.1592 22.75 11.5303 22.75 11.9747 22.75H12.0252C12.4697 22.75 12.8407 22.75 13.1454 22.7292C13.4625 22.7076 13.762 22.661 14.0524 22.5407C14.7262 22.2616 15.2616 21.7262 15.5407 21.0524C15.686 20.7016 15.7253 20.3319 15.7403 19.93C15.7524 19.607 15.9154 19.3375 16.156 19.1985C16.3966 19.0596 16.7116 19.0532 16.9974 19.2042C17.3529 19.3921 17.6927 19.5429 18.0692 19.5924C18.7923 19.6876 19.5236 19.4917 20.1022 19.0477C20.3516 18.8563 20.5417 18.6203 20.719 18.3565C20.8893 18.1031 21.0748 17.7818 21.297 17.3969L21.3223 17.3531C21.5445 16.9682 21.7301 16.6468 21.8644 16.3726C22.0042 16.0872 22.1135 15.8045 22.1546 15.4929C22.2498 14.7697 22.0538 14.0384 21.6098 13.4598C21.3787 13.1586 21.0782 12.9397 20.7378 12.7258C20.464 12.5538 20.3121 12.2778 20.3121 11.9999C20.3121 11.7221 20.464 11.4462 20.7377 11.2742C21.0783 11.0603 21.3788 10.8414 21.6099 10.5401C22.0539 9.96149 22.2499 9.23019 22.1547 8.50708C22.1136 8.19546 22.0043 7.91274 21.8645 7.6273C21.7302 7.35313 21.5447 7.03183 21.3224 6.64695L21.2972 6.60318C21.0749 6.21825 20.8894 5.89688 20.7191 5.64347C20.5418 5.37967 20.3517 5.1436 20.1023 4.95225C19.5237 4.50826 18.7924 4.3123 18.0692 4.4075C17.6928 4.45706 17.353 4.60782 16.9975 4.79572C16.7117 4.94679 16.3967 4.94036 16.1561 4.80144C15.9155 4.66253 15.7524 4.39297 15.7403 4.06991C15.7253 3.66808 15.686 3.2984 15.5407 2.94762C15.2616 2.27379 14.7262 1.73844 14.0524 1.45933C13.762 1.33905 13.4625 1.29241 13.1454 1.27077C12.8407 1.24999 12.4697 1.24999 12.0252 1.25H11.9747ZM10.5216 2.84515C10.5988 2.81319 10.716 2.78372 10.9567 2.76729C11.2042 2.75041 11.5238 2.75 12 2.75C12.4762 2.75 12.7958 2.75041 13.0432 2.76729C13.284 2.78372 13.4012 2.81319 13.4783 2.84515C13.7846 2.97202 14.028 3.21536 14.1548 3.52165C14.1949 3.61826 14.228 3.76887 14.2414 4.12597C14.271 4.91835 14.68 5.68129 15.4061 6.10048C16.1321 6.51968 16.9974 6.4924 17.6984 6.12188C18.0143 5.9549 18.1614 5.90832 18.265 5.89467C18.5937 5.8514 18.9261 5.94047 19.1891 6.14228C19.2554 6.19312 19.3395 6.27989 19.4741 6.48016C19.6125 6.68603 19.7726 6.9626 20.0107 7.375C20.2488 7.78741 20.4083 8.06438 20.5174 8.28713C20.6235 8.50382 20.6566 8.62007 20.6675 8.70287C20.7108 9.03155 20.6217 9.36397 20.4199 9.62698C20.3562 9.70995 20.2424 9.81399 19.9397 10.0041C19.2684 10.426 18.8122 11.1616 18.8121 11.9999C18.8121 12.8383 19.2683 13.574 19.9397 13.9959C20.2423 14.186 20.3561 14.29 20.4198 14.373C20.6216 14.636 20.7107 14.9684 20.6674 15.2971C20.6565 15.3799 20.6234 15.4961 20.5173 15.7128C20.4082 15.9355 20.2487 16.2125 20.0106 16.6249C19.7725 17.0373 19.6124 17.3139 19.474 17.5198C19.3394 17.72 19.2553 17.8068 19.189 17.8576C18.926 18.0595 18.5936 18.1485 18.2649 18.1053C18.1613 18.0916 18.0142 18.045 17.6983 17.8781C16.9973 17.5075 16.132 17.4803 15.4059 17.8995C14.68 18.3187 14.271 19.0816 14.2414 19.874C14.228 20.2311 14.1949 20.3817 14.1548 20.4784C14.028 20.7846 13.7846 21.028 13.4783 21.1549C13.4012 21.1868 13.284 21.2163 13.0432 21.2327C12.7958 21.2496 12.4762 21.25 12 21.25C11.5238 21.25 11.2042 21.2496 10.9567 21.2327C10.716 21.2163 10.5988 21.1868 10.5216 21.1549C10.2154 21.028 9.97201 20.7846 9.84514 20.4784C9.80512 20.3817 9.77195 20.2311 9.75859 19.874C9.72896 19.0817 9.31997 18.3187 8.5939 17.8995C7.86784 17.4803 7.00262 17.5076 6.30158 17.8781C5.98565 18.0451 5.83863 18.0917 5.73495 18.1053C5.40626 18.1486 5.07385 18.0595 4.81084 17.8577C4.74458 17.8069 4.66045 17.7201 4.52586 17.5198C4.38751 17.314 4.22736 17.0374 3.98926 16.625C3.75115 16.2126 3.59171 15.9356 3.4826 15.7129C3.37646 15.4962 3.34338 15.3799 3.33248 15.2971C3.28921 14.9684 3.37828 14.636 3.5801 14.373C3.64376 14.2901 3.75761 14.186 4.0602 13.9959C4.73158 13.5741 5.18782 12.8384 5.18786 12.0001C5.18791 11.1616 4.73165 10.4259 4.06021 10.004C3.75769 9.81389 3.64385 9.70987 3.58019 9.62691C3.37838 9.3639 3.28931 9.03149 3.33258 8.7028C3.34348 8.62001 3.37656 8.50375 3.4827 8.28707C3.59181 8.06431 3.75125 7.78734 3.98935 7.37493C4.22746 6.96253 4.3876 6.68596 4.52596 6.48009C4.66055 6.27983 4.74468 6.19305 4.81093 6.14222C5.07395 5.9404 5.40636 5.85133 5.73504 5.8946C5.83873 5.90825 5.98576 5.95483 6.30173 6.12184C7.00273 6.49235 7.86791 6.51962 8.59394 6.10045C9.31998 5.68128 9.72896 4.91837 9.75859 4.12602C9.77195 3.76889 9.80512 3.61827 9.84514 3.52165C9.97201 3.21536 10.2154 2.97202 10.5216 2.84515Z" fill="#1C274C"/>
+				</svg></li>
+			<li id="Compare_SDA3_to_FHIR" class="list_item">
+				<svg width="25px" height="25px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+					<title>SDA & FHIR</title>
+					<path d="M2 4h9v1H3v15h8v1H2zm10 19h1V2h-1zM8.283 10.283l-.566-.566L4.934 12.5l2.783 2.783.566-.566L6.566 13H11v-1H6.566zM14 12h4.08l-1.54-1.54.92-.92 2.96 2.96-2.96 2.96-.92-.92L18.08 13H14v8h9V4h-9z"/>
+					<path fill="none" d="M0 0h24v24H0z"/>
+				</svg></li>
+			<li id="FHIR_Network" class="list_item">
+				<svg width="25px" height="25px" viewBox="0 0 32 32" fill="#000000" version="1.1" xmlns="http://www.w3.org/2000/svg">
+					<title>FHIR Network</title>
+					<path d="M27 21.75c-0.795 0.004-1.538 0.229-2.169 0.616l0.018-0.010-2.694-2.449c0.724-1.105 1.154-2.459 1.154-3.913 0-1.572-0.503-3.027-1.358-4.212l0.015 0.021 3.062-3.062c0.57 0.316 1.249 0.503 1.971 0.508h0.002c2.347 0 4.25-1.903 4.25-4.25s-1.903-4.25-4.25-4.25c-2.347 0-4.25 1.903-4.25 4.25v0c0.005 0.724 0.193 1.403 0.519 1.995l-0.011-0.022-3.062 3.062c-1.147-0.84-2.587-1.344-4.144-1.344-0.868 0-1.699 0.157-2.467 0.443l0.049-0.016-0.644-1.17c0.726-0.757 1.173-1.787 1.173-2.921 0-2.332-1.891-4.223-4.223-4.223s-4.223 1.891-4.223 4.223c0 2.332 1.891 4.223 4.223 4.223 0.306 0 0.605-0.033 0.893-0.095l-0.028 0.005 0.642 1.166c-1.685 1.315-2.758 3.345-2.758 5.627 0 0.605 0.076 1.193 0.218 1.754l-0.011-0.049-0.667 0.283c-0.78-0.904-1.927-1.474-3.207-1.474-2.334 0-4.226 1.892-4.226 4.226s1.892 4.226 4.226 4.226c2.334 0 4.226-1.892 4.226-4.226 0-0.008-0-0.017-0-0.025v0.001c-0.008-0.159-0.023-0.307-0.046-0.451l0.003 0.024 0.667-0.283c1.303 2.026 3.547 3.349 6.1 3.349 1.703 0 3.268-0.589 4.503-1.574l-0.015 0.011 2.702 2.455c-0.258 0.526-0.41 1.144-0.414 1.797v0.001c0 2.347 1.903 4.25 4.25 4.25s4.25-1.903 4.25-4.25c0-2.347-1.903-4.25-4.25-4.25v0zM8.19 5c0-0.966 0.784-1.75 1.75-1.75s1.75 0.784 1.75 1.75c0 0.966-0.784 1.75-1.75 1.75v0c-0.966-0.001-1.749-0.784-1.75-1.75v-0zM5 22.42c-0.966-0.001-1.748-0.783-1.748-1.749s0.783-1.749 1.749-1.749c0.966 0 1.748 0.782 1.749 1.748v0c-0.001 0.966-0.784 1.749-1.75 1.75h-0zM27 3.25c0.966 0 1.75 0.784 1.75 1.75s-0.784 1.75-1.75 1.75c-0.966 0-1.75-0.784-1.75-1.75v0c0.001-0.966 0.784-1.749 1.75-1.75h0zM11.19 16c0-0.001 0-0.002 0-0.003 0-2.655 2.152-4.807 4.807-4.807 1.328 0 2.53 0.539 3.4 1.409l0.001 0.001 0.001 0.001c0.87 0.87 1.407 2.072 1.407 3.399 0 2.656-2.153 4.808-4.808 4.808s-4.808-2.153-4.808-4.808c0-0 0-0 0-0v0zM27 27.75c-0.966 0-1.75-0.784-1.75-1.75s0.784-1.75 1.75-1.75c0.966 0 1.75 0.784 1.75 1.75v0c-0.001 0.966-0.784 1.749-1.75 1.75h-0z"></path>
+				</svg></li>
+			<li id="FHIR_Timeline" class="list_item">
+				<svg width="25px" height="25px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32" enable-background="new 0 0 32 32" xml:space="preserve">
+					<title>FHIR Timeline</title>
+					<line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="5" y1="28" x2="5" y2="4"/>
+					<circle fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" cx="16" cy="10" r="2"/>
+					<circle fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" cx="23" cy="16" r="2"/>
+					<circle fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" cx="11" cy="22" r="2"/>
+					<line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="28" y1="16" x2="25" y2="16"/>
+					<line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="21" y1="16" x2="5" y2="16"/>
+					<line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="28" y1="10" x2="18" y2="10"/>
+					<line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="14" y1="10" x2="5" y2="10"/>
+					<line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="28" y1="22" x2="13" y2="22"/>
+					<line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="9" y1="22" x2="5" y2="22"/>
+				</svg></li>
+			
+			</ul>
+			<div class="spacer_box"><p> </p></div>
+			<ul class="list_load">
+				
+			<li id="DTL_Viewer" class="list_item">		
+				<svg width="25px" height="25px" fill="#000000" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32" xml:space="preserve">
+					<title>DTL Viewer</title>
+					<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+					<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#000000" stroke-width="0.96">
+						<path id="transform--02" d="M31,31.36h-8c-0.199,0-0.36-0.161-0.36-0.36V17c0-0.199,0.161-0.36,0.36-0.36h3.64V5.36H23V4.64h4 c0.199,0,0.36,0.161,0.36,0.36v11.64H31c0.199,0,0.36,0.161,0.36,0.36v14C31.36,31.199,31.199,31.36,31,31.36z M23.36,30.64h7.279 V17.36H23.36V30.64z M5,31.36c-2.404,0-4.36-1.956-4.36-4.36S2.596,22.64,5,22.64c2.283,0,4.162,1.764,4.345,4H20v0.721H9.345 C9.162,29.597,7.283,31.36,5,31.36z M5,23.36c-2.007,0-3.64,1.633-3.64,3.64S2.993,30.64,5,30.64S8.64,29.007,8.64,27 S7.007,23.36,5,23.36z M5.36,20.5H4.64V5c0-0.199,0.161-0.36,0.36-0.36h8.64V1c0-0.133,0.073-0.255,0.19-0.317 s0.26-0.056,0.37,0.018l6,4C20.3,4.767,20.36,4.879,20.36,5s-0.06,0.233-0.161,0.299l-6,4c-0.11,0.074-0.253,0.081-0.37,0.018 C13.713,9.255,13.64,9.133,13.64,9V5.36H5.36V20.5z M14.36,1.673v6.654L19.351,5L14.36,1.673z"></path></g>
+					<g id="SVGRepo_iconCarrier"> <path id="transform--02" d="M31,31.36h-8c-0.199,0-0.36-0.161-0.36-0.36V17c0-0.199,0.161-0.36,0.36-0.36h3.64V5.36H23V4.64h4 c0.199,0,0.36,0.161,0.36,0.36v11.64H31c0.199,0,0.36,0.161,0.36,0.36v14C31.36,31.199,31.199,31.36,31,31.36z M23.36,30.64h7.279 V17.36H23.36V30.64z M5,31.36c-2.404,0-4.36-1.956-4.36-4.36S2.596,22.64,5,22.64c2.283,0,4.162,1.764,4.345,4H20v0.721H9.345 C9.162,29.597,7.283,31.36,5,31.36z M5,23.36c-2.007,0-3.64,1.633-3.64,3.64S2.993,30.64,5,30.64S8.64,29.007,8.64,27 S7.007,23.36,5,23.36z M5.36,20.5H4.64V5c0-0.199,0.161-0.36,0.36-0.36h8.64V1c0-0.133,0.073-0.255,0.19-0.317 s0.26-0.056,0.37,0.018l6,4C20.3,4.767,20.36,4.879,20.36,5s-0.06,0.233-0.161,0.299l-6,4c-0.11,0.074-0.253,0.081-0.37,0.018 C13.713,9.255,13.64,9.133,13.64,9V5.36H5.36V20.5z M14.36,1.673v6.654L19.351,5L14.36,1.673z"></path></g>
+				</svg></li>
+			<li id="Management_Portal" class="list_item">		
+				<svg width="25px" height="25px" id="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 160.3">
+					<title>HSFHIRToolkit production</title>
+					<defs><style>.cls-1{fill:#333695;}.cls-2{fill:#00b5af;}</style></defs>
+					<polygon class="cls-1" points="20.12 22.5 0 12.43 0 140.17 40.24 160.3 40.24 137.8 20.12 127.74 20.12 22.5"/>
+					<polygon class="cls-2" points="40.24 137.8 60.36 147.88 60.36 20.13 20.12 0 20.12 22.5 40.24 32.56 40.24 137.8"/>
+				</svg></li>
+			<!-- Fix bugs first!-- li id="FHIR_Tester_Inbound_to_Outbound" class="list_item">		
+				<svg width="25px" height="25px" viewBox="0 0 24 24" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg">
+					<title>FHIR Unittest</title>
+					<defs><style>.cls-11{fill:none;stroke:#020202;stroke-miterlimit:10;stroke-width:1.91px;}</style></defs>
+					<path class="cls-11" d="M5.32,1.5H9.14a0,0,0,0,1,0,0V13.91a1.91,1.91,0,0,1-1.91,1.91h0a1.91,1.91,0,0,1-1.91-1.91V1.5A0,0,0,0,1,5.32,1.5Z"/>
+					<line class="cls-11" x1="3.41" y1="1.5" x2="11.05" y2="1.5"/>
+					<path class="cls-11" d="M14.86,1.5h3.82a0,0,0,0,1,0,0V13.91a1.91,1.91,0,0,1-1.91,1.91h0a1.91,1.91,0,0,1-1.91-1.91V1.5A0,0,0,0,1,14.86,1.5Z"/>
+					<line class="cls-11" x1="12.95" y1="1.5" x2="20.59" y2="1.5"/>
+					<line class="cls-11" x1="14.86" y1="5.32" x2="9.14" y2="5.32"/>
+					<polyline class="cls-11" points="18.68 5.32 22.5 5.32 22.5 18.68 22.5 22.5 1.5 22.5 1.5 18.68 1.5 5.32 5.32 5.32"/><rect class="cls-1" x="1.5" y="18.68" width="21" height="3.82"/>
+					<line class="cls-11" x1="5.32" y1="9.14" x2="9.14" y2="9.14"/>
+					<line class="cls-11" x1="14.86" y1="9.14" x2="18.68" y2="9.14"/>
+				</svg></li-->
+				
+			<li id="CodeSystem_Importer" class="list_item">
+				<svg width="25px" height="25px" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+				    <title>import</title>
+				    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+				        <g id="Combined-Shape" fill="#000000" transform="translate(42.666667, 85.333333)">
+				            <path d="M405.333333,-1.42108547e-14 L405.333333,362.666667 L21.3333333,362.666667 L21.3333333,85.3333333 L64,85.3333333 L64,320 L362.666667,320 L362.666667,42.6666667 L277.333333,42.6666667 L277.333333,-1.42108547e-14 L405.333333,-1.42108547e-14 Z M128,-1.42108547e-14 C185.3601,-1.42108547e-14 232.145453,45.2758765 234.568117,102.039688 L234.666667,106.666667 L234.666,183.152 L283.581722,134.248389 L313.751611,164.418278 L213.333333,264.836556 L112.915055,164.418278 L143.084945,134.248389 L192,183.152 L192,106.666667 C192,72.5828078 165.356374,44.7219012 131.760486,42.7753108 L128,42.6666667 L7.10542736e-15,42.6666667 L7.10542736e-15,-1.42108547e-14 L128,-1.42108547e-14 Z"></path>
+				        </g>
+				    </g>
+				</svg></li>
+
+		</ul>
+	</div>
+</div>
+
+</body>
+</html>
+	
+	>
+	
+	return $$$OK
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="HS.Local.zimpl.fhirpro.UI.SDA3uFHIRViewer">
+<Super>HS.Local.zimpl.fhirpro.UI.Super</Super>
+<TimeChanged>66872,50851.806404</TimeChanged>
+<TimeCreated>66805,56689.363725</TimeCreated>
+
+<Method name="OnPage">
+<Description><![CDATA[
+Event handler for <b>PAGE</b> event: this is invoked in order to  
+generate the content of a csp page.]]></Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<ServerOnly>1</ServerOnly>
+<Implementation><![CDATA[
+	&html<<!DOCTYPE HTML>
+<html>
+<head>
+	<title>HSFHIRToolkit | SDA3 & FHIR</title>
+	#(..MetaTags())#
+	#(..LinkJS("jquery-3.7.1.min.js"))#
+	#(..XDataJS("BeautifyJS"))#
+	#(..XDataJS("StorageHandler"))#
+	#(..DefaultStyle())#
+		
+	<style>
+	body {background-image:none;}
+	textarea {
+		width: 100%;
+		height: 100%;
+		overflow: scroll;
+	}
+	#container {
+		height:98vh;
+    	width: 100%;
+    	display: flex;
+	}
+
+	#separator {
+	    cursor: col-resize;
+	    background-color: #aaa;
+	    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='30'><path d='M2 0 v30 M5 0 v30 M8 0 v30' fill='none' stroke='black'/></svg>");
+	    background-repeat: no-repeat;
+	    background-position: center;
+	    width: 5px;
+	    height: 100%;
+
+	    /* Prevent the browser's built-in drag from interfering */
+	    -moz-user-select: none;
+	    -ms-user-select: none;
+	    user-select: none;
+	}
+
+	#sdaSource {
+	    background-color: rgba(51, 54, 149, 0.01);
+	    width: 20%;
+	    height: 100%;
+	    min-width: 10px;
+	}
+
+	#fhirSource {
+	    background-color: rgba(0, 181, 175, 0.01);
+	    width: 80%;
+	    height: 100%;
+	    min-width: 10px;
+	}
+</style>
+		
+<script type="text/javascript">
+$(document).ready(function(){
+	dragElement( document.getElementById("separator"), "H" );
+	parse();
+	/* TODO: create components to display and highlight search terms of the sda and fhir
+			reference: https://css-tricks.com/creating-an-editable-textarea-that-supports-syntax-highlighted-code/
+	$('.textarea').on('dblclick', function(ele){
+		
+		let searchTerm = window.getSelection().toString();
+		console.log('this', $(this));
+		console.log($(this).parent().attr('id'), searchTerm);
+		searchHighlight($(this).parent().attr('id'), searchTerm);
+		
+	});
+	*/
+});
+
+function searchHighlight(sourceTextArea, searchTerm) {
+	let targetTextArea = (sourceTextArea==='sdaSource') ? 'fhirSource':'sdaSource';
+	let regex = new RegExp(`(${searchTerm})`, "gi");
+	let text = $('#'+targetTextArea).val();
+	console.log(text.match(regex));
+	
+	let parts = text.split(regex);
+	let highlightedText = parts
+        .map((part) =>
+          part.match(regex)
+            ? `<span style="background-color: yellow;">${part}</span>`
+            : part
+        )
+        .join("");
+      // Replace the original text with the highlighted version
+      $('#'+targetTextArea).html(highlightedText);
+}
+
+function parse() {
+		
+	let tMpiid = getMpiid();
+	if (tMpiid == "") {
+		console.log("No MPIID found in current session. Search for a patient first.");
+		return
+	}
+	
+	let tSDA = getSdaData();
+	if (tSDA === null) {
+		console.log("No SDA data found in localStorage. Search for a patient first.");
+	} else {
+		$('#sdaSource').val(vkbeautify.xml(tSDA, ' '));
+		//$('#sdaSource').html('<xmp class="textarea"><?xml version="1.0" encoding="UTF-8"?>'+vkbeautify.xml(tSDA, ' ')+'</xmp>');
+	}
+
+	let tFHIR = getFhirData();
+	if (tFHIR === null) {
+		console.log("No FHIR data found in localStorage. Search for a patient first.");
+	} else {
+		$('#fhirSource').val(vkbeautify.json(tFHIR, ' '));
+		//$('#fhirSource').html('<pre class="textarea">'+vkbeautify.json(tFHIR, ' ')+'</pre>');
+	}
+	
+}
+function dragElement(element, direction) {
+    var   md; // remember mouse down info
+    const first  = document.getElementById("sdaSource");
+    const second = document.getElementById("fhirSource");
+
+    element.onmousedown = onMouseDown;
+
+	function onMouseDown(e) {
+		//console.log("mouse down: " + e.clientX);
+		md = {e:e,
+		      offsetLeft:  element.offsetLeft,
+		      offsetTop:   element.offsetTop,
+		      firstWidth:  first.offsetWidth,
+		      secondWidth: second.offsetWidth
+		     };
+
+		document.onmousemove = onMouseMove;
+		document.onmouseup = () => {
+		    //console.log("mouse up");
+		    document.onmousemove = document.onmouseup = null;
+		}
+	}
+
+	function onMouseMove(e) {
+		//console.log("mouse move: " + e.clientX);
+		var delta = {x: e.clientX - md.e.clientX,
+		             y: e.clientY - md.e.clientY};
+
+		if (direction === "H" ) // Horizontal
+		{
+		    // Prevent negative-sized elements
+		    delta.x = Math.min(Math.max(delta.x, -md.firstWidth),
+		               md.secondWidth);
+
+		    element.style.left = md.offsetLeft + delta.x + "px";
+		    first.style.width = (md.firstWidth + delta.x) + "px";
+		    second.style.width = (md.secondWidth - delta.x) + "px";
+		}
+	}
+}
+</script>
+</head>
+	<body>
+		<div id="container">
+			<textarea id="sdaSource" autocomplete="off" readonly placeholder="SDA Data..."></textarea>
+			<div id="separator" ></div>
+			<textarea id="fhirSource" autocomplete="off" readonly placeholder="FHIR Data..."></textarea>
+			<!--div id="sdaSource" autocomplete="off" readonly placeholder="SDA Data..."></div>
+			<div id="separator" ></div>
+			<div id="fhirSource" autocomplete="off" readonly placeholder="FHIR Data..."></div-->
+		</div>	
+	</body>
+	</html>>
+
+	return $$$OK
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="HS.Local.zimpl.fhirpro.UI.Super">
+<Super>%CSP.Page</Super>
+<TimeChanged>66913,48624.202277</TimeChanged>
+<TimeCreated>66805,52482.334631</TimeCreated>
+
+<Parameter name="COLLATERALFOLDER">
+<Description>
+Local folder where javascripts and CSS files are stored.
+path is relative to the webroot of this application</Description>
+<Default>/csp/healthshare/zimplfhirpro/</Default>
+</Parameter>
+
+<Parameter name="SDAStreamServer">
+<Default>HS.Local.zimpl.fhirpro.API.StreamSDA.cls</Default>
+</Parameter>
+
+<Parameter name="FHIRStreamServer">
+<Default>HS.Local.zimpl.fhirpro.API.StreamFHIR.cls</Default>
+</Parameter>
+
+<Method name="OnPage">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	&html<<!DOCTYPE HTML>
+<html>	
+<head>
+	<title>HSFHIRToolkit | inspector</title>
+	#(..MetaTags())#
+	#(..DefaultStyle())#
+	#(..XDataJS("BeautifyJS"))#
+	#(..XDataJS("StorageHandler"))#
+	#(..LinkJS("jquery-3.7.1.min.js"))#
+	
+	<style> /* for overrides */
+	</style>
+</head>
+<body>
+</body>
+>
+
+	return $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="DefaultStyle">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	&html<
+	<style>
+	body {
+		background-color: #f7f7f7;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 28' width='56' height='28'%3E%3Cpath fill='%23e1e4e2' fill-opacity='0.25' d='M56 26v2h-7.75c2.3-1.27 4.94-2 7.75-2zm-26 2a2 2 0 1 0-4 0h-4.09A25.98 25.98 0 0 0 0 16v-2c.67 0 1.34.02 2 .07V14a2 2 0 0 0-2-2v-2a4 4 0 0 1 3.98 3.6 28.09 28.09 0 0 1 2.8-3.86A8 8 0 0 0 0 6V4a9.99 9.99 0 0 1 8.17 4.23c.94-.95 1.96-1.83 3.03-2.63A13.98 13.98 0 0 0 0 0h7.75c2 1.1 3.73 2.63 5.1 4.45 1.12-.72 2.3-1.37 3.53-1.93A20.1 20.1 0 0 0 14.28 0h2.7c.45.56.88 1.14 1.29 1.74 1.3-.48 2.63-.87 4-1.15-.11-.2-.23-.4-.36-.59H26v.07a28.4 28.4 0 0 1 4 0V0h4.09l-.37.59c1.38.28 2.72.67 4.01 1.15.4-.6.84-1.18 1.3-1.74h2.69a20.1 20.1 0 0 0-2.1 2.52c1.23.56 2.41 1.2 3.54 1.93A16.08 16.08 0 0 1 48.25 0H56c-4.58 0-8.65 2.2-11.2 5.6 1.07.8 2.09 1.68 3.03 2.63A9.99 9.99 0 0 1 56 4v2a8 8 0 0 0-6.77 3.74c1.03 1.2 1.97 2.5 2.79 3.86A4 4 0 0 1 56 10v2a2 2 0 0 0-2 2.07 28.4 28.4 0 0 1 2-.07v2c-9.2 0-17.3 4.78-21.91 12H30zM7.75 28H0v-2c2.81 0 5.46.73 7.75 2zM56 20v2c-5.6 0-10.65 2.3-14.28 6h-2.7c4.04-4.89 10.15-8 16.98-8zm-39.03 8h-2.69C10.65 24.3 5.6 22 0 22v-2c6.83 0 12.94 3.11 16.97 8zm15.01-.4a28.09 28.09 0 0 1 2.8-3.86 8 8 0 0 0-13.55 0c1.03 1.2 1.97 2.5 2.79 3.86a4 4 0 0 1 7.96 0zm14.29-11.86c1.3-.48 2.63-.87 4-1.15a25.99 25.99 0 0 0-44.55 0c1.38.28 2.72.67 4.01 1.15a21.98 21.98 0 0 1 36.54 0zm-5.43 2.71c1.13-.72 2.3-1.37 3.54-1.93a19.98 19.98 0 0 0-32.76 0c1.23.56 2.41 1.2 3.54 1.93a15.98 15.98 0 0 1 25.68 0zm-4.67 3.78c.94-.95 1.96-1.83 3.03-2.63a13.98 13.98 0 0 0-22.4 0c1.07.8 2.09 1.68 3.03 2.63a9.99 9.99 0 0 1 16.34 0z'%3E%3C/path%3E%3C/svg%3E");
+		background-attachment: fixed;
+		color: #464646;
+		font-family: sans-serif;
+		font-size: 18px;
+		font-weight: 300;
+		line-height: 140%;
+		margin: 0;
+		height: 100%;
+		padding: 0;
+		width: 100vw;
+		overflow: scroll;
+	}
+	iframe {
+		width: calc(100% - 44px);
+		position: fixed;
+		top: 22px;
+		left: 42px;
+		bottom: 0;
+		right: 0;
+		height: 100%;
+		border: none;
+		margin: 0;
+		padding: 0;
+		overflow: hidden;
+	}
+	</style>
+	>
+	
+	return ""
+]]></Implementation>
+</Method>
+
+<Method name="MetaTags">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	
+	&html<
+	<link rel="icon" type="image/x-icon" href="favicon.ico"/>
+	<meta http-equiv="cache-control" content="no-cache, must-revalidate, post-check=0, pre-check=0"/>
+	<meta http-equiv="cache-control" content="max-age=0"/>
+	<meta http-equiv="expires" content="0"/>
+	<meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT"/>
+	<meta http-equiv="pragma" content="no-cache"/>
+	>
+	
+	return ""
+]]></Implementation>
+</Method>
+
+<Method name="AddMappings">
+<Description>
+Add the Mappings needed to access registry tables such as OIDMap</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>pNamespace="HSFHIRToolkit"</FormalSpec>
+<Implementation><![CDATA[	w ##class(HS.Sync.Utils).Mapping(pNamespace,1)
+]]></Implementation>
+</Method>
+
+<Method name="LinkJS">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>pFilename</FormalSpec>
+<Implementation><![CDATA[	return "<script type=""text/javascript"" src="""_..#COLLATERALFOLDER_pFilename_"""></script>"
+]]></Implementation>
+</Method>
+
+<Method name="LinkCSS">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>pFilename</FormalSpec>
+<Implementation><![CDATA[	return "<link type=""text/css"" href="""_..#COLLATERALFOLDER_pFilename_""" rel=""stylesheet"" />"
+]]></Implementation>
+</Method>
+
+<Method name="XDataJS">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>pXDataJS</FormalSpec>
+<Implementation><![CDATA[
+	set tJS  = ##class(Ens.Util.URLStream).GetURLStream("xdata://"_..%ClassName(1)_":"_pXDataJS, .tStreamOut)
+	
+	return "<script type=""text/javascript"">"_tStreamOut.Read()_"</script>"
+]]></Implementation>
+</Method>
+
+<XData name="StorageHandler">
+<MimeType>text/javascript</MimeType>
+<Data><![CDATA[
+	
+	var storage = window.sessionStorage;
+	
+	function setMpiid(pMpiid){
+		return storage.setItem("mpiid", pMpiid);
+	}
+	function getMpiid() {
+		return storage.getItem("mpiid");
+	}
+	function setFhirData(pFhirData) {
+		return storage.setItem("FHIR#" + getMpiid(), pFhirData);
+	}
+	function setSdaData(pSdaData) {
+		return storage.setItem("SDA#" + getMpiid(), pSdaData);
+	}
+	function getFhirData() {
+		var storage = getStorage();
+		return storage.getItem("FHIR#" + getMpiid());
+	}
+	function getSdaData() {
+		var storage = getStorage();
+		return storage.getItem("SDA#" + getMpiid());
+	}
+	function type(data) {
+		return data.startsWith("<") ? "xml" : "json";
+	}
+	function prefix(data) {
+		return data.startsWith("<") ? "SDA#" : "FHIR#";
+	}
+	function setStorage(storageType) {
+		return storage.setItem("storageType", storageType);
+	}
+	function getStorage() {
+		return this[storage.getItem("storageType")];
+	}
+]]></Data>
+</XData>
+
+<XData name="BeautifyJS">
+<MimeType>text/javascript</MimeType>
+<Data><![CDATA[
+/**
+* vkBeautify - javascript plugin to pretty-print or minify text in XML, JSON, CSS and SQL formats.
+*  
+* Version - 0.99.00.beta 
+* Copyright (c) 2012 Vadim Kiryukhin
+* vkiryukhin @ gmail.com
+* http://www.eslinstructor.net/vkbeautify/
+* 
+* MIT license:
+*   http://www.opensource.org/licenses/mit-license.php
+*
+*   Pretty print
+*
+*        vkbeautify.xml(text [,indent_pattern]);
+*        vkbeautify.json(text [,indent_pattern]);
+*        vkbeautify.css(text [,indent_pattern]);
+*        vkbeautify.sql(text [,indent_pattern]);
+*
+*        @text - String; text to beatufy;
+*        @indent_pattern - Integer | String;
+*                Integer:  number of white spaces;
+*                String:   character string to visualize indentation ( can also be a set of white spaces )
+*   Minify
+*
+*        vkbeautify.xmlmin(text [,preserve_comments]);
+*        vkbeautify.jsonmin(text);
+*        vkbeautify.cssmin(text [,preserve_comments]);
+*        vkbeautify.sqlmin(text);
+*
+*        @text - String; text to minify;
+*        @preserve_comments - Bool; [optional];
+*                Set this flag to true to prevent removing comments from @text ( minxml and mincss functions only. )
+*
+*   Examples:
+*        vkbeautify.xml(text); // pretty print XML
+*        vkbeautify.json(text, 4 ); // pretty print JSON
+*        vkbeautify.css(text, '. . . .'); // pretty print CSS
+*        vkbeautify.sql(text, '----'); // pretty print SQL
+*
+*        vkbeautify.xmlmin(text, true);// minify XML, preserve comments
+*        vkbeautify.jsonmin(text);// minify JSON
+*        vkbeautify.cssmin(text);// minify CSS, remove comments ( default )
+*        vkbeautify.sqlmin(text);// minify SQL
+*
+*/
+
+(function() {
+
+function createShiftArr(step) {
+
+	var space = '    ';
+	
+	if ( isNaN(parseInt(step)) ) {  // argument is string
+		space = step;
+	} else { // argument is integer
+		switch(step) {
+			case 1: space = ' '; break;
+			case 2: space = '  '; break;
+			case 3: space = '   '; break;
+			case 4: space = '    '; break;
+			case 5: space = '     '; break;
+			case 6: space = '      '; break;
+			case 7: space = '       '; break;
+			case 8: space = '        '; break;
+			case 9: space = '         '; break;
+			case 10: space = '          '; break;
+			case 11: space = '           '; break;
+			case 12: space = '            '; break;
+		}
+	}
+
+	var shift = ['\n']; // array of shifts
+	for(ix=0;ix<100;ix++){
+		shift.push(shift[ix]+space); 
+	}
+	return shift;
+}
+
+function vkbeautify(){
+	this.step = '\t'; // 4 spaces
+	this.shift = createShiftArr(this.step);
+};
+
+vkbeautify.prototype.xml = function(text,step) {
+
+	var ar = text.replace(/>\s{0,}</g,"><")
+				 .replace(/</g,"~::~<")
+				 .replace(/\s*xmlns\:/g,"~::~xmlns:")
+				 .replace(/\s*xmlns\=/g,"~::~xmlns=")
+				 .split('~::~'),
+		len = ar.length,
+		inComment = false,
+		deep = 0,
+		str = '',
+		ix = 0,
+		shift = step ? createShiftArr(step) : this.shift;
+
+		for(ix=0;ix<len;ix++) {
+			// start comment or <![CDATA[...]]]]><![CDATA[> or <!DOCTYPE //
+			if(ar[ix].search(/<!/) > -1) { 
+				str += shift[deep]+ar[ix];
+				inComment = true; 
+				// end comment  or <![CDATA[...]]]]><![CDATA[> //
+				if(ar[ix].search(/-->/) > -1 || ar[ix].search(/\]>/) > -1 || ar[ix].search(/!DOCTYPE/) > -1 ) { 
+					inComment = false; 
+				}
+			} else 
+			// end comment  or <![CDATA[...]]]]><![CDATA[> //
+			if(ar[ix].search(/-->/) > -1 || ar[ix].search(/\]>/) > -1) { 
+				str += ar[ix];
+				inComment = false; 
+			} else 
+			// <elm></elm> //
+			if( /^<\w/.exec(ar[ix-1]) && /^<\/\w/.exec(ar[ix]) &&
+				/^<[\w:\-\.\,]+/.exec(ar[ix-1]) == /^<\/[\w:\-\.\,]+/.exec(ar[ix])[0].replace('/','')) { 
+				str += ar[ix];
+				if(!inComment) deep--;
+			} else
+			 // <elm> //
+			if(ar[ix].search(/<\w/) > -1 && ar[ix].search(/<\//) == -1 && ar[ix].search(/\/>/) == -1 ) {
+				str = !inComment ? str += shift[deep++]+ar[ix] : str += ar[ix];
+			} else 
+			 // <elm>...</elm> //
+			if(ar[ix].search(/<\w/) > -1 && ar[ix].search(/<\//) > -1) {
+				str = !inComment ? str += shift[deep]+ar[ix] : str += ar[ix];
+			} else 
+			// </elm> //
+			if(ar[ix].search(/<\//) > -1) { 
+				str = !inComment ? str += shift[--deep]+ar[ix] : str += ar[ix];
+			} else 
+			// <elm/> //
+			if(ar[ix].search(/\/>/) > -1 ) { 
+				str = !inComment ? str += shift[deep]+ar[ix] : str += ar[ix];
+			} else 
+			// <? xml ... ?> //
+			if(ar[ix].search(/<\?/) > -1) { 
+				str += shift[deep]+ar[ix];
+			} else 
+			// xmlns //
+			if( ar[ix].search(/xmlns\:/) > -1  || ar[ix].search(/xmlns\=/) > -1) { 
+				str += shift[deep]+ar[ix];
+			} 
+			
+			else {
+				str += ar[ix];
+			}
+		}
+		
+	return  (str[0] == '\n') ? str.slice(1) : str;
+}
+
+vkbeautify.prototype.json = function(text,step) {
+
+	var step = step ? step : this.step;
+	
+	if (typeof JSON === 'undefined' ) return text; 
+	
+	if ( typeof text === "string" ) return JSON.stringify(JSON.parse(text), null, step);
+	if ( typeof text === "object" ) return JSON.stringify(text, null, step);
+		
+	return text; // text is not string nor object
+}
+
+vkbeautify.prototype.css = function(text, step) {
+
+	var ar = text.replace(/\s{1,}/g,' ')
+				.replace(/\{/g,"{~::~")
+				.replace(/\}/g,"~::~}~::~")
+				.replace(/\;/g,";~::~")
+				.replace(/\/\*/g,"~::~/*")
+				.replace(/\*\//g,"*/~::~")
+				.replace(/~::~\s{0,}~::~/g,"~::~")
+				.split('~::~'),
+		len = ar.length,
+		deep = 0,
+		str = '',
+		ix = 0,
+		shift = step ? createShiftArr(step) : this.shift;
+		
+		for(ix=0;ix<len;ix++) {
+
+			if( /\{/.exec(ar[ix]))  { 
+				str += shift[deep++]+ar[ix];
+			} else 
+			if( /\}/.exec(ar[ix]))  { 
+				str += shift[--deep]+ar[ix];
+			} else
+			if( /\*\\/.exec(ar[ix]))  { 
+				str += shift[deep]+ar[ix];
+			}
+			else {
+				str += shift[deep]+ar[ix];
+			}
+		}
+		return str.replace(/^\n{1,}/,'');
+}
+
+//----------------------------------------------------------------------------
+
+function isSubquery(str, parenthesisLevel) {
+	return  parenthesisLevel - (str.replace(/\(/g,'').length - str.replace(/\)/g,'').length )
+}
+
+function split_sql(str, tab) {
+
+	return str.replace(/\s{1,}/g," ")
+
+				.replace(/ AND /ig,"~::~"+tab+tab+"AND ")
+				.replace(/ BETWEEN /ig,"~::~"+tab+"BETWEEN ")
+				.replace(/ CASE /ig,"~::~"+tab+"CASE ")
+				.replace(/ ELSE /ig,"~::~"+tab+"ELSE ")
+				.replace(/ END /ig,"~::~"+tab+"END ")
+				.replace(/ FROM /ig,"~::~FROM ")
+				.replace(/ GROUP\s{1,}BY/ig,"~::~GROUP BY ")
+				.replace(/ HAVING /ig,"~::~HAVING ")
+				//.replace(/ SET /ig," SET~::~")
+				.replace(/ IN /ig," IN ")
+				
+				.replace(/ JOIN /ig,"~::~JOIN ")
+				.replace(/ CROSS~::~{1,}JOIN /ig,"~::~CROSS JOIN ")
+				.replace(/ INNER~::~{1,}JOIN /ig,"~::~INNER JOIN ")
+				.replace(/ LEFT~::~{1,}JOIN /ig,"~::~LEFT JOIN ")
+				.replace(/ RIGHT~::~{1,}JOIN /ig,"~::~RIGHT JOIN ")
+				
+				.replace(/ ON /ig,"~::~"+tab+"ON ")
+				.replace(/ OR /ig,"~::~"+tab+tab+"OR ")
+				.replace(/ ORDER\s{1,}BY/ig,"~::~ORDER BY ")
+				.replace(/ OVER /ig,"~::~"+tab+"OVER ")
+
+				.replace(/\(\s{0,}SELECT /ig,"~::~(SELECT ")
+				.replace(/\)\s{0,}SELECT /ig,")~::~SELECT ")
+				
+				.replace(/ THEN /ig," THEN~::~"+tab+"")
+				.replace(/ UNION /ig,"~::~UNION~::~")
+				.replace(/ USING /ig,"~::~USING ")
+				.replace(/ WHEN /ig,"~::~"+tab+"WHEN ")
+				.replace(/ WHERE /ig,"~::~WHERE ")
+				.replace(/ WITH /ig,"~::~WITH ")
+				
+				//.replace(/\,\s{0,}\(/ig,",~::~( ")
+				//.replace(/\,/ig,",~::~"+tab+tab+"")
+
+				.replace(/ ALL /ig," ALL ")
+				.replace(/ AS /ig," AS ")
+				.replace(/ ASC /ig," ASC ")	
+				.replace(/ DESC /ig," DESC ")	
+				.replace(/ DISTINCT /ig," DISTINCT ")
+				.replace(/ EXISTS /ig," EXISTS ")
+				.replace(/ NOT /ig," NOT ")
+				.replace(/ NULL /ig," NULL ")
+				.replace(/ LIKE /ig," LIKE ")
+				.replace(/\s{0,}SELECT /ig,"SELECT ")
+				.replace(/\s{0,}UPDATE /ig,"UPDATE ")
+				.replace(/ SET /ig," SET ")
+							
+				.replace(/~::~{1,}/g,"~::~")
+				.split('~::~');
+}
+
+vkbeautify.prototype.sql = function(text,step) {
+
+	var ar_by_quote = text.replace(/\s{1,}/g," ")
+							.replace(/\'/ig,"~::~\'")
+							.split('~::~'),
+		len = ar_by_quote.length,
+		ar = [],
+		deep = 0,
+		tab = this.step,//+this.step,
+		inComment = true,
+		inQuote = false,
+		parenthesisLevel = 0,
+		str = '',
+		ix = 0,
+		shift = step ? createShiftArr(step) : this.shift;;
+
+		for(ix=0;ix<len;ix++) {
+			if(ix%2) {
+				ar = ar.concat(ar_by_quote[ix]);
+			} else {
+				ar = ar.concat(split_sql(ar_by_quote[ix], tab) );
+			}
+		}
+		
+		len = ar.length;
+		for(ix=0;ix<len;ix++) {
+			
+			parenthesisLevel = isSubquery(ar[ix], parenthesisLevel);
+			
+			if( /\s{0,}\s{0,}SELECT\s{0,}/.exec(ar[ix]))  { 
+				ar[ix] = ar[ix].replace(/\,/g,",\n"+tab+tab+"")
+			} 
+			
+			if( /\s{0,}\s{0,}SET\s{0,}/.exec(ar[ix]))  { 
+				ar[ix] = ar[ix].replace(/\,/g,",\n"+tab+tab+"")
+			} 
+			
+			if( /\s{0,}\(\s{0,}SELECT\s{0,}/.exec(ar[ix]))  { 
+				deep++;
+				str += shift[deep]+ar[ix];
+			} else 
+			if( /\'/.exec(ar[ix]) )  { 
+				if(parenthesisLevel<1 && deep) {
+					deep--;
+				}
+				str += ar[ix];
+			}
+			else  { 
+				str += shift[deep]+ar[ix];
+				if(parenthesisLevel<1 && deep) {
+					deep--;
+				}
+			} 
+			var junk = 0;
+		}
+
+		str = str.replace(/^\n{1,}/,'').replace(/\n{1,}/g,"\n");
+		return str;
+}
+
+
+vkbeautify.prototype.xmlmin = function(text, preserveComments) {
+
+	var str = preserveComments ? text
+							   : text.replace(/\<![ \r\n\t]*(--([^\-]|[\r\n]|-[^\-])*--[ \r\n\t]*)\>/g,"")
+									 .replace(/[ \r\n\t]{1,}xmlns/g, ' xmlns');
+	return  str.replace(/>\s{0,}</g,"><"); 
+}
+
+vkbeautify.prototype.jsonmin = function(text) {
+
+	if (typeof JSON === 'undefined' ) return text; 
+	
+	return JSON.stringify(JSON.parse(text), null, 0); 
+				
+}
+
+vkbeautify.prototype.cssmin = function(text, preserveComments) {
+	
+	var str = preserveComments ? text
+							   : text.replace(/\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\//g,"") ;
+
+	return str.replace(/\s{1,}/g,' ')
+			  .replace(/\{\s{1,}/g,"{")
+			  .replace(/\}\s{1,}/g,"}")
+			  .replace(/\;\s{1,}/g,";")
+			  .replace(/\/\*\s{1,}/g,"/*")
+			  .replace(/\*\/\s{1,}/g,"*/");
+}
+
+vkbeautify.prototype.sqlmin = function(text) {
+	return text.replace(/\s{1,}/g," ").replace(/\s{1,}\(/,"(").replace(/\s{1,}\)/,")");
+}
+
+window.vkbeautify = new vkbeautify();
+
+})();
+]]></Data>
+</XData>
+</Class>
+
+
+<Class name="HS.Local.zimpl.fhirpro.UI.Utils.XSLTCallbackHandler">
+<Super>HS.Util.XSLTHelper</Super>
+<TimeChanged>66851,63531.617235</TimeChanged>
+<TimeCreated>66046,37184.302273</TimeCreated>
+
+<Method name="evaluate">
+<FormalSpec>Args...</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	#if 0
+	/// debugging code not used in production code
+	Do ..LogAccess(Args(1))
+	#endif	
+	If Args(1)="xmltimestamp" {
+		Quit ..xmltimestamp(Args(2))
+	} ElseIf Args(1)="getDtlSourceDoctype" {
+		Quit $select(##class(%Dictionary.ClassDefinition).%Exists(Args(2)):$classmethod(Args(2), "GetSourceDocType"), 1:"")
+	}ElseIf Args(1)="getDtlTargetDoctype" {
+		Quit $select(##class(%Dictionary.ClassDefinition).%Exists(Args(2)):$classmethod(Args(2), "GetTargetDocType"), 1:"")
+	}ElseIf Args(1)="createGUID" {
+		Quit $System.Util.CreateGUID()
+	} ElseIf Args(1)="currentDate" {
+		Quit $ZDT($P($H,","),3)
+	} ElseIf Args(1)="lookup" {
+		Quit ..lookup(Args(2),Args(3))
+	} ElseIF Args(1)="dateNoDash" {
+		Quit ..dateNoDash(Args(2))
+	} ElseIf Args(1)="stripapos" {
+		Quit $zstrip(Args(2),"<>","'")
+	} ElseIf Args(1)="piece" {
+		Quit $P(Args(2),Args(3),Args(4))
+	} ElseIf Args(1)="pieceStrip" {
+		Quit $ZSTRIP($P(Args(2),Args(3),Args(4)),"<>W")
+	} ElseIf Args(1)="strip" {
+		Quit $ZSTRIP(Args(2),"<>"_Args(3))
+	} ElseIf Args(1)="encode" {
+		Quit $system.Encryption.Base64Encode(Args(2))
+	} ElseIf Args(1)="decode" {
+		Quit $system.Encryption.Base64Decode(Args(2))
+	} ElseIf Args(1)="timestamp" {
+		Quit ..timestamp($g(Args(2),$h))
+	} ElseIf Args(1)="xmltimestampisbefore" {
+		Quit ..xmltimestampisbefore(Args(2),Args(3))
+	} ElseIf Args(1)="dateDiff" {
+		Quit ..dateDiff(Args(2), Args(3), $Get(Args(4), $ZDateTime($Horolog, 3)))
+	} ElseIf Args(1)="GWtoOID" {
+		#; Consider deleting this function in favor of ..getOIDForCode()
+		Quit ##class(HS.Data.OIDMap).OIDForType(Args(2),"Repository","")
+	} ElseIf Args(1)="CodetoOID" {
+		Quit:Args(2)="" ""
+		Quit ##class(HS.Data.OIDMap).GetOIDForCode(Args(2),$g(Args(3),"Unknown code:"_Args(2)))
+	} ElseIf Args(1)="OIDtoCode" {
+		Quit:Args(2)="" ""
+		Quit ##class(HS.Data.OIDMap).GetCodeForOID(Args(2),$G(Args(3),"Unknown OID:"_Args(2)))
+	} ElseIf Args(1)="OIDtoGW" {
+		#; Consider deleting this function in favor of ..getCodeForOID()
+		Quit ##class(HS.Data.OIDMap).GetCodeForOID(Args(2))
+	} ElseIf Args(1)="OIDtoFacilityName" {
+		Set tReturn=Args(2)
+		Set tFACCode=##class(HS.Data.OIDMap).GetCodeForOID(Args(2))
+		If ##class(HS.Facility.Config).%ExistsId(tFACCode) {Set tReturn=##class(HS.Facility.Config).NameGetStored(tFACCode)}
+		Quit tReturn
+	} ElseIf Args(1)="OIDtoFacilityContact" {
+		Set tReturn=Args(2)
+		Set tFACCode=##class(HS.Data.OIDMap).GetCodeForOID(Args(2))
+		Set tFAC=##class(HS.Facility.Config).%OpenId(tFACCode)
+		If $ISObject(tFAC) {
+			Set tReturn=tFAC.Contact.FirstName_" "_tFAC.Contact.LastName
+		}
+		Quit tReturn
+	} ElseIf Args(1)="getHomeCommunityCode" {
+		Quit $$$HomeCommunity
+	} ElseIf Args(1)="getSystemOID" {
+		#; Consider deleting this function in favor of ..getOIDForCode()
+		Quit ##class(HS.Data.OIDMap).OIDForType($g(Args(2)),"AssigningAuthority",$g(Args(2)))
+	} ElseIf Args(1)="GetIdentifierType" { Quit ##class(HS.AssignAuth.Config).GetIdentifierType($g(Args(2)))
+	} ElseIf Args(1)="lookupIHETransaction" {
+		Quit ..lookupIHETransaction(Args(2))
+	} ElseIf Args(1)="resultFlag" {
+		Quit ##class(HS.SDA3.LabResultItem).RangeResult(Args(2),Args(3))
+	} ElseIf Args(1)="getNumberType" {
+		Quit ##class(HS.AssignAuth.Config).GetNumberType(Args(2))
+	} ElseIf Args(1)="debug" {
+		Set @("^" _ Args(2)) = Args(3)
+		Quit ""
+	} ElseIf Args(1)="getOIDForCode" {
+		Quit ..getOIDForCode(Args(2), $Get(Args(3)), $Get(Args(4)))
+	} ElseIf Args(1)="getCodeForOID" {
+		Quit ..getCodeForOID(Args(2), $Get(Args(3)), $Get(Args(4)))
+	} ElseIf Args(1)="getDescriptionForOID" {
+		Quit ..getDescriptionForOID(Args(2), $Get(Args(3)), $Get(Args(4), Args(2)))
+	} ElseIf Args(1)="getURLForCode" {
+		Quit ..getURLForCode(Args(2), $Get(Args(3)), $Get(Args(4)))
+	} ElseIf Args(1)="getCodeForURL" {
+		Quit ..getCodeForURL(Args(2), $Get(Args(3)), $Get(Args(4)))
+	} ElseIf Args(1)="getDescriptionForURL" {
+		Quit ..getDescriptionForURL(Args(2), $Get(Args(3)), $Get(Args(4), Args(2)))
+	} ElseIf Args(1)="hex2dec" { Quit ..hex2dec(Args(2))
+	} ElseIf Args(1)="uuid2oid" { Quit ..uuid2oid(Args(2))
+	} ElseIf Args(1)="createUUID" { Quit ..createUUID()
+	} ElseIf Args(1)="createOID" { Quit ..createOID()
+	} ElseIf Args(1)="createHL7Timestamp" { Quit ..createHL7Timestamp()
+	} ElseIf Args(1)="createID" { Quit ..createID($G(Args(2))) 
+	} ElseIf Args(1)="varReset" { Quit ..varReset()	 
+	} ElseIf Args(1)="varSet" { Quit ..varSet(Args...) 
+	} ElseIf Args(1)="varGet"	{ Quit ..varGet(Args...) 
+	} ElseIf Args(1)="varInc" { Quit ..varInc(Args...) 
+	} ElseIf Args(1)="varKill" { Quit ..varKill(Args...) 
+	} ElseIf Args(1)="varData" { Quit ..varData(Args...) 
+	} ElseIf Args(1)="varConcat" { Quit ..varConcat(Args...) 
+	} ElseIf Args(1)="varDebug" { Quit ..varDebug(Args...) 
+	} ElseIf Args(1)="getPreviousUUID" { Quit ..getPreviousUUID(Args(2))
+	} ElseIf Args(1)="encodeURL" { Quit $ZCVT(Args(2),"O","URL") 
+	} ElseIf Args(1)="decodeURL" { Quit $ZCVT(Args(2),"I","URL")
+	} ElseIf Args(1)="makeURL" { Quit ..makeURL(Args...)
+	} ElseIf Args(1)="encodeJS" { Quit $ZCVT(Args(2),"O","JS") 
+	} ElseIf Args(1)="decodeJS" { Quit $ZCVT(Args(2),"I","JS")
+	} ElseIf Args(1)="getConfigValue" { Quit ..getConfigValue(Args(2))
+	} ElseIf Args(1)="getHierarchicalConfigValue" { Quit ..getHierarchicalConfigValue(Args(2),Args...)
+	} ElseIf Args(1)="getCodedEntryConfig" { Quit ..getCodedEntryConfig(Args(2),Args...)
+	} ElseIf Args(1)="getCID" { 
+		Set tCID=Args(2)
+		Set:tCID["cid:" tCID=$e(tCID,5,*)
+		Quit $ZCVT(tCID,"I","URL")
+	} ElseIf Args(1)="getUniqueTime" { Quit ..getUniqueTime(Args(2),Args(3))
+	} ElseIf Args(1)="toUpper" { Quit $ZConvert($Get(Args(2)), "U")
+	} ElseIf Args(1)="toLower" { Quit $ZConvert($Get(Args(2)), "L")
+	} ElseIf Args(1)="getServiceNameFromOID" { Quit ..getServiceNameFromOID($G(Args(2)),$G(Args(3)),$G(Args(4)),$G(Args(5)))
+	} ElseIf Args(1)="getServiceHostFromOID" { Quit ..getServiceHostFromOID($G(Args(2)),$G(Args(3)),$G(Args(4)),$G(Args(5)))
+	} ElseIf Args(1)="getServiceURLFromOID" { Quit ..getServiceURLFromOID($G(Args(2)),$G(Args(3)),$G(Args(4)),$G(Args(5)))
+	} ElseIf Args(1)="getServiceNameFromURL" { Quit ..getServiceNameFromURL($G(Args(2)))
+	} ElseIf Args(1)="getServiceOIDFromURL" { Quit ..getServiceOIDFromURL($G(Args(2)))
+	} ElseIf Args(1)="addFilterEntity" { Quit ##Class(HS.Reports.Patient.ReportRun).AddFilterEntity(Args(2),$G(Args(3)),$G(Args(4)),$G(Args(5)),$G(Args(6)),$G(Args(7)),$G(Args(8)))
+	} ElseIf Args(1)="includeEntity" { Quit ##Class(HS.Reports.Patient.ReportRun).IncludeEntity(Args(2))
+	} ElseIf Args(1)="generateVisitNumber" { Quit $TR($ZTIMESTAMP,",.","")_$R(10000)
+	} ElseIf Args(1)="addStreamletType" { Set %streamletType(Args(2))=$G(Args(3)) Quit ""
+	} ElseIf Args(1)="recordSDAData" { Set %SDAData=Args(2) Quit ""
+	} ElseIf Args(1)="xmltimestampToUTC" {
+		Quit ..xmltimestampToUTC(Args(2))
+	} ElseIf Args(1)="getQuickStream" { Quit ..getQuickStream(Args(2))
+	} ElseIf Args(1)="addUTCtoDateTime" { Quit ..returnAsUTC(Args(2))  
+	} ElseIf Args(1)="xmltimestampToLocal" { Quit ..returnAsLocal(..xmltimestamp(Args(2))) }
+	
+	
+	ZTRAP "BAD:"_$g(Args(1))
+]]></Implementation>
+</Method>
+</Class>
+
+
+</Export>
