@@ -18,7 +18,7 @@ Many thanks to our sponsor for this project, the University Hospital of Hamburg-
 
 [<img src="README_img/UKE_logo_klassisch.png">](https://www.uke.de)
 
-Here are some screenshots with descriptions of the tool in action...
+The following screen captures narrate the basic functionality ...
 
 ---
 ![Retrieval and viewer of SDA Containers and FHIR Bundles by MRN or MPIID for comparison](README_img/SAFI_Datasource.png)
@@ -33,11 +33,11 @@ Here are some screenshots with descriptions of the tool in action...
 *Timeline diagram of specific FHIR resources within a bundle*
 
 ---
-![DTL Viewer with search and filter capabilities](README_img/SAFI_DTL-Viewer.png)
+![DTL Viewer with search and filter capabilities](README_img/DTL-Viewer.png)
 *Extensible DTL Viewer with search, filter and export capabilities*
 
 ---
-![Integrated Management Portal](README_img/SAFI_SMP.png)
+![Integrated Management Portal](README_img/SMP.png)
 *Integrated Management Portal*
 
 
