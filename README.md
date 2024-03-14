@@ -14,14 +14,15 @@
 ## Scope
 This package provides a number of tools which were developed to aid in the implementation of the [German MII FHIR profiles](https://simplifier.net/organization/koordinationsstellemii) in [InterSystems HealthShare](https://www.intersystems.com/interoperability-platform/).  These tools are not intended for production use.
 
-[<img style="float:right" src="README_img/UKE_logo_klassisch.png">](https://www.uke.de)
 Many thanks to our sponsor for this project, the University Hospital of Hamburg-Eppendorf, Germany :tada:
+
+[<img src="README_img/UKE_logo_klassisch.png">](https://www.uke.de)
 
 Here are some screenshots with descriptions of the tool in action...
 
 ---
 ![Retrieval and viewer of SDA Containers and FHIR Bundles by MRN or MPIID for comparison](README_img/SAFI_Datasource.png)
-*Retrieve and view SDA Containers and FHIR Bundles by MRN or MPIID*
+*Retrieve and compare SDA Containers with FHIR Bundles by MRN/AA or MPIID*
 
 ---
 ![Network diagram which displays the hierarchy of all FHIR resources within a bundle](README_img/SAFI_FHIR-Network.png)
@@ -66,7 +67,6 @@ HSCUSTOM> do ##class(HS.Local.zimpl.fhirpro.API.Installer).Install()
 - [ ] Unzip and save the contents of 
 
 `zimplfhirpro_Dependencies-*.zip` 
-
 
 to the following directory:
 
