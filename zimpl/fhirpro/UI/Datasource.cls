@@ -54,7 +54,7 @@ async function fetchData()
 	} 
 	
 	//// Get SDA and place in a textarea						
-	const sda = await fetch('#(..#SDAStreamServer)#'+querystr)
+	const sda = await fetch('#(..#SDAStreamServer)#'+querystr, {cache: "no-cache"})
 							.then(response => response.text()
 								.then(status = response.status));
 	
@@ -74,7 +74,7 @@ async function fetchData()
 	} 
 	
 	//// Get FHIR
-	const fhir = await fetch('#(..#FHIRStreamServer)#?MPIID='+pMPIID)
+	const fhir = await fetch('#(..#FHIRStreamServer)#?MPIID='+pMPIID, {cache: "no-cache"})
 							.then(response => response.json());
 	const fhirpretty = vkbeautify.json(JSON.stringify(fhir), ' ');
 	

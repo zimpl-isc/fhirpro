@@ -347,6 +347,9 @@ function processEntry(entry) {
 			if(resource.location) resource.location.forEach(getLocationsString);
 			tItem.content = '[VK] ' + locationsString;	
 			tItem.title = 'resource id:'+resource.id;
+		
+		} else {
+			tItem.content = resource.reasonCode[0].coding[0].display;
 		}
 		
 		if (tItem.start == tItem.end) {
@@ -426,6 +429,10 @@ function processEntry(entry) {
 		console.log('<WARNING> Issues were found!',resource);
 	}
 	
+	if (tItem.start === undefined && resource.resourceType!=='Patient') {
+		tItem.start = Date.now();
+		console.log('tItem.start undefined for '+resource.resourceType+'/'+resource.id);
+	}
 	
 }
 

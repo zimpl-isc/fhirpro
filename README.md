@@ -85,3 +85,4 @@ to the following directory:
 
 ## Roadmap
 - Add REST API in ODS to handle ReloadPatient(), etc from this tool
+- Add tools for managing ^ISCSOAP,^FSLOG; verify custom DTL package; Extension Mapping
