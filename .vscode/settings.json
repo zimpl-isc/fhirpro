@@ -1,0 +1,7 @@
+{
+    "objectscript.conn": {
+        "ns": "HSCUSTOM",
+        "server": "hs20231-mac",
+        "active": true
+    },
+}

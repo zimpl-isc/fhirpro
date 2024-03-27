@@ -1,3 +1,10 @@
+/**
+* Displays a timeline visualization of FHIR data.
+*
+* @version 1.0 2024-03-27
+* @author Brandon Thomas
+*/
+
 Class HS.Local.zimpl.fhirpro.UI.FHIRTimeline Extends HS.Local.zimpl.fhirpro.UI.Super
 {
 

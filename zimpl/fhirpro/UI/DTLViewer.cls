@@ -1,6 +1,11 @@
-/// Subclass this class to include your customizations
-/// 
-/// Application for searching documenting Data Transformations
+/**
+* Application for searching and documenting Data Transformations.
+* Create an extension of this class for custom grouping of DTLs.
+*
+* @version 1.0 2024-03-27
+* @author Brandon Thomas
+*/
+
 Class HS.Local.zimpl.fhirpro.UI.DTLViewer Extends HS.Local.zimpl.fhirpro.UI.Super
 {
 

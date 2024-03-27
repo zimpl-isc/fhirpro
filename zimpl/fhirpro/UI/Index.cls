@@ -1,3 +1,11 @@
+/**
+* Starting web page for the FHIR Profiling toolkit which 
+* consolidates all graphical tools into one UI
+*
+* @version 1.0 2024-03-27
+* @author Brandon Thomas
+*/
+
 Class HS.Local.zimpl.fhirpro.UI.Index Extends HS.Local.zimpl.fhirpro.UI.Super
 {
 
@@ -69,7 +77,7 @@ ClassMethod OnPage() As %Status
 	position: fixed;
 	z-index: 100;
 	width: 100%;
-	background: linear-gradient(45deg, #333695b8, #00b5afb8);
+	background: linear-gradient(45deg, #333695, #44c7c2 40%);
 	border-bottom: 2px silver ridge;
 	font-size: 0.7em;
 	font-style: italic;
@@ -106,9 +114,15 @@ ClassMethod OnPage() As %Status
 		"CodeSystem_Importer":"HS.Local.zimpl.fhirpro.UI.CodeSystemImporter.cls"
 	};
 
+	function mainFrameReady() {
+		console.log('mainframe ready');
+		$('#LoadingMessage').toggle(false);
+	}
 	
 	function toggle(activeElementId) {
 		console.log('toggle ' + activeElementId);
+		$('#LoadingMessage').toggle(true);
+		
 		$('.list_item').removeClass('active');
 		$('#'+activeElementId).addClass('active');
 		
@@ -140,7 +154,9 @@ ClassMethod OnPage() As %Status
 	
 </div>
 
-<iframe id="MainFrame" src="HS.Local.zimpl.fhirpro.UI.Datasource.cls"></iframe>
+<iframe id="MainFrame" class="frame" src="HS.Local.zimpl.fhirpro.UI.Datasource.cls" onload="mainFrameReady()"></iframe>
+<div id="LoadingMessage" class="frame" style="display:none;"><span class="blink">Loading...</span></div>
+
 
 <div class="side_menu">
 	<div class="container">

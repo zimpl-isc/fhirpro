@@ -1,3 +1,11 @@
+/**
+* Business Service class for the toolkit Production
+*  which handles the requests for SDA3 or FHIR data
+*
+* @version 1.0 2024-03-27
+* @author Brandon Thomas
+*/
+
 Class HS.Local.zimpl.fhirpro.API.TestService Extends HS.Test.Service
 {
 

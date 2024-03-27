@@ -1,3 +1,10 @@
+/**
+* UI for selecting and retrieving SDA3 and FHIR data
+*
+* @version 1.0 2024-03-27
+* @author Brandon Thomas
+*/
+
 Class HS.Local.zimpl.fhirpro.UI.Datasource Extends HS.Local.zimpl.fhirpro.UI.Super
 {
 

@@ -1,3 +1,10 @@
+/**
+* Utility class supporting the DTL Viewer
+*
+* @version 1.0 2024-03-27
+* @author Brandon Thomas
+*/
+
 Class HS.Local.zimpl.fhirpro.UI.Utils.XSLTCallbackHandler Extends HS.Util.XSLTHelper
 {
 

@@ -1,9 +1,18 @@
+/**
+* Superclass for graphical webpages which includes some useful utilities and styling
+*
+* @version 1.0 2024-03-27
+* @author Brandon Thomas
+*/
+
 Class HS.Local.zimpl.fhirpro.UI.Super Extends %CSP.Page
 {
 
 /// Local folder where javascripts and CSS files are stored.
-/// path is relative to the webroot of this application
-Parameter COLLATERALFOLDER = "/csp/healthshare/zimplfhirpro/";
+/// Path is relative to the webroot of this application and must be accessible to the browser
+Parameter COLLATERALFOLDER;
+
+// "/csp/healthshare/zimplfhirpro/";
 
 Parameter SDAStreamServer = "HS.Local.zimpl.fhirpro.API.StreamSDA.cls";
 
@@ -50,7 +59,7 @@ ClassMethod DefaultStyle()
 		width: 100vw;
 		overflow: scroll;
 	}
-	iframe {
+	.frame {
 		width: calc(100% - 44px);
 		position: fixed;
 		top: 22px;
@@ -62,6 +71,21 @@ ClassMethod DefaultStyle()
 		margin: 0;
 		padding: 0;
 		overflow: hidden;
+	}
+	#LoadingMessage {
+		background-color: #ffffffd6;
+		text-align: center;
+		line-height: 75vh;
+		font-size: larger;
+		font-weight: bold;
+	}
+	.blink {
+		animation: blink-text 2000ms linear infinite;
+	}
+	@keyframes blink-text {
+		0% {opacity: 1; }
+		60% {opacity: 0; }
+		100% {opacity: 1; }
 	}
 	</style>
 	>
@@ -109,8 +133,7 @@ ClassMethod XDataJS(pXDataJS)
 
 XData StorageHandler [ MimeType = text/javascript ]
 {
-	
-	var storage = window.sessionStorage;
+var storage = window.sessionStorage;
 	
 	function setMpiid(pMpiid){
 		return storage.setItem("mpiid", pMpiid);

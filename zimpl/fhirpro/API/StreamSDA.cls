@@ -1,3 +1,11 @@
+/**
+* Utility class supporting the transmission of SDA3 data 
+* between the frontend UI and backend Production
+*
+* @version 1.0 2024-03-27
+* @author Brandon Thomas
+*/
+
 Class HS.Local.zimpl.fhirpro.API.StreamSDA Extends %CSP.StreamServer
 {
 

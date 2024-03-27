@@ -1,3 +1,10 @@
+/**
+* Installer class for the FHIR Profiler toolkit
+*
+* @version 1.0 2024-03-27
+* @author Brandon Thomas
+*/
+
 Class HS.Local.zimpl.fhirpro.API.Installer
 {
 
