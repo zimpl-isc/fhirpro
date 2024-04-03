@@ -109,7 +109,7 @@ ClassMethod OnPage() As %Status
 	}
 
 	function traverse(jsonObj, nodetype, nodeid, parent) {
-		if( jsonObj !== null && typeof jsonObj == "object" ) {
+		if((jsonObj !== null) && (typeof jsonObj == "object")) {
 			Object.entries(jsonObj).forEach(([key, value]) => {
 				// key is either an array index or object key
 				if(key=="reference"){
