@@ -84,6 +84,9 @@ ClassMethod OnPage() As %Status
 				display = prefix +' '+ given.toString().replace(',',' ') +' '+ family;
 			}
 			
+		} else if(resourceType === 'Organization') {
+			display = rsc.name;
+
 		} else if(typeof rsc.type!=='undefined') {
 			if((typeof rsc.type==='object') && (typeof rsc.type.coding!=='undefined')) {
 				display = rsc.type.coding[0].display || rsc.type.coding[0].code;
