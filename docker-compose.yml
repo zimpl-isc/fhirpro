@@ -1,0 +1,16 @@
+version: '3.6'
+
+services:
+
+  iris:
+    image: intersystemsdc/irishealth-community
+    restart: always
+    command: /iris-main
+      - -a /home/irisowner/dev/ascript.sh
+      - -b /home/irisowner/dev/bscript.sh
+      - --ISCAgent false
+    ports: 
+      - 41773:1972
+      - 42773:52773
+    volumes:
+      - ./:/home/irisowner/dev
