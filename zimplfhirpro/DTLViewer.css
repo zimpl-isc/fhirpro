@@ -1,0 +1,56 @@
+html, body { font-family: Helvetica, Arial, sans-serif; background-color: white;}
+h1, h2, h6	{margin:0 12px; display:inline-block;}
+h6		{margin:0 12px; display:block;}
+hr	{height:0; border:none;}
+th, td { padding:5px; text-align:left;}
+ul {list-style-type:none; color:#333;}
+li {padding:2px;}
+#ActionTable td {border-bottom: 1px dotted gray;}
+#ActionTable th {border-bottom: 1px solid #111;}
+table { 
+	width: 100%;
+	border-collapse: collapse;
+	font-size:inherit;
+}
+thead tr {height:2em; background:linear-gradient(180deg, rgba(164,226,222,1) 0%, rgba(214,255,253,1) 100%);}
+tr.disabled { background-color: #372b2b; color:#bbbbbb; font-size:x-small; }
+tr td:first-child {white-space: nowrap;}
+.tableColDescr	{min-width:15%;}
+table.dataTable thead .sorting {filter:contrast(10);}
+table.dataTable {padding-top:0.5em;}
+table.dataTable.display tbody tr:hover{background-color:rgba(164,226,222,0.2);}
+.comment {font-style:italic; font-weight:lighter; font-size:x-small; font-family:inherit;}
+.code { 
+	font-family: "Source Sans Pro",Futura,Arial,sans-serif, Consolas, "Courier New", Courier, Lucida Console, monospace; 
+	padding: 2px 4px; 
+	/* handle text wrapping */
+	display: inline-block; padding-left: 10px; text-indent: -10px;
+}
+.group	{font-style:italic; font-weight:lighter; font-size:smaller;}
+.level1 { background-color: white; }
+.level2 { background-color: #f5f5f5; }
+.level3 { background-color: #eeeeee; }
+.level3 { background-color: #e0e0e0 }
+.level4 { background-color: #bdbdbd; }
+.level5 { background-color: #9e9e9e; }
+.level6 { background-color: #757575; color:whitesmoke;}
+.level7 { background-color: #616161; color:whitesmoke;}
+.level8 { background-color: #424242; color:whitesmoke;}
+.content {
+	margin: 0 auto;
+}
+.contentTable {overflow: scroll;}
+.simple-tree-table-icon	{width:1em !important; line-height:1em !important; color:black;}
+a:link {color: #48A09B; text-decoration: none;}
+a:visited {color: #48A09B; text-decoration: none;}
+a:hover {color: #48A09B; text-decoration: underline;}
+a:active {color: #48A09B; text-decoration: underline;}
+::selection {background:rgba(255,0,255,.4)}
+.docType {color:#48A09B; font-style:italic; margin-left:1em;}
+.doctype::before {content:"["}
+.doctype::after {content:"]"}
+
+.warning {float:right; color:red;}
+
+.dataTables_length {float:right !important;}
+.dataTables_filter {float:left !important;}

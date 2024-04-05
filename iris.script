@@ -1,15 +1,14 @@
-    zn "%SYS"
-    // fix package mapping in HSCUSTOM
-    for p="%IPM","%pkg.isc" do ##Class(Config.MapPackages).Delete("HSCUSTOM",p)
+zn "%SYS"
+// Unexpire passwords and set up passwordless mode to simplify dev use.
+do ##class(Security.Users).UnExpireUserPasswords("*")
+zpm "install passwordless"
 
-    // Unexpire passwords and set up passwordless mode to simplify dev use.
-    do ##class(Security.Users).UnExpireUserPasswords("*")
-    zpm "install passwordless"
+zn "HSCUSTOM"
+// Create /_vscode web app to support intersystems-community.testingmanager VS Code extension
+zpm "install vscode-per-namespace-settings"
+zpm "install webterminal"
 
-    zn "HSCUSTOM"
-    // Create /_vscode web app to support intersystems-community.testingmanager VS Code extension
-    zpm "install vscode-per-namespace-settings"
-    zpm "install webterminal"
-   
-   halt
-
+do $system.OBJ.ImportDir("/home/irisowner/dev/zimpl/","*","ck",,1)
+do ##class(HS.Local.zimpl.fhirpro.API.Installer).Install()
+  
+halt

@@ -83,7 +83,8 @@ to the following directory:
 
 ### Navigate to the Startpage
 <http://localhost:52774/csp/healthshare/zimplfhirpro/HS.Local.zimpl.fhirpro.UI.Index.cls>
-
+### In DOcker
+<http://192.168.0.11:42773/csp/healthshare/zimplfhirpro/HS.Local.zimpl.fhirpro.UI.Index.cls>
 ## Disclaimer
 :warning: This application is not supported by InterSystems Corporation. Please be notified that you use it at your own risk.
 
@@ -119,7 +120,7 @@ Make sure you have [git](https://git-scm.com/book/en/v2/Getting-Started-Installi
 ### Installation
 Clone/git pull the repo into any local directory
 ```
-$ git clone https://github.com/r-cemper/mini-docker.git
+$ git clone https://github.com/rcemper/PR_fhirpro.git
 ```
 To build and start the container run:
 ```
