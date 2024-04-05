@@ -131,11 +131,11 @@ To open IRIS Terminal do:
 $ docker-compose exec iris iris session iris
 USER>
 ```
-or using **WebTerminal**
-<http://localhost:42773/terminal/>
+or using **WebTerminal**    
+<http://localhost:42773/terminal/>    
 
-To access IRIS System Management Portal
-<http://localhost:42773/csp/sys/UtilHome.csp>
-Access Production
-<http://localhost:42773/csp/hscustom/EnsPortal.ProductionConfig.zen?PRODUCTION=HS.Local.zimpl.fhirpro.Production>
+To access IRIS System Management Portal    
+<http://localhost:42773/csp/sys/UtilHome.csp>    
+Access Production   
+<http://localhost:42773/csp/hscustom/EnsPortal.ProductionConfig.zen?PRODUCTION=HS.Local.zimpl.fhirpro.Production>   
 ```
