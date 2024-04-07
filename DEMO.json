@@ -1,0 +1,3964 @@
+{
+ "resourceType": "Bundle",
+ "id": "50c41ad2-f7b7-4237-b15f-21f16020a348",
+ "type": "searchset",
+ "timestamp": "2023-10-25T09:15:28Z",
+ "total": 70,
+ "link": [
+  {
+   "relation": "self",
+   "url": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Patient/100211849/$everything"
+  }
+ ],
+ "entry": [
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Patient/100211849",
+   "resource": {
+    "resourceType": "Patient",
+    "address": [
+     {
+      "city": "Aachen",
+      "country": "D",
+      "line": [
+       "Struewelsstraße 30"
+      ],
+      "postalCode": "52074",
+      "text": "Struewelsstraße 30, 52074, Aachen, D",
+      "type": "both"
+     }
+    ],
+    "birthDate": "1991-01-01",
+    "contact": [
+     {
+      "name": {
+       "family": "Feuerstein",
+       "given": [
+        "Fred"
+       ]
+      },
+      "telecom": [
+       {
+        "system": "phone",
+        "use": "home",
+        "value": "0176-47944470"
+       }
+      ]
+     }
+    ],
+    "extension": [
+     {
+      "url": "http://hl7.org/fhir/StructureDefinition/patient-religion",
+      "valueCodeableConcept": {
+       "coding": [
+        {
+         "code": "RK",
+         "display": "RK"
+        }
+       ]
+      }
+     }
+    ],
+    "gender": "female",
+    "identifier": [
+     {
+      "system": "HomeCommunity",
+      "type": {
+       "coding": [
+        {
+         "code": "PI",
+         "system": "http://terminology.hl7.org/CodeSystem/v2-0203"
+        }
+       ],
+       "text": "MPIID"
+      },
+      "value": "100211849"
+     },
+     {
+      "assigner": {
+       "reference": "Organization/1730318"
+      },
+      "system": "https://www.ukaachen.de/fhir/NamingSystem/medico/patient-identifier",
+      "type": {
+       "coding": [
+        {
+         "code": "MR",
+         "system": "http://terminology.hl7.org/CodeSystem/v2-0203"
+        }
+       ],
+       "text": "MRN"
+      },
+      "value": "987650000181234"
+     }
+    ],
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-person/StructureDefinition/Patient|2.0.0-alpha3"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    },
+    "multipleBirthBoolean": false,
+    "name": [
+     {
+      "family": "Feuerstein",
+      "given": [
+       "Frieda"
+      ],
+      "text": "Frieda",
+      "use": "official"
+     }
+    ],
+    "id": "100211849"
+   },
+   "search": {
+    "mode": "match"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Organization/1730318",
+   "resource": {
+    "resourceType": "Organization",
+    "active": true,
+    "address": [
+     {
+      "city": "Aachen",
+      "country": "Deutschland",
+      "line": [
+       "Struewelsstraße 30"
+      ],
+      "postalCode": "52074",
+      "state": "NRW",
+      "text": "Struewelsstraße 30",
+      "type": "both"
+     }
+    ],
+    "identifier": [
+     {
+      "system": "https://www.ukaachen.de/",
+      "value": "UKA"
+     },
+     {
+      "system": "http://fhir.de/NamingSystem/arge-ik/iknr",
+      "value": "260530012"
+     },
+     {
+      "system": "https://www.ukaachen.de/",
+      "value": "UKA"
+     }
+    ],
+    "name": "Universitätsklinikum Irgendwo",
+    "id": "1730318",
+    "meta": {
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/RelatedPerson/1729603",
+   "resource": {
+    "resourceType": "RelatedPerson",
+    "address": [
+     {
+      "city": "Aachen",
+      "country": "D",
+      "line": [
+       "Struewelsstraße 30"
+      ],
+      "postalCode": "52074",
+      "text": "Struewelsstraße 30, 52074, Aachen, D",
+      "type": "both"
+     }
+    ],
+    "birthDate": "1991-01-01",
+    "name": [
+     {
+      "family": "Feuerstein",
+      "given": [
+       "Frieda"
+      ]
+     }
+    ],
+    "patient": {
+     "reference": "Patient/100211849"
+    },
+    "period": {
+     "start": "1901-01-01T00:00:00+01:00"
+    },
+    "id": "1729603",
+    "meta": {
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Encounter/e63aecca-87d2-475a-a0ad-a598d7c3fd3c",
+   "resource": {
+    "resourceType": "Encounter",
+    "class": {
+     "code": "IMP",
+     "system": "EncounterClassDE"
+    },
+    "hospitalization": {
+     "admitSource": {
+      "coding": [
+       {
+        "code": "260532811",
+        "display": "260532811",
+        "system": "https://www.medizininformatik-initiative.de/fhir/core/modul-fall/CodeSystem/Aufnahmeanlass"
+       }
+      ]
+     },
+     "dischargeDisposition": {
+      "coding": [
+       {
+        "code": "2",
+        "system": "Entlassungsgrund"
+       }
+      ]
+     }
+    },
+    "identifier": [
+     {
+      "system": "https://www.ukaachen.de/fhir/NamingSystem/medico/encounter-identifier",
+      "type": {
+       "coding": [
+        {
+         "code": "VN",
+         "system": "http://terminology.hl7.org/CodeSystem/v2-0203"
+        }
+       ],
+       "text": "EncounterNumber"
+      },
+      "use": "official",
+      "value": "9876640370"
+     }
+    ],
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-fall/StructureDefinition/KontaktGesundheitseinrichtung|2.0.0"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    },
+    "period": {
+     "end": "2023-01-11T12:00:00.000+01:00",
+     "start": "2022-12-31T13:20:00.000+01:00"
+    },
+    "reasonCode": [
+     {
+      "coding": [
+       {
+        "code": "01",
+        "system": "Aufnahmegrund"
+       }
+      ]
+     }
+    ],
+    "serviceProvider": {
+     "reference": "Organization/1730318"
+    },
+    "status": "finished",
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "type": [
+     {
+      "coding": [
+       {
+        "code": "einrichtungskontakt",
+        "display": "Einrichtungskontakt",
+        "system": "http://fhir.de/CodeSystem/kontaktart-de"
+       }
+      ]
+     }
+    ],
+    "id": "e63aecca-87d2-475a-a0ad-a598d7c3fd3c"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Organization/1729604",
+   "resource": {
+    "resourceType": "Organization",
+    "active": true,
+    "address": [
+     {
+      "city": "Aachen",
+      "country": "Deutschland",
+      "line": [
+       "Struewelsstraße 30"
+      ],
+      "postalCode": "52074",
+      "state": "NRW",
+      "text": "Struewelsstraße 30",
+      "type": "both"
+     }
+    ],
+    "identifier": [
+     {
+      "system": "https://ukaachen.de/fhir/CodeSystem/Fachabteilung",
+      "value": "UC"
+     }
+    ],
+    "name": "UC",
+    "partOf": {
+     "reference": "Organization/1730318"
+    },
+    "id": "1729604",
+    "meta": {
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X",
+   "resource": {
+    "resourceType": "Encounter",
+    "class": {
+     "code": "IMP",
+     "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode"
+    },
+    "identifier": [
+     {
+      "system": "https://www.ukaachen.de/fhir/NamingSystem/medico/patient-identifier",
+      "type": {
+       "text": "EncounterNumber"
+      },
+      "use": "official",
+      "value": "9876640370-31529603-AK"
+     }
+    ],
+    "partOf": {
+     "reference": "Encounter/e63aecca-87d2-475a-a0ad-a598d7c3fd3c"
+    },
+    "period": {
+     "end": "2023-01-11T12:00:00.000+01:00",
+     "start": "2022-12-31T13:20:00.000+01:00"
+    },
+    "reasonCode": [
+     {
+      "coding": [
+       {
+        "code": "0101",
+        "display": "0101"
+       }
+      ]
+     }
+    ],
+    "serviceProvider": {
+     "reference": "Organization/1729604"
+    },
+    "serviceType": {
+     "coding": [
+      {
+       "code": "9422135",
+       "display": "9422135",
+       "system": "https://www.medizininformatik-initiative.de/fhir/core/modul-fall/CodeSystem/Fachabteilungsschluessel"
+      }
+     ]
+    },
+    "status": "finished",
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "type": [
+     {
+      "coding": [
+       {
+        "code": "abteilungskontakt",
+        "display": "Abteilungskontakt",
+        "system": "http://fhir.de/CodeSystem/kontaktart-de"
+       }
+      ]
+     }
+    ],
+    "id": "PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X",
+    "meta": {
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Location/1729606",
+   "resource": {
+    "resourceType": "Location",
+    "identifier": [
+     {
+      "system": "https://ukaachen.de/fhir/CodeSystem/Ward",
+      "value": "OIM6"
+     }
+    ],
+    "managingOrganization": {
+     "reference": "Organization/1730318"
+    },
+    "name": "OIM6",
+    "physicalType": {
+     "coding": [
+      {
+       "code": "wa",
+       "display": "Ward",
+       "system": "http://hl7.org/fhir/ValueSet/location-physical-type"
+      }
+     ]
+    },
+    "id": "1729606",
+    "meta": {
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Location/1729607",
+   "resource": {
+    "resourceType": "Location",
+    "identifier": [
+     {
+      "system": "https://ukaachen.de/fhir/CodeSystem/Room",
+      "value": "OIM6_010"
+     }
+    ],
+    "name": "010",
+    "partOf": {
+     "reference": "Location/1729606"
+    },
+    "physicalType": {
+     "coding": [
+      {
+       "code": "ro",
+       "display": "Room",
+       "system": "http://hl7.org/fhir/ValueSet/location-physical-type"
+      }
+     ]
+    },
+    "id": "1729607",
+    "meta": {
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Location/1729608",
+   "resource": {
+    "resourceType": "Location",
+    "identifier": [
+     {
+      "system": "https://ukaachen.de/fhir/CodeSystem/Bed",
+      "value": "OIM6_010_08"
+     }
+    ],
+    "name": "08",
+    "partOf": {
+     "reference": "Location/1729607"
+    },
+    "physicalType": {
+     "coding": [
+      {
+       "code": "bd",
+       "display": "Bed",
+       "system": "http://hl7.org/fhir/ValueSet/location-physical-type"
+      }
+     ]
+    },
+    "id": "1729608",
+    "meta": {
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Encounter/SYY5SSB5O5OTVIR4BXHEYGRQBSXSW32K",
+   "resource": {
+    "resourceType": "Encounter",
+    "class": {
+     "code": "IMP",
+     "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode"
+    },
+    "identifier": [
+     {
+      "system": "https://www.ukaachen.de/fhir/NamingSystem/medico/patient-identifier",
+      "type": {
+       "text": "EncounterNumber"
+      },
+      "use": "official",
+      "value": "9876640370-31529603-VK"
+     }
+    ],
+    "location": [
+     {
+      "location": {
+       "display": "OIM6",
+       "reference": "Location/1729606"
+      },
+      "physicalType": {
+       "coding": [
+        {
+         "display": "Ward"
+        }
+       ]
+      }
+     },
+     {
+      "location": {
+       "display": "010",
+       "reference": "Location/1729607"
+      },
+      "physicalType": {
+       "coding": [
+        {
+         "display": "Room"
+        }
+       ]
+      }
+     },
+     {
+      "location": {
+       "display": "08",
+       "reference": "Location/1729608"
+      },
+      "physicalType": {
+       "coding": [
+        {
+         "display": "Bed"
+        }
+       ]
+      }
+     }
+    ],
+    "partOf": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "period": {
+     "end": "2023-01-11T12:00:00.000+01:00",
+     "start": "2022-12-31T13:20:00.000+01:00"
+    },
+    "reasonCode": [
+     {
+      "coding": [
+       {
+        "code": "0101",
+        "display": "0101"
+       }
+      ]
+     }
+    ],
+    "status": "finished",
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "type": [
+     {
+      "coding": [
+       {
+        "code": "versorgungsstellenkontakt",
+        "display": "Versorgungsstellenkontakt",
+        "system": "http://fhir.de/CodeSystem/kontaktart-de"
+       }
+      ]
+     }
+    ],
+    "id": "SYY5SSB5O5OTVIR4BXHEYGRQBSXSW32K",
+    "meta": {
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Organization/4",
+   "resource": {
+    "resourceType": "Organization",
+    "name": "InterSystems",
+    "active": true,
+    "id": "4",
+    "meta": {
+     "lastUpdated": "2023-09-15T13:37:44Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Provenance/100211849",
+   "resource": {
+    "resourceType": "Provenance",
+    "recorded": "2023-10-13T10:49:35+02:00",
+    "agent": [
+     {
+      "type": {
+       "coding": [
+        {
+         "system": "http://terminology.hl7.org/CodeSystem/provenance-participant-type",
+         "code": "assembler"
+        }
+       ]
+      },
+      "who": {
+       "reference": "Organization/4"
+      }
+     }
+    ],
+    "target": [
+     {
+      "reference": "Patient/100211849"
+     }
+    ],
+    "id": "100211849",
+    "meta": {
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Location/1729610",
+   "resource": {
+    "resourceType": "Location",
+    "identifier": [
+     {
+      "system": "https://ukaachen.de/fhir/CodeSystem/Ward",
+      "value": "UC02"
+     }
+    ],
+    "managingOrganization": {
+     "reference": "Organization/1730318"
+    },
+    "name": "UC02",
+    "physicalType": {
+     "coding": [
+      {
+       "code": "wa",
+       "display": "Ward",
+       "system": "http://hl7.org/fhir/ValueSet/location-physical-type"
+      }
+     ]
+    },
+    "id": "1729610",
+    "meta": {
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Location/1730321",
+   "resource": {
+    "resourceType": "Location",
+    "identifier": [
+     {
+      "system": "https://ukaachen.de/fhir/CodeSystem/Room",
+      "value": "UC02_04"
+     }
+    ],
+    "name": "04",
+    "partOf": {
+     "reference": "Location/1729610"
+    },
+    "physicalType": {
+     "coding": [
+      {
+       "code": "ro",
+       "display": "Room",
+       "system": "http://hl7.org/fhir/ValueSet/location-physical-type"
+      }
+     ]
+    },
+    "id": "1730321",
+    "meta": {
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Location/1730322",
+   "resource": {
+    "resourceType": "Location",
+    "identifier": [
+     {
+      "system": "https://ukaachen.de/fhir/CodeSystem/Bed",
+      "value": "UC02_04_A"
+     }
+    ],
+    "name": "A",
+    "partOf": {
+     "reference": "Location/1730321"
+    },
+    "physicalType": {
+     "coding": [
+      {
+       "code": "bd",
+       "display": "Bed",
+       "system": "http://hl7.org/fhir/ValueSet/location-physical-type"
+      }
+     ]
+    },
+    "id": "1730322",
+    "meta": {
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Encounter/7IDJNI53K4AVKTIRT26GT73MI5SGPSY2",
+   "resource": {
+    "resourceType": "Encounter",
+    "class": {
+     "code": "IMP",
+     "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode"
+    },
+    "identifier": [
+     {
+      "system": "https://www.ukaachen.de/fhir/NamingSystem/medico/patient-identifier",
+      "type": {
+       "text": "EncounterNumber"
+      },
+      "use": "official",
+      "value": "9876640370-31529769-VK"
+     }
+    ],
+    "location": [
+     {
+      "location": {
+       "display": "UC02",
+       "reference": "Location/1729610"
+      },
+      "physicalType": {
+       "coding": [
+        {
+         "display": "Ward"
+        }
+       ]
+      }
+     },
+     {
+      "location": {
+       "display": "04",
+       "reference": "Location/1730321"
+      },
+      "physicalType": {
+       "coding": [
+        {
+         "display": "Room"
+        }
+       ]
+      }
+     },
+     {
+      "location": {
+       "display": "A",
+       "reference": "Location/1730322"
+      },
+      "physicalType": {
+       "coding": [
+        {
+         "display": "Bed"
+        }
+       ]
+      }
+     }
+    ],
+    "partOf": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "period": {
+     "start": "2023-01-01T00:05:00.000+01:00"
+    },
+    "reasonCode": [
+     {
+      "coding": [
+       {
+        "code": "0101",
+        "display": "0101"
+       }
+      ]
+     }
+    ],
+    "status": "in-progress",
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "type": [
+     {
+      "coding": [
+       {
+        "code": "versorgungsstellenkontakt",
+        "display": "Versorgungsstellenkontakt",
+        "system": "http://fhir.de/CodeSystem/kontaktart-de"
+       }
+      ]
+     }
+    ],
+    "id": "7IDJNI53K4AVKTIRT26GT73MI5SGPSY2",
+    "meta": {
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Location/1730324",
+   "resource": {
+    "resourceType": "Location",
+    "identifier": [
+     {
+      "system": "https://ukaachen.de/fhir/CodeSystem/Ward",
+      "value": "OIM4"
+     }
+    ],
+    "managingOrganization": {
+     "reference": "Organization/1730318"
+    },
+    "name": "OIM4",
+    "physicalType": {
+     "coding": [
+      {
+       "code": "wa",
+       "display": "Ward",
+       "system": "http://hl7.org/fhir/ValueSet/location-physical-type"
+      }
+     ]
+    },
+    "id": "1730324",
+    "meta": {
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Location/1730325",
+   "resource": {
+    "resourceType": "Location",
+    "identifier": [
+     {
+      "system": "https://ukaachen.de/fhir/CodeSystem/Room",
+      "value": "OIM4_04"
+     }
+    ],
+    "name": "04",
+    "partOf": {
+     "reference": "Location/1730324"
+    },
+    "physicalType": {
+     "coding": [
+      {
+       "code": "ro",
+       "display": "Room",
+       "system": "http://hl7.org/fhir/ValueSet/location-physical-type"
+      }
+     ]
+    },
+    "id": "1730325",
+    "meta": {
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Location/1730326",
+   "resource": {
+    "resourceType": "Location",
+    "identifier": [
+     {
+      "system": "https://ukaachen.de/fhir/CodeSystem/Bed",
+      "value": "OIM4_04_A"
+     }
+    ],
+    "name": "A",
+    "partOf": {
+     "reference": "Location/1730325"
+    },
+    "physicalType": {
+     "coding": [
+      {
+       "code": "bd",
+       "display": "Bed",
+       "system": "http://hl7.org/fhir/ValueSet/location-physical-type"
+      }
+     ]
+    },
+    "id": "1730326",
+    "meta": {
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Encounter/ZZTF2MDKPXWC6BZ5RZKHRI3VL5CCBBCX",
+   "resource": {
+    "resourceType": "Encounter",
+    "class": {
+     "code": "IMP",
+     "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode"
+    },
+    "identifier": [
+     {
+      "system": "https://www.ukaachen.de/fhir/NamingSystem/medico/patient-identifier",
+      "type": {
+       "text": "EncounterNumber"
+      },
+      "use": "official",
+      "value": "9876640370-31544297-VK"
+     }
+    ],
+    "location": [
+     {
+      "location": {
+       "display": "OIM4",
+       "reference": "Location/1730324"
+      },
+      "physicalType": {
+       "coding": [
+        {
+         "display": "Ward"
+        }
+       ]
+      }
+     },
+     {
+      "location": {
+       "display": "04",
+       "reference": "Location/1730325"
+      },
+      "physicalType": {
+       "coding": [
+        {
+         "display": "Room"
+        }
+       ]
+      }
+     },
+     {
+      "location": {
+       "display": "A",
+       "reference": "Location/1730326"
+      },
+      "physicalType": {
+       "coding": [
+        {
+         "display": "Bed"
+        }
+       ]
+      }
+     }
+    ],
+    "partOf": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "period": {
+     "start": "2023-01-04T17:57:00.000+01:00"
+    },
+    "reasonCode": [
+     {
+      "coding": [
+       {
+        "code": "0101",
+        "display": "0101"
+       }
+      ]
+     }
+    ],
+    "status": "in-progress",
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "type": [
+     {
+      "coding": [
+       {
+        "code": "versorgungsstellenkontakt",
+        "display": "Versorgungsstellenkontakt",
+        "system": "http://fhir.de/CodeSystem/kontaktart-de"
+       }
+      ]
+     }
+    ],
+    "id": "ZZTF2MDKPXWC6BZ5RZKHRI3VL5CCBBCX",
+    "meta": {
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Location/1730328",
+   "resource": {
+    "resourceType": "Location",
+    "identifier": [
+     {
+      "system": "https://ukaachen.de/fhir/CodeSystem/Bed",
+      "value": "UC02_04_B"
+     }
+    ],
+    "name": "B",
+    "partOf": {
+     "reference": "Location/1730321"
+    },
+    "physicalType": {
+     "coding": [
+      {
+       "code": "bd",
+       "display": "Bed",
+       "system": "http://hl7.org/fhir/ValueSet/location-physical-type"
+      }
+     ]
+    },
+    "id": "1730328",
+    "meta": {
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Encounter/5RS3ZBJXAU267RXAHU7M4WRYJB22UXYB",
+   "resource": {
+    "resourceType": "Encounter",
+    "class": {
+     "code": "IMP",
+     "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode"
+    },
+    "identifier": [
+     {
+      "system": "https://www.ukaachen.de/fhir/NamingSystem/medico/patient-identifier",
+      "type": {
+       "text": "EncounterNumber"
+      },
+      "use": "official",
+      "value": "9876640370-31547876-VK"
+     }
+    ],
+    "location": [
+     {
+      "location": {
+       "display": "UC02",
+       "reference": "Location/1729610"
+      },
+      "physicalType": {
+       "coding": [
+        {
+         "display": "Ward"
+        }
+       ]
+      }
+     },
+     {
+      "location": {
+       "display": "04",
+       "reference": "Location/1730321"
+      },
+      "physicalType": {
+       "coding": [
+        {
+         "display": "Room"
+        }
+       ]
+      }
+     },
+     {
+      "location": {
+       "display": "B",
+       "reference": "Location/1730328"
+      },
+      "physicalType": {
+       "coding": [
+        {
+         "display": "Bed"
+        }
+       ]
+      }
+     }
+    ],
+    "partOf": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "period": {
+     "start": "2023-01-06T18:58:00.000+01:00"
+    },
+    "reasonCode": [
+     {
+      "coding": [
+       {
+        "code": "0101",
+        "display": "0101"
+       }
+      ]
+     }
+    ],
+    "status": "in-progress",
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "type": [
+     {
+      "coding": [
+       {
+        "code": "versorgungsstellenkontakt",
+        "display": "Versorgungsstellenkontakt",
+        "system": "http://fhir.de/CodeSystem/kontaktart-de"
+       }
+      ]
+     }
+    ],
+    "id": "5RS3ZBJXAU267RXAHU7M4WRYJB22UXYB",
+    "meta": {
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Encounter/ER5B6YGN22GGXERE55WK3SVRP2JCVC5U",
+   "resource": {
+    "resourceType": "Encounter",
+    "class": {
+     "code": "IMP",
+     "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode"
+    },
+    "identifier": [
+     {
+      "system": "https://www.ukaachen.de/fhir/NamingSystem/medico/patient-identifier",
+      "type": {
+       "text": "EncounterNumber"
+      },
+      "use": "official",
+      "value": "9876640370-31555340-VK"
+     }
+    ],
+    "location": [
+     {
+      "location": {
+       "display": "UC02",
+       "reference": "Location/1729610"
+      },
+      "physicalType": {
+       "coding": [
+        {
+         "display": "Ward"
+        }
+       ]
+      }
+     }
+    ],
+    "partOf": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "period": {
+     "start": "2023-01-11T11:58:00.000+01:00"
+    },
+    "reasonCode": [
+     {
+      "coding": [
+       {
+        "code": "0101",
+        "display": "0101"
+       }
+      ]
+     }
+    ],
+    "status": "in-progress",
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "type": [
+     {
+      "coding": [
+       {
+        "code": "versorgungsstellenkontakt",
+        "display": "Versorgungsstellenkontakt",
+        "system": "http://fhir.de/CodeSystem/kontaktart-de"
+       }
+      ]
+     }
+    ],
+    "id": "ER5B6YGN22GGXERE55WK3SVRP2JCVC5U",
+    "meta": {
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Organization/1730331",
+   "resource": {
+    "resourceType": "Organization",
+    "active": true,
+    "address": [
+     {
+      "city": "Aachen",
+      "country": "Deutschland",
+      "line": [
+       "Struewelsstraße 30"
+      ],
+      "postalCode": "52074",
+      "state": "NRW",
+      "text": "Struewelsstraße  30",
+      "type": "both"
+     }
+    ],
+    "identifier": [
+     {
+      "system": "https://ukaachen.de/fhir/CodeSystem/Fachabteilung",
+      "value": "NU"
+     }
+    ],
+    "name": "NU",
+    "partOf": {
+     "reference": "Organization/1730318"
+    },
+    "id": "1730331",
+    "meta": {
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Encounter/4BM5HERJ6DGGPEVTFW7S5VZXO6KJTMLX",
+   "resource": {
+    "resourceType": "Encounter",
+    "class": {
+     "code": "IMP",
+     "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode"
+    },
+    "identifier": [
+     {
+      "system": "https://www.ukaachen.de/fhir/NamingSystem/medico/patient-identifier",
+      "type": {
+       "text": "EncounterNumber"
+      },
+      "use": "official",
+      "value": "9876640370-5049988858-AK"
+     }
+    ],
+    "partOf": {
+     "reference": "Encounter/e63aecca-87d2-475a-a0ad-a598d7c3fd3c"
+    },
+    "period": {
+     "end": "2023-01-04T11:54:00.000+01:00",
+     "start": "2023-01-04T11:54:00.000+01:00"
+    },
+    "reasonCode": [
+     {
+      "coding": [
+       {
+        "code": "0101",
+        "display": "0101"
+       }
+      ]
+     }
+    ],
+    "serviceProvider": {
+     "reference": "Organization/1730331"
+    },
+    "serviceType": {
+     "coding": [
+      {
+       "code": "9422135",
+       "display": "9422135",
+       "system": "https://www.medizininformatik-initiative.de/fhir/core/modul-fall/CodeSystem/Fachabteilungsschluessel"
+      }
+     ]
+    },
+    "status": "unknown",
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "type": [
+     {
+      "coding": [
+       {
+        "code": "abteilungskontakt",
+        "display": "Abteilungskontakt",
+        "system": "http://fhir.de/CodeSystem/kontaktart-de"
+       }
+      ]
+     }
+    ],
+    "id": "4BM5HERJ6DGGPEVTFW7S5VZXO6KJTMLX",
+    "meta": {
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Location/1730333",
+   "resource": {
+    "resourceType": "Location",
+    "identifier": [
+     {
+      "system": "https://ukaachen.de/fhir/CodeSystem/Ward",
+      "value": "NUPO"
+     }
+    ],
+    "managingOrganization": {
+     "reference": "Organization/1730318"
+    },
+    "name": "NUPO",
+    "physicalType": {
+     "coding": [
+      {
+       "code": "wa",
+       "display": "Ward",
+       "system": "http://hl7.org/fhir/ValueSet/location-physical-type"
+      }
+     ]
+    },
+    "id": "1730333",
+    "meta": {
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Encounter/BOLGR7N554TBUNP5V3XRXSN7CSDZUMJV",
+   "resource": {
+    "resourceType": "Encounter",
+    "class": {
+     "code": "IMP",
+     "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode"
+    },
+    "identifier": [
+     {
+      "system": "https://www.ukaachen.de/fhir/NamingSystem/medico/patient-identifier",
+      "type": {
+       "text": "EncounterNumber"
+      },
+      "use": "official",
+      "value": "9876640370-5049988858-VK"
+     }
+    ],
+    "location": [
+     {
+      "location": {
+       "display": "NUPO",
+       "reference": "Location/1730333"
+      },
+      "physicalType": {
+       "coding": [
+        {
+         "display": "Ward"
+        }
+       ]
+      }
+     }
+    ],
+    "partOf": {
+     "reference": "Encounter/4BM5HERJ6DGGPEVTFW7S5VZXO6KJTMLX"
+    },
+    "period": {
+     "end": "2023-01-04T11:54:00.000+01:00",
+     "start": "2023-01-04T11:54:00.000+01:00"
+    },
+    "reasonCode": [
+     {
+      "coding": [
+       {
+        "code": "0101",
+        "display": "0101"
+       }
+      ]
+     }
+    ],
+    "status": "unknown",
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "type": [
+     {
+      "coding": [
+       {
+        "code": "versorgungsstellenkontakt",
+        "display": "Versorgungsstellenkontakt",
+        "system": "http://fhir.de/CodeSystem/kontaktart-de"
+       }
+      ]
+     }
+    ],
+    "id": "BOLGR7N554TBUNP5V3XRXSN7CSDZUMJV",
+    "meta": {
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Condition/1730336",
+   "resource": {
+    "resourceType": "Condition",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "encounter-diagnosis",
+        "display": "Encounter Diagnosis",
+        "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+       }
+      ],
+      "text": "Encounter Diagnosis"
+     },
+     {
+      "coding": [
+       {
+        "code": "ENT",
+        "display": "ENT"
+       }
+      ]
+     }
+    ],
+    "clinicalStatus": {
+     "coding": [
+      {
+       "code": "active",
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "R15",
+       "display": "Stuhlinkontinenz",
+       "system": "http://fhir.de/CodeSystem/bfarm/icd-10-gm|2022"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-diagnose/StructureDefinition/Diagnose|2.0.0-alpha3"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    },
+    "recordedDate": "2023-01-02T08:22:22+01:00",
+    "severity": {
+     "coding": [
+      {
+       "code": "0",
+       "system": "DiagnosisPriorityUKE"
+      }
+     ]
+    },
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730336"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Condition/1730337",
+   "resource": {
+    "resourceType": "Condition",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "encounter-diagnosis",
+        "display": "Encounter Diagnosis",
+        "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+       }
+      ],
+      "text": "Encounter Diagnosis"
+     },
+     {
+      "coding": [
+       {
+        "code": "ENT",
+        "display": "ENT"
+       }
+      ]
+     }
+    ],
+    "clinicalStatus": {
+     "coding": [
+      {
+       "code": "active",
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "I10.90",
+       "display": "Essentielle Hypertonie, nicht näher bezeichnet: Ohne Angabe einer hypertensiven Krise",
+       "system": "http://fhir.de/CodeSystem/bfarm/icd-10-gm|2022"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-diagnose/StructureDefinition/Diagnose|2.0.0-alpha3"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    },
+    "recordedDate": "2023-01-02T08:22:22+01:00",
+    "severity": {
+     "coding": [
+      {
+       "code": "0",
+       "system": "DiagnosisPriorityUKE"
+      }
+     ]
+    },
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730337"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Condition/1730338",
+   "resource": {
+    "resourceType": "Condition",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "encounter-diagnosis",
+        "display": "Encounter Diagnosis",
+        "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+       }
+      ],
+      "text": "Encounter Diagnosis"
+     },
+     {
+      "coding": [
+       {
+        "code": "ENT",
+        "display": "ENT"
+       }
+      ]
+     }
+    ],
+    "clinicalStatus": {
+     "coding": [
+      {
+       "code": "active",
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "N18.4",
+       "display": "Chronische Niereninsuffizienz, Stadium IV (GFR 15-29)",
+       "system": "http://fhir.de/CodeSystem/bfarm/icd-10-gm|2022"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-diagnose/StructureDefinition/Diagnose|2.0.0-alpha3"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    },
+    "recordedDate": "2023-01-02T08:22:22+01:00",
+    "severity": {
+     "coding": [
+      {
+       "code": "0",
+       "system": "DiagnosisPriorityUKE"
+      }
+     ]
+    },
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730338"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Condition/1730339",
+   "resource": {
+    "resourceType": "Condition",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "encounter-diagnosis",
+        "display": "Encounter Diagnosis",
+        "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+       }
+      ],
+      "text": "Encounter Diagnosis"
+     },
+     {
+      "coding": [
+       {
+        "code": "ENT",
+        "display": "ENT"
+       }
+      ]
+     }
+    ],
+    "clinicalStatus": {
+     "coding": [
+      {
+       "code": "active",
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "J18.9",
+       "display": "Pneumonie, nicht näher bezeichnet",
+       "system": "http://fhir.de/CodeSystem/bfarm/icd-10-gm|2022"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-diagnose/StructureDefinition/Diagnose|2.0.0-alpha3"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    },
+    "recordedDate": "2023-01-06T08:56:59+01:00",
+    "severity": {
+     "coding": [
+      {
+       "code": "0",
+       "system": "DiagnosisPriorityUKE"
+      }
+     ]
+    },
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730339"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Condition/1730340",
+   "resource": {
+    "resourceType": "Condition",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "encounter-diagnosis",
+        "display": "Encounter Diagnosis",
+        "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+       }
+      ],
+      "text": "Encounter Diagnosis"
+     },
+     {
+      "coding": [
+       {
+        "code": "ENT",
+        "display": "ENT"
+       }
+      ]
+     }
+    ],
+    "clinicalStatus": {
+     "coding": [
+      {
+       "code": "active",
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "U69.01",
+       "display": "Anderenorts klassifizierte, im Krankenhaus erworbene Pneumonie, die mehr als 48 Stunden nach Aufnahme auftritt",
+       "system": "http://fhir.de/CodeSystem/bfarm/icd-10-gm|2022"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-diagnose/StructureDefinition/Diagnose|2.0.0-alpha3"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    },
+    "recordedDate": "2023-01-06T08:56:59+01:00",
+    "severity": {
+     "coding": [
+      {
+       "code": "0",
+       "system": "DiagnosisPriorityUKE"
+      }
+     ]
+    },
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730340"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Condition/1730341",
+   "resource": {
+    "resourceType": "Condition",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "encounter-diagnosis",
+        "display": "Encounter Diagnosis",
+        "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+       }
+      ],
+      "text": "Encounter Diagnosis"
+     },
+     {
+      "coding": [
+       {
+        "code": "ENT",
+        "display": "ENT"
+       }
+      ]
+     }
+    ],
+    "clinicalStatus": {
+     "coding": [
+      {
+       "code": "active",
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "J91",
+       "display": "Pleuraerguss bei anderenorts klassifizierten Krankheiten",
+       "system": "http://fhir.de/CodeSystem/bfarm/icd-10-gm|2022"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-diagnose/StructureDefinition/Diagnose|2.0.0-alpha3"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    },
+    "recordedDate": "2023-01-06T08:56:59+01:00",
+    "severity": {
+     "coding": [
+      {
+       "code": "0",
+       "system": "DiagnosisPriorityUKE"
+      }
+     ]
+    },
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730341"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Condition/1730342",
+   "resource": {
+    "resourceType": "Condition",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "encounter-diagnosis",
+        "display": "Encounter Diagnosis",
+        "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+       }
+      ],
+      "text": "Encounter Diagnosis"
+     },
+     {
+      "coding": [
+       {
+        "code": "ENT",
+        "display": "ENT"
+       }
+      ]
+     }
+    ],
+    "clinicalStatus": {
+     "coding": [
+      {
+       "code": "active",
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "I44.0",
+       "display": "Atrioventrikulärer Block 1. Grades",
+       "system": "http://fhir.de/CodeSystem/bfarm/icd-10-gm|2022"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-diagnose/StructureDefinition/Diagnose|2.0.0-alpha3"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    },
+    "recordedDate": "2023-01-06T08:56:59+01:00",
+    "severity": {
+     "coding": [
+      {
+       "code": "0",
+       "system": "DiagnosisPriorityUKE"
+      }
+     ]
+    },
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730342"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Condition/1730343",
+   "resource": {
+    "resourceType": "Condition",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "encounter-diagnosis",
+        "display": "Encounter Diagnosis",
+        "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+       }
+      ],
+      "text": "Encounter Diagnosis"
+     },
+     {
+      "coding": [
+       {
+        "code": "ENT",
+        "display": "ENT"
+       }
+      ]
+     }
+    ],
+    "clinicalStatus": {
+     "coding": [
+      {
+       "code": "active",
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "F05.8",
+       "display": "Sonstige Formen des Delirs",
+       "system": "http://fhir.de/CodeSystem/bfarm/icd-10-gm|2022"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-diagnose/StructureDefinition/Diagnose|2.0.0-alpha3"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    },
+    "recordedDate": "2023-01-06T08:56:59+01:00",
+    "severity": {
+     "coding": [
+      {
+       "code": "0",
+       "system": "DiagnosisPriorityUKE"
+      }
+     ]
+    },
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730343"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Condition/1730344",
+   "resource": {
+    "resourceType": "Condition",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "encounter-diagnosis",
+        "display": "Encounter Diagnosis",
+        "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+       }
+      ],
+      "text": "Encounter Diagnosis"
+     },
+     {
+      "coding": [
+       {
+        "code": "ENT",
+        "display": "ENT"
+       }
+      ]
+     }
+    ],
+    "clinicalStatus": {
+     "coding": [
+      {
+       "code": "active",
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "S72.01",
+       "display": "Schenkelhalsfraktur: Intrakapsulär",
+       "system": "http://fhir.de/CodeSystem/bfarm/icd-10-gm|2022"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-diagnose/StructureDefinition/Diagnose|2.0.0-alpha3"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    },
+    "recordedDate": "2023-01-02T08:22:21+01:00",
+    "severity": {
+     "coding": [
+      {
+       "code": "1",
+       "system": "DiagnosisPriorityUKE"
+      }
+     ]
+    },
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730344"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Condition/1730345",
+   "resource": {
+    "resourceType": "Condition",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "encounter-diagnosis",
+        "display": "Encounter Diagnosis",
+        "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+       }
+      ],
+      "text": "Encounter Diagnosis"
+     },
+     {
+      "coding": [
+       {
+        "code": "ENT",
+        "display": "ENT"
+       }
+      ]
+     }
+    ],
+    "clinicalStatus": {
+     "coding": [
+      {
+       "code": "active",
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "Z85.3",
+       "display": "Bösartige Neubildung der Brustdrüse [Mamma] in der Eigenanamnese",
+       "system": "http://fhir.de/CodeSystem/bfarm/icd-10-gm|2022"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-diagnose/StructureDefinition/Diagnose|2.0.0-alpha3"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    },
+    "recordedDate": "2023-01-06T08:56:59+01:00",
+    "severity": {
+     "coding": [
+      {
+       "code": "0",
+       "system": "DiagnosisPriorityUKE"
+      }
+     ]
+    },
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730345"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Condition/1730346",
+   "resource": {
+    "resourceType": "Condition",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "encounter-diagnosis",
+        "display": "Encounter Diagnosis",
+        "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+       }
+      ],
+      "text": "Encounter Diagnosis"
+     },
+     {
+      "coding": [
+       {
+        "code": "ENT",
+        "display": "ENT"
+       }
+      ]
+     }
+    ],
+    "clinicalStatus": {
+     "coding": [
+      {
+       "code": "active",
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "J98.10",
+       "display": "Dystelektase",
+       "system": "http://fhir.de/CodeSystem/bfarm/icd-10-gm|2022"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-diagnose/StructureDefinition/Diagnose|2.0.0-alpha3"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    },
+    "recordedDate": "2023-01-09T08:42:58+01:00",
+    "severity": {
+     "coding": [
+      {
+       "code": "0",
+       "system": "DiagnosisPriorityUKE"
+      }
+     ]
+    },
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730346"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Condition/1730347",
+   "resource": {
+    "resourceType": "Condition",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "encounter-diagnosis",
+        "display": "Encounter Diagnosis",
+        "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+       }
+      ],
+      "text": "Encounter Diagnosis"
+     },
+     {
+      "coding": [
+       {
+        "code": "ENT",
+        "display": "ENT"
+       }
+      ]
+     }
+    ],
+    "clinicalStatus": {
+     "coding": [
+      {
+       "code": "active",
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "E87.1",
+       "display": "Hypoosmolalität und Hyponatriämie",
+       "system": "http://fhir.de/CodeSystem/bfarm/icd-10-gm|2022"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-diagnose/StructureDefinition/Diagnose|2.0.0-alpha3"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    },
+    "recordedDate": "2023-01-27T11:19:37+01:00",
+    "severity": {
+     "coding": [
+      {
+       "code": "0",
+       "system": "DiagnosisPriorityUKE"
+      }
+     ]
+    },
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730347"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Condition/1730348",
+   "resource": {
+    "resourceType": "Condition",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "encounter-diagnosis",
+        "display": "Encounter Diagnosis",
+        "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+       }
+      ],
+      "text": "Encounter Diagnosis"
+     },
+     {
+      "coding": [
+       {
+        "code": "ENT",
+        "display": "ENT"
+       }
+      ]
+     }
+    ],
+    "clinicalStatus": {
+     "coding": [
+      {
+       "code": "active",
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "E87.5",
+       "display": "Hyperkaliämie",
+       "system": "http://fhir.de/CodeSystem/bfarm/icd-10-gm|2022"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-diagnose/StructureDefinition/Diagnose|2.0.0-alpha3"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    },
+    "recordedDate": "2023-01-27T11:19:37+01:00",
+    "severity": {
+     "coding": [
+      {
+       "code": "0",
+       "system": "DiagnosisPriorityUKE"
+      }
+     ]
+    },
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730348"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Condition/1730349",
+   "resource": {
+    "resourceType": "Condition",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "encounter-diagnosis",
+        "display": "Encounter Diagnosis",
+        "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+       }
+      ],
+      "text": "Encounter Diagnosis"
+     },
+     {
+      "coding": [
+       {
+        "code": "ENT",
+        "display": "ENT"
+       }
+      ]
+     }
+    ],
+    "clinicalStatus": {
+     "coding": [
+      {
+       "code": "active",
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "I26.9",
+       "display": "Lungenembolie ohne Angabe eines akuten Cor pulmonale",
+       "system": "http://fhir.de/CodeSystem/bfarm/icd-10-gm|2022"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-diagnose/StructureDefinition/Diagnose|2.0.0-alpha3"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    },
+    "recordedDate": "2023-01-27T11:19:37+01:00",
+    "severity": {
+     "coding": [
+      {
+       "code": "0",
+       "system": "DiagnosisPriorityUKE"
+      }
+     ]
+    },
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730349"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Condition/1730350",
+   "resource": {
+    "resourceType": "Condition",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "encounter-diagnosis",
+        "display": "Encounter Diagnosis",
+        "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+       }
+      ],
+      "text": "Encounter Diagnosis"
+     },
+     {
+      "coding": [
+       {
+        "code": "ENT",
+        "display": "ENT"
+       }
+      ]
+     }
+    ],
+    "clinicalStatus": {
+     "coding": [
+      {
+       "code": "active",
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "N39.0",
+       "display": "Harnwegsinfektion, Lokalisation nicht näher bezeichnet",
+       "system": "http://fhir.de/CodeSystem/bfarm/icd-10-gm|2022"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-diagnose/StructureDefinition/Diagnose|2.0.0-alpha3"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    },
+    "recordedDate": "2023-01-27T11:19:37+01:00",
+    "severity": {
+     "coding": [
+      {
+       "code": "0",
+       "system": "DiagnosisPriorityUKE"
+      }
+     ]
+    },
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730350"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Condition/1730351",
+   "resource": {
+    "resourceType": "Condition",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "encounter-diagnosis",
+        "display": "Encounter Diagnosis",
+        "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+       }
+      ],
+      "text": "Encounter Diagnosis"
+     },
+     {
+      "coding": [
+       {
+        "code": "ENT",
+        "display": "ENT"
+       }
+      ]
+     }
+    ],
+    "clinicalStatus": {
+     "coding": [
+      {
+       "code": "active",
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "B96.2",
+       "display": "Escherichia coli [E. coli] und andere Enterobacterales als Ursache von Krankheiten, die in anderen Kapiteln klassifiziert sind",
+       "system": "http://fhir.de/CodeSystem/bfarm/icd-10-gm|2022"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-diagnose/StructureDefinition/Diagnose|2.0.0-alpha3"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    },
+    "recordedDate": "2023-01-27T11:19:37+01:00",
+    "severity": {
+     "coding": [
+      {
+       "code": "0",
+       "system": "DiagnosisPriorityUKE"
+      }
+     ]
+    },
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730351"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Condition/1730352",
+   "resource": {
+    "resourceType": "Condition",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "encounter-diagnosis",
+        "display": "Encounter Diagnosis",
+        "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+       }
+      ],
+      "text": "Encounter Diagnosis"
+     },
+     {
+      "coding": [
+       {
+        "code": "ENT",
+        "display": "ENT"
+       }
+      ]
+     }
+    ],
+    "clinicalStatus": {
+     "coding": [
+      {
+       "code": "active",
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "S71.84",
+       "display": "Weichteilschaden I. Grades bei geschlossener Fraktur oder Luxation der Hüfte und des Oberschenkels",
+       "system": "http://fhir.de/CodeSystem/bfarm/icd-10-gm|2022"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-diagnose/StructureDefinition/Diagnose|2.0.0-alpha3"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    },
+    "recordedDate": "2023-01-02T08:22:22+01:00",
+    "severity": {
+     "coding": [
+      {
+       "code": "0",
+       "system": "DiagnosisPriorityUKE"
+      }
+     ]
+    },
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730352"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Condition/1730353",
+   "resource": {
+    "resourceType": "Condition",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "encounter-diagnosis",
+        "display": "Encounter Diagnosis",
+        "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+       }
+      ],
+      "text": "Encounter Diagnosis"
+     },
+     {
+      "coding": [
+       {
+        "code": "ENT",
+        "display": "ENT"
+       }
+      ]
+     }
+    ],
+    "clinicalStatus": {
+     "coding": [
+      {
+       "code": "active",
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "A04.70",
+       "display": "Enterokolitis durch Clostridium difficile ohne Megakolon, ohne sonstige Organkomplikationen",
+       "system": "http://fhir.de/CodeSystem/bfarm/icd-10-gm|2022"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-diagnose/StructureDefinition/Diagnose|2.0.0-alpha3"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    },
+    "recordedDate": "2023-01-27T11:19:37+01:00",
+    "severity": {
+     "coding": [
+      {
+       "code": "0",
+       "system": "DiagnosisPriorityUKE"
+      }
+     ]
+    },
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730353"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Condition/1730354",
+   "resource": {
+    "resourceType": "Condition",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "encounter-diagnosis",
+        "display": "Encounter Diagnosis",
+        "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+       }
+      ],
+      "text": "Encounter Diagnosis"
+     },
+     {
+      "coding": [
+       {
+        "code": "ENT",
+        "display": "ENT"
+       }
+      ]
+     }
+    ],
+    "clinicalStatus": {
+     "coding": [
+      {
+       "code": "active",
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "D62",
+       "display": "Akute Blutungsanämie",
+       "system": "http://fhir.de/CodeSystem/bfarm/icd-10-gm|2022"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-diagnose/StructureDefinition/Diagnose|2.0.0-alpha3"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    },
+    "recordedDate": "2023-01-27T11:24:44+01:00",
+    "severity": {
+     "coding": [
+      {
+       "code": "0",
+       "system": "DiagnosisPriorityUKE"
+      }
+     ]
+    },
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730354"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Condition/1730355",
+   "resource": {
+    "resourceType": "Condition",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "encounter-diagnosis",
+        "display": "Encounter Diagnosis",
+        "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+       }
+      ],
+      "text": "Encounter Diagnosis"
+     },
+     {
+      "coding": [
+       {
+        "code": "ENT",
+        "display": "ENT"
+       }
+      ]
+     }
+    ],
+    "clinicalStatus": {
+     "coding": [
+      {
+       "code": "active",
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "N17.91",
+       "display": "Akutes Nierenversagen, nicht näher bezeichnet: Stadium 1",
+       "system": "http://fhir.de/CodeSystem/bfarm/icd-10-gm|2022"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-diagnose/StructureDefinition/Diagnose|2.0.0-alpha3"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:35Z",
+     "versionId": "1"
+    },
+    "recordedDate": "2023-01-27T11:26:22+01:00",
+    "severity": {
+     "coding": [
+      {
+       "code": "0",
+       "system": "DiagnosisPriorityUKE"
+      }
+     ]
+    },
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730355"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Condition/1730356",
+   "resource": {
+    "resourceType": "Condition",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "encounter-diagnosis",
+        "display": "Encounter Diagnosis",
+        "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+       }
+      ],
+      "text": "Encounter Diagnosis"
+     },
+     {
+      "coding": [
+       {
+        "code": "ENT",
+        "display": "ENT"
+       }
+      ]
+     }
+    ],
+    "clinicalStatus": {
+     "coding": [
+      {
+       "code": "active",
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "Z11",
+       "display": "Spezielle Verfahren zur Untersuchung auf infektiöse und parasitäre Krankheiten",
+       "system": "http://fhir.de/CodeSystem/bfarm/icd-10-gm|2022"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-diagnose/StructureDefinition/Diagnose|2.0.0-alpha3"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:36Z",
+     "versionId": "1"
+    },
+    "recordedDate": "2023-01-27T11:26:22+01:00",
+    "severity": {
+     "coding": [
+      {
+       "code": "0",
+       "system": "DiagnosisPriorityUKE"
+      }
+     ]
+    },
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730356"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Condition/1730357",
+   "resource": {
+    "resourceType": "Condition",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "encounter-diagnosis",
+        "display": "Encounter Diagnosis",
+        "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+       }
+      ],
+      "text": "Encounter Diagnosis"
+     },
+     {
+      "coding": [
+       {
+        "code": "ENT",
+        "display": "ENT"
+       }
+      ]
+     }
+    ],
+    "clinicalStatus": {
+     "coding": [
+      {
+       "code": "active",
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "U99.0",
+       "display": "Spezielle Verfahren zur Untersuchung auf SARS-CoV-2",
+       "system": "http://fhir.de/CodeSystem/bfarm/icd-10-gm|2022"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-diagnose/StructureDefinition/Diagnose|2.0.0-alpha3"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:36Z",
+     "versionId": "1"
+    },
+    "recordedDate": "2023-01-27T11:26:22+01:00",
+    "severity": {
+     "coding": [
+      {
+       "code": "0",
+       "system": "DiagnosisPriorityUKE"
+      }
+     ]
+    },
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730357"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Condition/1730358",
+   "resource": {
+    "resourceType": "Condition",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "encounter-diagnosis",
+        "display": "Encounter Diagnosis",
+        "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+       }
+      ],
+      "text": "Encounter Diagnosis"
+     },
+     {
+      "coding": [
+       {
+        "code": "ENT",
+        "display": "ENT"
+       }
+      ]
+     }
+    ],
+    "clinicalStatus": {
+     "coding": [
+      {
+       "code": "active",
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "I48.1",
+       "display": "Vorhofflimmern, persistierend",
+       "system": "http://fhir.de/CodeSystem/bfarm/icd-10-gm|2022"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-diagnose/StructureDefinition/Diagnose|2.0.0-alpha3"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:36Z",
+     "versionId": "1"
+    },
+    "recordedDate": "2023-01-02T08:22:22+01:00",
+    "severity": {
+     "coding": [
+      {
+       "code": "0",
+       "system": "DiagnosisPriorityUKE"
+      }
+     ]
+    },
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730358"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Condition/1730359",
+   "resource": {
+    "resourceType": "Condition",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "encounter-diagnosis",
+        "display": "Encounter Diagnosis",
+        "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+       }
+      ],
+      "text": "Encounter Diagnosis"
+     },
+     {
+      "coding": [
+       {
+        "code": "ENT",
+        "display": "ENT"
+       }
+      ]
+     }
+    ],
+    "clinicalStatus": {
+     "coding": [
+      {
+       "code": "active",
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "Z92.1",
+       "display": "Dauertherapie (gegenwärtig) mit Antikoagulanzien in der Eigenanamnese",
+       "system": "http://fhir.de/CodeSystem/bfarm/icd-10-gm|2022"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-diagnose/StructureDefinition/Diagnose|2.0.0-alpha3"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:36Z",
+     "versionId": "1"
+    },
+    "recordedDate": "2023-01-02T08:22:22+01:00",
+    "severity": {
+     "coding": [
+      {
+       "code": "0",
+       "system": "DiagnosisPriorityUKE"
+      }
+     ]
+    },
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730359"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Condition/1730360",
+   "resource": {
+    "resourceType": "Condition",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "encounter-diagnosis",
+        "display": "Encounter Diagnosis",
+        "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+       }
+      ],
+      "text": "Encounter Diagnosis"
+     },
+     {
+      "coding": [
+       {
+        "code": "ENT",
+        "display": "ENT"
+       }
+      ]
+     }
+    ],
+    "clinicalStatus": {
+     "coding": [
+      {
+       "code": "active",
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "E87.6",
+       "display": "Hypokaliämie",
+       "system": "http://fhir.de/CodeSystem/bfarm/icd-10-gm|2022"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-diagnose/StructureDefinition/Diagnose|2.0.0-alpha3"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:36Z",
+     "versionId": "1"
+    },
+    "recordedDate": "2023-01-02T08:22:22+01:00",
+    "severity": {
+     "coding": [
+      {
+       "code": "0",
+       "system": "DiagnosisPriorityUKE"
+      }
+     ]
+    },
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730360"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Procedure/1730361",
+   "resource": {
+    "resourceType": "Procedure",
+    "category": {
+     "coding": [
+      {
+       "system": "http://snomed.info/sct"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "9-984.7",
+       "display": "Pflegebedürftigkeit: Pflegebedürftig nach Pflegegrad 2"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-prozedur/StructureDefinition/Procedure|2.0.0-alpha2"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:36Z",
+     "versionId": "1"
+    },
+    "performedDateTime": "2022-12-30T12:03:00+01:00",
+    "status": "unknown",
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730361"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Procedure/1730362",
+   "resource": {
+    "resourceType": "Procedure",
+    "category": {
+     "coding": [
+      {
+       "system": "http://snomed.info/sct"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "3-732.0",
+       "display": "Single-Photon-Emissionscomputertomographie mit Computertomographie [SPECT/CT] der Lunge: Mit Niedrigdosis-Computertomographie zur Schwächungskorrektur"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-prozedur/StructureDefinition/Procedure|2.0.0-alpha2"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:36Z",
+     "versionId": "1"
+    },
+    "performedDateTime": "2023-01-04T13:30:00+01:00",
+    "status": "unknown",
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730362"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Procedure/1730363",
+   "resource": {
+    "resourceType": "Procedure",
+    "category": {
+     "coding": [
+      {
+       "system": "http://snomed.info/sct"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "3-703.0",
+       "display": "Szintigraphie der Lunge: Perfusionsszintigraphie"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-prozedur/StructureDefinition/Procedure|2.0.0-alpha2"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:36Z",
+     "versionId": "1"
+    },
+    "performedDateTime": "2023-01-04T13:30:00+01:00",
+    "status": "unknown",
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730363"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Procedure/1730364",
+   "resource": {
+    "resourceType": "Procedure",
+    "category": {
+     "coding": [
+      {
+       "system": "http://snomed.info/sct"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "3-732.0",
+       "display": "Single-Photon-Emissionscomputertomographie mit Computertomographie [SPECT/CT] der Lunge: Mit Niedrigdosis-Computertomographie zur Schwächungskorrektur"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-prozedur/StructureDefinition/Procedure|2.0.0-alpha2"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:36Z",
+     "versionId": "1"
+    },
+    "performedDateTime": "2023-01-04T13:00:00+01:00",
+    "status": "unknown",
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730364"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Procedure/1730365",
+   "resource": {
+    "resourceType": "Procedure",
+    "category": {
+     "coding": [
+      {
+       "system": "http://snomed.info/sct"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "3-722.1",
+       "display": "Single-Photon-Emissionscomputertomographie der Lunge: Ventilations-Single-Photon-Emissionscomputertomographie"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-prozedur/StructureDefinition/Procedure|2.0.0-alpha2"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:36Z",
+     "versionId": "1"
+    },
+    "performedDateTime": "2023-01-04T13:00:00+01:00",
+    "status": "unknown",
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730365"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Procedure/1730366",
+   "resource": {
+    "resourceType": "Procedure",
+    "category": {
+     "coding": [
+      {
+       "system": "http://snomed.info/sct"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "3-703.1",
+       "display": "Szintigraphie der Lunge: Ventilationsszintigraphie"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-prozedur/StructureDefinition/Procedure|2.0.0-alpha2"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:36Z",
+     "versionId": "1"
+    },
+    "performedDateTime": "2023-01-04T13:00:00+01:00",
+    "status": "unknown",
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730366"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Procedure/1730367",
+   "resource": {
+    "resourceType": "Procedure",
+    "category": {
+     "coding": [
+      {
+       "system": "http://snomed.info/sct"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "3-202",
+       "display": "Native Computertomographie des Thorax"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-prozedur/StructureDefinition/Procedure|2.0.0-alpha2"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:36Z",
+     "versionId": "1"
+    },
+    "performedDateTime": "2023-01-04T11:30:00+01:00",
+    "status": "unknown",
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730367"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Procedure/1730368",
+   "resource": {
+    "resourceType": "Procedure",
+    "category": {
+     "coding": [
+      {
+       "system": "http://snomed.info/sct"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "3-222",
+       "display": "Computertomographie des Thorax mit Kontrastmittel"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-prozedur/StructureDefinition/Procedure|2.0.0-alpha2"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:36Z",
+     "versionId": "1"
+    },
+    "performedDateTime": "2023-01-04T16:33:00+01:00",
+    "status": "unknown",
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730368"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Procedure/1730369",
+   "resource": {
+    "resourceType": "Procedure",
+    "category": {
+     "coding": [
+      {
+       "system": "http://snomed.info/sct"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "3-990",
+       "display": "Computergestützte Bilddatenanalyse mit 3D-Auswertung"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-prozedur/StructureDefinition/Procedure|2.0.0-alpha2"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:36Z",
+     "versionId": "1"
+    },
+    "performedDateTime": "2023-01-04T16:33:00+01:00",
+    "status": "unknown",
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730369"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Procedure/1730370",
+   "resource": {
+    "resourceType": "Procedure",
+    "category": {
+     "coding": [
+      {
+       "system": "http://snomed.info/sct"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "8-706",
+       "display": "Anlegen einer Maske zur maschinellen Beatmung"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-prozedur/StructureDefinition/Procedure|2.0.0-alpha2"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:36Z",
+     "versionId": "1"
+    },
+    "performedDateTime": "2023-01-04T20:55:00+01:00",
+    "status": "unknown",
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730370"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Procedure/1730371",
+   "resource": {
+    "resourceType": "Procedure",
+    "category": {
+     "coding": [
+      {
+       "system": "http://snomed.info/sct"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "8-931.0",
+       "display": "Monitoring von Atmung, Herz und Kreislauf"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-prozedur/StructureDefinition/Procedure|2.0.0-alpha2"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:36Z",
+     "versionId": "1"
+    },
+    "performedDateTime": "2023-01-04T22:00:00+01:00",
+    "status": "unknown",
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730371"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Procedure/1730372",
+   "resource": {
+    "resourceType": "Procedure",
+    "category": {
+     "coding": [
+      {
+       "system": "http://snomed.info/sct"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "8-98f.0",
+       "display": "Aufwendige intensivmedizinische Komplexbehandlung (Basisprozedur): 1 bis 184 Aufwandspunkte"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-prozedur/StructureDefinition/Procedure|2.0.0-alpha2"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:36Z",
+     "versionId": "1"
+    },
+    "performedDateTime": "2023-01-04T17:57:00+01:00",
+    "status": "unknown",
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730372"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Procedure/1730373",
+   "resource": {
+    "resourceType": "Procedure",
+    "category": {
+     "coding": [
+      {
+       "system": "http://snomed.info/sct"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "8-800.c0",
+       "display": "1 Erythrozytenkonzentrat 1 TE bis unter 6 TE"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-prozedur/StructureDefinition/Procedure|2.0.0-alpha2"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:36Z",
+     "versionId": "1"
+    },
+    "performedDateTime": "2023-01-05T22:40:00+01:00",
+    "status": "unknown",
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730373"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Procedure/1730374",
+   "resource": {
+    "resourceType": "Procedure",
+    "category": {
+     "coding": [
+      {
+       "system": "http://snomed.info/sct"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "9-999.xxx",
+       "display": "Covid Testung des Coronavirus SARS-CoV-2 (§26 KHG) - als PCR-Test"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-prozedur/StructureDefinition/Procedure|2.0.0-alpha2"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:36Z",
+     "versionId": "1"
+    },
+    "performedDateTime": "2023-01-04T00:04:00+01:00",
+    "status": "unknown",
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730374"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Procedure/1730375",
+   "resource": {
+    "resourceType": "Procedure",
+    "category": {
+     "coding": [
+      {
+       "system": "http://snomed.info/sct"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "9-999.xxx",
+       "display": "Covid Testung des Coronavirus SARS-CoV-2 (§26 KHG) - als PCR-Test"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-prozedur/StructureDefinition/Procedure|2.0.0-alpha2"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:36Z",
+     "versionId": "1"
+    },
+    "performedDateTime": "2023-01-10T00:04:00+01:00",
+    "status": "unknown",
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730375"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Procedure/1730376",
+   "resource": {
+    "resourceType": "Procedure",
+    "category": {
+     "coding": [
+      {
+       "system": "http://snomed.info/sct"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "8-980.0",
+       "display": "Intensivmedizinische Komplexbehandlung (Basisprozedur): 1 bis 184 Aufwandspunkte"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-prozedur/StructureDefinition/Procedure|2.0.0-alpha2"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:36Z",
+     "versionId": "1"
+    },
+    "performedDateTime": "2023-01-04T17:57:00+01:00",
+    "status": "unknown",
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730376"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Procedure/1730377",
+   "resource": {
+    "resourceType": "Procedure",
+    "category": {
+     "coding": [
+      {
+       "system": "http://snomed.info/sct"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "5-820.41",
+       "display": "Implantation einer zementierten Duokopfprothese am Hüftgelenk"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-prozedur/StructureDefinition/Procedure|2.0.0-alpha2"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:36Z",
+     "versionId": "1"
+    },
+    "performedDateTime": "2022-12-31T11:06:00+01:00",
+    "status": "unknown",
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730377"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "http://localhost:52773/csp/healthshare/odsprod/fhir/r4/Procedure/1730378",
+   "resource": {
+    "resourceType": "Procedure",
+    "category": {
+     "coding": [
+      {
+       "system": "http://snomed.info/sct"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "8-930",
+       "display": "Monitoring von Atmung, Herz und Kreislauf"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "Encounter/PCY4U6MC3Z2NFJ7KL6737AQ2RKSW226X"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-prozedur/StructureDefinition/Procedure|2.0.0-alpha2"
+     ],
+     "source": "https://www.ukaachen.de/fhir/system/medico",
+     "lastUpdated": "2023-10-13T08:49:36Z",
+     "versionId": "1"
+    },
+    "performedDateTime": "2022-12-31T12:40:00+01:00",
+    "status": "unknown",
+    "subject": {
+     "reference": "Patient/100211849"
+    },
+    "id": "1730378"
+   },
+   "search": {
+    "mode": "include"
+   }
+  }
+ ]
+}

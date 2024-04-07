@@ -8,7 +8,12 @@ zn "HSCUSTOM"
 zpm "install vscode-per-namespace-settings"
 zpm "install webterminal"
 
-do $system.OBJ.ImportDir("/home/irisowner/dev/zimpl/","*","ck",,1)
+// get Installer first to create namespace
+do $system.OBJ.ImportDir("/home/irisowner/dev/zimpl","Installer*","ck")
 do ##class(HS.Local.zimpl.fhirpro.API.Installer).Install()
+
+zn "ZIMPLFHIRPRO"
+do $system.OBJ.ImportDir("/home/irisowner/dev/zimpl","*","ck",,1)
+
   
 halt

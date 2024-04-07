@@ -136,6 +136,9 @@ or using **WebTerminal**
 
 To access IRIS System Management Portal    
 <http://localhost:42773/csp/sys/UtilHome.csp>    
-Access Production   
-<http://localhost:42773/csp/hscustom/EnsPortal.ProductionConfig.zen?PRODUCTION=HS.Local.zimpl.fhirpro.Production>   
+Access Production    
+<http://localhost:42773/csp/healthshare/zimplfhirpro/EnsPortal.ProductionConfig.zen?PRODUCTION=HS.Local.zimpl.fhirpro.Production>    
+Test file DEMO.Json is avaialble here:
+```
+/home/irisowner/dev/DEMO.json
 ```
