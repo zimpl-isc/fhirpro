@@ -1,0 +1,19 @@
+zn "%SYS"
+// Unexpire passwords and set up passwordless mode to simplify dev use.
+do ##class(Security.Users).UnExpireUserPasswords("*")
+zpm "install passwordless"
+
+zn "HSCUSTOM"
+// Create /_vscode web app to support intersystems-community.testingmanager VS Code extension
+zpm "install vscode-per-namespace-settings"
+zpm "install webterminal"
+
+// get Installer first to create namespace
+do $system.OBJ.ImportDir("/home/irisowner/dev/zimpl","Installer*","ck")
+do ##class(HS.Local.zimpl.fhirpro.API.Installer).Install()
+
+zn "ZIMPLFHIRPRO"
+do $system.OBJ.ImportDir("/home/irisowner/dev/zimpl","*","ck",,1)
+
+  
+halt

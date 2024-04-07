@@ -8,11 +8,11 @@ XData ProductionDefinition
   <ActorPoolSize>1</ActorPoolSize>
   <Item Name="HS.Util.Trace.Operations" Category="" ClassName="HS.Util.Trace.Operations" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
   </Item>
-  <Item Name="GATEWAY" Category="" ClassName="HS.Gateway.Access.RemoteOperations" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
+  <!-- Item Name="GATEWAY" Category="" ClassName="HS.Gateway.Access.RemoteOperations" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
     <Setting Target="Host" Name="ServiceName">dembp18bthomas.local:HSACCESS</Setting>
     <Setting Target="Host" Name="ReplyCodeActions">E=C</Setting>
     <Setting Target="Host" Name="TraceOperations">*FULL*</Setting>
-  </Item>
+  </Item -->
   <Item Name="HS.Local.zimpl.fhirpro.API.TestService" Category="" ClassName="HS.Local.zimpl.fhirpro.API.TestService" PoolSize="0" Enabled="true" Foreground="false" Comment="" LogTraceEvents="true" Schedule="">
     <Setting Target="Host" Name="FHIRRESTOperations">HS.FHIRServer.Interop.HTTPOperation</Setting>
   </Item>
