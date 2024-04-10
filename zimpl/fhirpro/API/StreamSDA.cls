@@ -53,7 +53,7 @@ ClassMethod GetSDAStreamOID(pMPIID = "", pMRN = "", pAA = "") As %String
 	set tRequest.MPIID = pMPIID
 	set tRequest.MRN = pMRN
 	set tRequest.AssigningAuthority = pAA
-	
+
 	set tSc=##class(Ens.Director).CreateBusinessService(..#BusinessService,.tService)
 	set tSc = tService.OnProcessInput(tRequest, .tResponse)
 	
@@ -81,10 +81,12 @@ ClassMethod GetSDAStreamOIDEnc(pMPIID = "", pMRN = "", pAA = "") As %String
 	set tRequest.MRN = pMRN
 	set tRequest.AssigningAuthority = pAA
 	
+	/* // Set a Filter the types of requested data
 	set tFilter = ##class(HS.Types.Filters).%New()
 	do tFilter.InfoTypes.Insert("ENC")
 	set tRequest.Filters = tFilter
-	
+	*/
+
 	set tSc=##class(Ens.Director).CreateBusinessService(..#BusinessService,.tService)
 	set tSc = tService.OnProcessInput(tRequest, .tResponse)
 	
