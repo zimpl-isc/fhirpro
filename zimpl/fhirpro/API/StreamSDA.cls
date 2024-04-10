@@ -19,16 +19,13 @@ Parameter BusinessService = "HS.Local.zimpl.fhirpro.API.TestService";
 /// in the <method>OnPage()</method>.
 ClassMethod OnPreHTTP() As %Boolean
 {
-	set tMPIID = $get(%request.Data("MPIID",1))
-	set tMRN = $get(%request.Data("MRN",1))
-	set tAA = $get(%request.Data("AA",1))
-	
-	if $get(%request.Data("Filter",1))'="" {
-		set %request.Data("STREAMOID",1) = ..GetSDAStreamOID(tMPIID, tMRN, tAA)
-	}
+	set tMPIID	= $get(%request.Data("MPIID",1))
+	set tMRN	= $get(%request.Data("MRN",1))
+	set tAA		= $get(%request.Data("AA",1))
+	set tFilters= $get(%request.Data("Filter",1))
 	
 	if (tMPIID'="")||((tMRN'="") && (tAA'="")) {
-		set %request.Data("STREAMOID",1) = ..GetSDAStreamOIDEnc(tMPIID, tMRN, tAA)
+		set %request.Data("STREAMOID",1) = ..GetSDAStreamOID(tMPIID, tMRN, tAA, tFilters)
 	}
 	
 	return ##super()
@@ -45,7 +42,7 @@ ClassMethod OnPostHTTP() [ ServerOnly = 1 ]
 	return $$$OK
 }
 
-ClassMethod GetSDAStreamOID(pMPIID = "", pMRN = "", pAA = "") As %String
+ClassMethod GetSDAStreamOID(pMPIID = "", pMRN = "", pAA = "", pFilters = "") As %String
 {
 	#dim tRequest as HS.Message.SearchAndFetchRequest = ##class(HS.Message.SearchAndFetchRequest).%New()
 	#dim tStreamHandle = ""
@@ -54,38 +51,15 @@ ClassMethod GetSDAStreamOID(pMPIID = "", pMRN = "", pAA = "") As %String
 	set tRequest.MRN = pMRN
 	set tRequest.AssigningAuthority = pAA
 
-	set tSc=##class(Ens.Director).CreateBusinessService(..#BusinessService,.tService)
-	set tSc = tService.OnProcessInput(tRequest, .tResponse)
-	
-	if $IsObject(tResponse) {
-		set tCSPStream = ##class(%CSP.BinaryStream).%New()
-		do tCSPStream.CopyFrom(tResponse.XMLData)
-		do tCSPStream.SetAttribute("ContentType","text/xml")
-		do tCSPStream.SetAttribute("Content-Disposition","inline; filename="_pMPIID_".xml")
-		do tCSPStream.SetAttribute("CharSet","UTF-8")
-		
-		do tCSPStream.%Save()
-		
-		set tStreamHandle = ##class(%CSP.StreamServer).Encrypt(tCSPStream.%Oid())
+	// Filters can be passed in to retrieve only specific datatypes, 
+	// 	for example: "ENC,OBS" for encounters and Observations
+	if (pFilters '= "") {
+		set tFilter = ##class(HS.Types.Filters).%New()
+		for tIter = 1:1:$length(pFilters, ",") {
+			do tFilter.InfoTypes.Insert($piece(pFilters, ",", tIter))
+		}
+		set tRequest.Filters = tFilter
 	}
-	
-	return tStreamHandle
-}
-
-ClassMethod GetSDAStreamOIDEnc(pMPIID = "", pMRN = "", pAA = "") As %String
-{
-	#dim tRequest as HS.Message.SearchAndFetchRequest = ##class(HS.Message.SearchAndFetchRequest).%New()
-	#dim tStreamHandle = ""
-	
-	set tRequest.MPIID = pMPIID
-	set tRequest.MRN = pMRN
-	set tRequest.AssigningAuthority = pAA
-	
-	/* // Set a Filter the types of requested data
-	set tFilter = ##class(HS.Types.Filters).%New()
-	do tFilter.InfoTypes.Insert("ENC")
-	set tRequest.Filters = tFilter
-	*/
 
 	set tSc=##class(Ens.Director).CreateBusinessService(..#BusinessService,.tService)
 	set tSc = tService.OnProcessInput(tRequest, .tResponse)
