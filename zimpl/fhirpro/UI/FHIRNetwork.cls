@@ -81,7 +81,10 @@ ClassMethod OnPage() As %Status
 			display = rsc.code.coding[0].code + ' ' + rsc.code.coding[0].display.substr(0,50)+'...';
 			title = rsc.code.coding[0].display;
 
-		} else if(resourceType === 'Patient') {
+		} else if(resourceType === 'Encounter') {
+			display = rsc.identifier[0].value;
+
+		} else if((resourceType === 'Patient') ||(resourceType === 'Practitioner')) {
 			display = rsc.name;
 			
 			if(typeof display==='object') {
@@ -92,7 +95,7 @@ ClassMethod OnPage() As %Status
 			}
 
 		} else if(resourceType === 'Organization') {
-			display = rsc.name;
+			display = rsc.name || rsc.identifier[0].value;
 
 		} else if(resourceType === 'Location') {
 			display = rsc.physicalType.coding[0].display + ' ' + rsc.identifier[0].value;
@@ -102,7 +105,7 @@ ClassMethod OnPage() As %Status
 			if((typeof rsc.type==='object') && (typeof rsc.type.coding!=='undefined')) {
 				display = rsc.type.coding[0].display || rsc.type.coding[0].code;
 				
-			} else if(Array.isArray(rsc.type)){
+			} else if(Array.isArray(rsc.type)) {
 				display = rsc.type[0].coding[0].display || rsc.type[0].coding[0].code;
 				console.log('typeof rsc.type for '+label+'= Array');
 			}
