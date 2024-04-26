@@ -60,6 +60,13 @@ ClassMethod OnPage() As %Status
 		//console.log(entry.resource.resourceType);
 		const rsc = entry.resource;
 		const resourceType = rsc.resourceType;
+
+		if (rsc.id===undefined) {
+			rsc.id = entry.fullUrl.split('/')[1] || entry.fullUrl //  is a urn //.split(':')[2];
+			entry.resource.id = rsc.id;
+			fhirResourceUrnUuids[rsc.id] = resourceType;
+			console.log('generating missing resource.id for ',entry);
+		}
 		const resourceId = resourceType+'/'+rsc.id;
 		
 		let title = resourceType;
@@ -67,11 +74,11 @@ ClassMethod OnPage() As %Status
 		let label = '<b>'+resourceType+'</b>';
 
 		if(resourceType === 'Condition') {
-			display = rsc.code.coding[0].code + ' ' + rsc.code.coding[0].display.substr(0,50)+'...'
+			display = rsc.code.coding[0].code + ' ' + rsc.code.coding[0].display.substr(0,50)+'...';
 			title = rsc.code.coding[0].display;
 
 		} else if(resourceType === 'Procedure') {
-			display = rsc.code.coding[0].code + ' ' + rsc.code.coding[0].display.substr(0,50)+'...'
+			display = rsc.code.coding[0].code + ' ' + rsc.code.coding[0].display.substr(0,50)+'...';
 			title = rsc.code.coding[0].display;
 
 		} else if(resourceType === 'Patient') {
@@ -79,13 +86,17 @@ ClassMethod OnPage() As %Status
 			
 			if(typeof display==='object') {
 				var prefix	= rsc.name[0].prefix || '';
-				var given	= rsc.name[0].given || '';
+				var given	= rsc.name[0].given  || '';
 				var family	= rsc.name[0].family || '';
 				display = prefix +' '+ given.toString().replace(',',' ') +' '+ family;
 			}
-			
+
 		} else if(resourceType === 'Organization') {
 			display = rsc.name;
+
+		} else if(resourceType === 'Location') {
+			display = rsc.physicalType.coding[0].display + ' ' + rsc.identifier[0].value;
+			title = rsc.physicalType.coding[0].display;
 
 		} else if(typeof rsc.type!=='undefined') {
 			if((typeof rsc.type==='object') && (typeof rsc.type.coding!=='undefined')) {
@@ -104,7 +115,6 @@ ClassMethod OnPage() As %Status
 		}
 		label = label +'\n'+ '<i>'+display+'</i>';
 		
-		
 		createNode(resourceId, resourceType, label, title);
 		console.log('createNode', resourceId, resourceType);
 		fhirResource[resourceId] = entry;
@@ -116,6 +126,11 @@ ClassMethod OnPage() As %Status
 			Object.entries(jsonObj).forEach(([key, value]) => {
 				// key is either an array index or object key
 				if(key=="reference"){
+					// if the id is a urn:uuid, lookup the resourceType and add it to the id (value)
+					if (value.split(':')[0]==="urn") {
+						value = fhirResourceUrnUuids[value]+'/'+value;
+					}
+					
 					createEdge(nodetype+'/'+nodeid, value, parent);
 					console.log('createEdge',nodetype,nodeid,value,parent);
 				}
@@ -131,6 +146,10 @@ ClassMethod OnPage() As %Status
 		
 		// Create a count for each resourceType
 		resourceTypes[resourceType] = parseInt(resourceTypes[resourceType] || 0) + 1; 
+	}
+
+	function createEdge(from,to,label) {
+		edges.add({from:from, to:to, label:'<i>'+label+'</i>'});
 	}
 
 	function updateTypeControls(resourceType, resourceCount = 1) {
@@ -153,6 +172,7 @@ ClassMethod OnPage() As %Status
 				)
 		);
 	}
+
 	function color(rscType) {
 		if (typeof colors==='undefined') {
 			console.log('generating color palette');
@@ -179,9 +199,6 @@ ClassMethod OnPage() As %Status
 		return colors[rscType]
 	}
 
-	function createEdge(from,to,label) {
-		edges.add({from:from, to:to, label:'<i>'+label+'</i>'});
-	}
 	function createUnhideButton(fhirResourceId) {
 		$('#HiddenResourceTray').append(
 			$('<input/>').attr({
@@ -243,6 +260,7 @@ ClassMethod OnPage() As %Status
 	}
 	window.addEventListener("load", () => {
 		fhirResource = new Array();
+		fhirResourceUrnUuids = new Array();
 		
 		// create an array with nodes
 		nodes = new vis.DataSet();
