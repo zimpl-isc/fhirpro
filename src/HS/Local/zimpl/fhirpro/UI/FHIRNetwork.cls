@@ -61,7 +61,13 @@ ClassMethod OnPage() As %Status
 		const rsc = entry.resource;
 		const resourceType = rsc.resourceType;
 
+		if (resourceType === "OperationOutcome") {
+			console.log('<OperationOutcome> Missing some data? ',JSON.stringify(entry));
+			return
+		}
+
 		if (rsc.id===undefined) {
+			console.log(entry);
 			rsc.id = entry.fullUrl.split('/')[1] || entry.fullUrl //  is a urn //.split(':')[2];
 			entry.resource.id = rsc.id;
 			fhirResourceUrnUuids[rsc.id] = resourceType;
