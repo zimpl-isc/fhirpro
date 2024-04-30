@@ -53,11 +53,12 @@ $(document).ready(function(){
 <script type="text/javascript">
 async function fetchData()
 {
-	let pMPIID = $('#mpiid').val();
-	let querystr = '?MPIID='+pMPIID;
+	const pMPIID = $('#mpiid').val();
+	const FHIRService = $('#FHIRService').val();
+	let querystr = '?MPIID='+pMPIID+'&FHIRSvc='+FHIRService;
 	
 	if (pMPIID == "") {
-		querystr = '?MRN='+$('#mrn').val()+'&AA='+$('#aa').val();
+		querystr += '?MRN='+$('#mrn').val()+'&AA='+$('#aa').val();
 	} 
 	
 	//// Get SDA and place in a textarea						
@@ -68,20 +69,19 @@ async function fetchData()
 	if (parseInt(status) !== 200) {
 		$('#PreviewSDA').val('Fetch failed with status code '+status);
 		console.log(status);
-		return
+		//return
+	} else {
+		const sdapretty = vkbeautify.xml(sda, ' ');
 	}
-	
-	const sdapretty = vkbeautify.xml(sda, ' ');
-	
+
 	if (pMPIID == "") {
 		parser = new DOMParser();
 		xmlDoc = parser.parseFromString(sda,"text/xml");
 		pMPIID = xmlDoc.getElementsByTagName('Patient')[0].getElementsByTagName('MPIID')[0].childNodes[0].nodeValue;
-	
 	} 
 	
 	//// Get FHIR
-	const fhir = await fetch('#(..#FHIRStreamServer)#?MPIID='+pMPIID, {cache: "no-cache"})
+	const fhir = await fetch('#(..#FHIRStreamServer)#?MPIID='+pMPIID+'&FHIRSvc='+FHIRService, {cache: "no-cache"})
 							.then(response => response.json());
 	const fhirpretty = vkbeautify.json(JSON.stringify(fhir), ' ');
 	
@@ -309,6 +309,7 @@ dl {
 			<br/> -- or -- <br/>
 		<input id="mpiid" name="mpiid" placeholder="mpiid...">
 			<br/>
+		#(..FHIRServiceSelect())#
 		<button onclick="fetchData()" style="float:right;">Fetch</button>
 		
 	</div>
@@ -351,6 +352,27 @@ dl {
 </html>>
 	
 	return $$$OK
+}
+
+ClassMethod FHIRServiceSelect()
+{
+	#dim tDefaultServiceName = ##class(Ens.Director).GetItemSettingValue("HS.FHIRServer.Interop.HTTPOperation","Host","ServiceName",.tsc)
+	set tSQL = "select * from HS_Registry_Service.HTTP where status=1"
+	set tRS = ##class(%ResultSet).%New()
+	do tRS.Prepare(tSQL)
+	do tRS.Execute()
+	
+	&html<<select id="FHIRService" name="ServiceName">>
+	
+	while tRS.Next() {
+		set tServiceName = tRS.Data("Name")
+		set tSelected = $case(tServiceName, tDefaultServiceName:" selected", :"")
+		&html<<option value="#(tServiceName)#"#(tSelected)#>#(tServiceName)#</option>>
+	}
+	
+	&html<</select>>
+	
+	return ""
 }
 
 ClassMethod AssigningAuthSelect()

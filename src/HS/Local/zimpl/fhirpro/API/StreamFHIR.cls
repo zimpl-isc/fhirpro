@@ -20,9 +20,10 @@ Parameter BusinessService = "HS.Local.zimpl.fhirpro.API.TestService";
 ClassMethod OnPreHTTP() As %Boolean
 {
 	set tMPIID = $get(%request.Data("MPIID",1))
+	set tFHIRSvc = $get(%request.Data("FHIRSvc",1))
 	
 	if (tMPIID'="") {
-		set %request.Data("STREAMOID",1) = ..GetStreamOID(tMPIID)
+		set %request.Data("STREAMOID",1) = ..GetStreamOID(tMPIID, tFHIRSvc)
 	}
 			
 	return ##super()
@@ -39,7 +40,7 @@ ClassMethod OnPostHTTP() [ ServerOnly = 1 ]
 	return $$$OK
 }
 
-ClassMethod GetStreamOID(pMPIID) As %String
+ClassMethod GetStreamOID(pMPIID, pFHIRSvc = "") As %String
 {
 	#dim tInteropRequest = ##class(HS.FHIRServer.Interop.Request).%New()
 	#dim tFHIRDataRequest = ##class(HS.FHIRServer.API.Data.Request).%New()
@@ -48,7 +49,8 @@ ClassMethod GetStreamOID(pMPIID) As %String
 	set tFHIRDataRequest.RequestPath = "/Patient/"_ pMPIID _"/$everything"
 	set tFHIRDataRequest.RequestFormatCode = "JSON"
 	set tFHIRDataRequest.ResponseFormatCode = "JSON"
-	
+	do:(pFHIRSvc'="") tFHIRDataRequest.AdditionalInfo.SetAt(pFHIRSvc,"ServiceName")
+
 	set tInteropRequest.Request = tFHIRDataRequest
 	
 	set tSc=##class(Ens.Director).CreateBusinessService(..#BusinessService,.tService)
