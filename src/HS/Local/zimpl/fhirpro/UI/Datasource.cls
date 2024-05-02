@@ -53,6 +53,7 @@ $(document).ready(function(){
 <script type="text/javascript">
 async function fetchData()
 {
+	let prettyPrint =  new String();
 	const pMPIID = $('#mpiid').val();
 	const FHIRService = $('#FHIRService').val();
 	let querystr = '?MPIID='+pMPIID+'&FHIRSvc='+FHIRService;
@@ -67,31 +68,37 @@ async function fetchData()
 								.then(status = response.status));
 	
 	if (parseInt(status) !== 200) {
-		$('#PreviewSDA').val('Fetch failed with status code '+status);
-		console.log(status);
-		//return
+		prettyPrint = 'SDA Fetch failed with status code: ' + status;
+		console.log(prettyPrint);
 	} else {
-		const sdapretty = vkbeautify.xml(sda, ' ');
+		prettyPrint = vkbeautify.xml(sda, ' ');
 	}
+
 
 	if (pMPIID == "") {
 		parser = new DOMParser();
 		xmlDoc = parser.parseFromString(sda,"text/xml");
 		pMPIID = xmlDoc.getElementsByTagName('Patient')[0].getElementsByTagName('MPIID')[0].childNodes[0].nodeValue;
-	} 
+	}
+	setMpiid(pMPIID);
+
+	setSdaData(prettyPrint);
 	
 	//// Get FHIR
 	const fhir = await fetch('#(..#FHIRStreamServer)#?MPIID='+pMPIID+'&FHIRSvc='+FHIRService, {cache: "no-cache"})
-							.then(response => response.json());
-	const fhirpretty = vkbeautify.json(JSON.stringify(fhir), ' ');
+							.then(response => response.json()
+								.then(status = response.status));
+
+	if (parseInt(status) !== 200) {
+		prettyPrint = 'FHIR Fetch failed with status code: ' + status;
+		console.log(prettyPrint);
+	} else {
+		prettyPrint = vkbeautify.json(JSON.stringify(fhir), ' ');
+	}
 	
+	setFhirData(prettyPrint);
 	setCurrent('sessionStorage',pMPIID);
-	
-	setFhirData(fhirpretty);
-	setSdaData(sdapretty);
-	
 	listStorages();
-	showCurrent(pMPIID);
 }
 function listStorages() {
 	
@@ -357,12 +364,12 @@ dl {
 ClassMethod FHIRServiceSelect()
 {
 	#dim tDefaultServiceName = ##class(Ens.Director).GetItemSettingValue("HS.FHIRServer.Interop.HTTPOperation","Host","ServiceName",.tsc)
-	set tSQL = "select * from HS_Registry_Service.HTTP where status=1"
+	set tSQL = "select * from HS_Registry_Service.HTTP where type='HTTP' and status=1 and url like '%fhir%'"
 	set tRS = ##class(%ResultSet).%New()
 	do tRS.Prepare(tSQL)
 	do tRS.Execute()
 	
-	&html<<select id="FHIRService" name="ServiceName">>
+	&html<<select id="FHIRService" name="ServiceName" title="#(tSQL)#">>
 	
 	while tRS.Next() {
 		set tServiceName = tRS.Data("Name")
@@ -382,7 +389,7 @@ ClassMethod AssigningAuthSelect()
 	do tRS.Prepare(tSQL)
 	do tRS.Execute()
 	
-	&html<<select id="aa" name="aa">>
+	&html<<select id="aa" name="aa" title="#(tSQL)#">>
 	
 	while tRS.Next() {
 		&html<<option value="#(tRS.Data("Code"))#">#(tRS.Data("Name"))#</option>>
