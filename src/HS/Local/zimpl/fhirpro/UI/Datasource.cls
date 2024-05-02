@@ -54,12 +54,12 @@ $(document).ready(function(){
 async function fetchData()
 {
 	let prettyPrint =  new String();
-	const pMPIID = $('#mpiid').val();
+	let pMPIID = $('#mpiid').val();
 	const FHIRService = $('#FHIRService').val();
 	let querystr = '?MPIID='+pMPIID+'&FHIRSvc='+FHIRService;
 	
 	if (pMPIID == "") {
-		querystr += '?MRN='+$('#mrn').val()+'&AA='+$('#aa').val();
+		querystr += '&MRN='+$('#mrn').val()+'&AA='+$('#aa').val();
 	} 
 	
 	//// Get SDA and place in a textarea						
