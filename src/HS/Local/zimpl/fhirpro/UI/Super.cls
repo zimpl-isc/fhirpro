@@ -87,6 +87,23 @@ ClassMethod DefaultStyle()
 		60% {opacity: 0; }
 		100% {opacity: 1; }
 	}
+.infoBox {
+	width: fit-content;
+	height: fit-content;
+	background: white;
+	border: 1px outset #45c4c2;
+	border-radius: 0.7em 0;
+	padding: 1em !important;
+	font-size: smaller;
+	display: inline-block;
+	min-width: 15em;
+}
+.infoBox.positioned {
+	position: absolute;
+	left: 1em;
+	top: 1em;
+	margin: 0;
+}
 	</style>
 	>
 	

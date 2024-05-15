@@ -266,7 +266,7 @@ dl {
 #DataSources div {
 	padding-left: 3em;
 }
-#CurrentItem {
+#CurrentItemzzz {
 	border: 1px solid #bfbfbf;
 	padding: 1em !important;
 	border-radius: 0.7em 0;
@@ -283,7 +283,7 @@ dl {
 <body>
 <div id="DataSources">
 
-	<div id="CurrentItem">
+	<div id="CurrentItem" class="infoBox">
 		<b>current:</b> <span id="CurrentMPIID"></span>
 		<br />
 		<b>source:</b> <span id="CurrentSource"></span>

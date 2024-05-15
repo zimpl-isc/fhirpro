@@ -15,10 +15,12 @@ ClassMethod OnPage() As %Status
 <html>
 <head>
 	<title>FHIR Bundle Visualizer</title>
+	#(..MetaTags())#
 	#(..LinkJS("jquery-3.7.1.min.js"))#
 	#(..LinkJS("vis-network.min.js"))#
 	#(..XDataJS("StorageHandler"))#
-	
+	#(..DefaultStyle())#
+
 	<script type="text/javascript">
 	let resourceTypesHidden = new Object();
 	let resourceTypes = new Object(); // createNode() updates a count,  updateTypeControls() draws a control
@@ -396,23 +398,17 @@ ClassMethod OnPage() As %Status
 		#VisNetworkPane {vertical-align:top; width:100%; height:100%;}
 		.nodeLabel {font-weight:bolder}
 		.nodeType {font-size:smaller}
-		#resourceTypeControls {
+		#resourceTypeControlszzz {
 			position: absolute;
-			z-index: 99;
-			width: auto;
-			height: auto;
-			background: linear-gradient(40deg, #45c4c2db, #f5f5f5db);
-			top: 2em;
 			left: 1em;
-			border: 1px outset #45c4c2;
-			border-radius: 7px;
-			padding: 0 1em;
+			top: 1em;
+			margin: 0;
 		}
 		#resourceTypeControls h1 {
 			font-size: larger;
 			color: #333895;
 			font-style: italic;
-			text-align: center;
+			margin:0;
 		}
 		#resourceTypeControls ul {
 			list-style-type: none;
@@ -429,7 +425,7 @@ ClassMethod OnPage() As %Status
 </head>
 <body>
   	<div id="VizualizerPanel">
-		<div id="resourceTypeControls">
+		<div id="resourceTypeControls" class="infoBox positioned">
 			<h1>resource types</h1>
 			<ul></ul>
 		</div>

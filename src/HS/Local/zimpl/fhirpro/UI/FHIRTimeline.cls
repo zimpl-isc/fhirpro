@@ -14,24 +14,14 @@ ClassMethod OnPage() As %Status
 <html>
 <head>
   <title>HSFHIRToolkit | FHIR timeline</title>
+  	#(..MetaTags())#
 	#(..LinkJS("jquery-3.7.1.min.js"))#
 	#(..XDataJS("StorageHandler"))#
 	#(..LinkJS("vis-timeline-graph2d.min.js"))#
 	#(..LinkCSS("vis-timeline-graph2d.min.css"))#
 	#(..DefaultStyle())#
+
   <style type="text/css">
-#patientData {
-	margin-bottom: 1em;
-	background-color: white;
-	width: fit-content;
-	padding: 0.1em 1em 1em 1em;
-	margin-top: 1em;
-	margin-left: 1em;
-	border: 1px solid #bfbfbf;
-	border-radius: 1em 0 1em 0;
-	font-size: smaller;
-	display: inline-block;
-}
 .hint {
 	text-align: right;
 	font-style: italic;
@@ -76,7 +66,7 @@ ClassMethod OnPage() As %Status
 </head>
 <body>
 
-<div id="patientData">
+<div id="patientData" class="infoBox" style="margin:1em;">
 	<svg id="buttonRefit" fill="#9c9c9c" height="20px" width="20px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
 	 viewBox="0 0 489.533 489.533" xml:space="preserve">
 		<g><path d="M268.175,488.161c98.2-11,176.9-89.5,188.1-187.7c14.7-128.4-85.1-237.7-210.2-239.1v-57.6c0-3.2-4-4.9-6.7-2.9
@@ -332,6 +322,8 @@ function processEntry(entry) {
 		
 	} else if (resource.resourceType == 'Encounter') {
 		
+		if (resource.period === undefined) return;
+
 		tItem.start = resource.period.start;
 		if (tItem.start === undefined) return;
 		if (resource.period.end !== undefined) {
@@ -496,7 +488,8 @@ function getObservationString(resource) {
 }	
 
 function getIdentifiersString(identifier) {
-	identifiersString += identifier.type.coding[0].code + ':' +	identifier.value + '; ';
+
+	identifiersString += identifier.type ? (identifier.type.coding[0].code + ':' +	identifier.value + '; ') : identifier.value;
 }
   
 function getLocationsString(location)
