@@ -100,6 +100,7 @@ ClassMethod DefaultStyle()
 }
 .infoBox.positioned {
 	position: absolute;
+	z-index:9999;
 	left: 1em;
 	top: 1em;
 	margin: 0;
