@@ -288,8 +288,8 @@ dl {
 		<br />
 		<b>source:</b> <span id="CurrentSource"></span>
 		<br />
-		<button id="ButtonCopylocalStorage" onclick="copyToLocalStorage()">Copy to localStorage</button>
-		<button id="ButtonCopysessionStorage" onclick="copyToSessionStorage()">Copy to sessionStorage</button>
+		<button id="ButtonCopylocalStorage" onclick="copyToLocalStorage()">Save to Storage</button>
+		<button id="ButtonCopysessionStorage" onclick="copyToSessionStorage()">Save for this Session only</button>
 	</div>
 
 	<div id="DataStored">
