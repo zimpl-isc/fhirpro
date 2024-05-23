@@ -201,6 +201,9 @@ ClassMethod OnPage() As %Status
 					        window.open('?package='+package+'&search='+search,'_self');
 					    }
 					});
+					$('#DTLList a').click(function(e){
+						e.stopPropagation();
+					});
 				});
 				
 				</script>
