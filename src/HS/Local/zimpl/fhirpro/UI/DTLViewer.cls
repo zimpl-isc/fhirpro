@@ -171,7 +171,7 @@ ClassMethod OnPage() As %Status
 					
 					&html<
 					<tr onclick="window.open('?DTL=#(tDTLClass)#', '_blank');" style="cursor:pointer;">
-						<td>#(tDTLClass)#</td>
+						<td> <a href="EnsPortal.DTLEditor.zen?DT=#(tDTLClass)#.dtl" target="_blank">&#9998;</a> #(tDTLClass)#</td>
 						<td>#(tSourceType)#>
 						if (tSourceDocType'="") {
 							&html<<span class="docType">#(tSourceDocType)#</span>>
