@@ -44,6 +44,8 @@ ClassMethod OnPage() As %Status
 		
 		bundle=JSON.parse(tFHIR);
 		bundle.entry.forEach(processEntry);
+		bundle.entry.forEach(processReferences);
+		
 
 		// sort the list of resourceTypes and draw the control
 		resourceTypes = Object.fromEntries(Object.entries(resourceTypes).sort());
@@ -75,6 +77,12 @@ ClassMethod OnPage() As %Status
 			fhirResourceUrnUuids[rsc.id] = resourceType;
 			console.log('generating missing resource.id for ',entry);
 		}
+
+		if (entry.fullUrl.split(':')[0]==="urn") {
+			fhirResourceUrnUuids[rsc.id] = resourceType;
+			console.log('handling urn:uuid type ids for ',entry);
+		}
+
 		const resourceId = resourceType+'/'+rsc.id;
 		
 		let title = resourceType;
@@ -129,9 +137,14 @@ ClassMethod OnPage() As %Status
 		createNode(resourceId, resourceType, label, title);
 		console.log('createNode', resourceId, resourceType);
 		fhirResource[resourceId] = entry;
-		traverse(rsc, resourceType, rsc.id);
 	}
 
+	function processReferences(entry) {
+		const rsc = entry.resource;
+		const resourceType = rsc.resourceType;
+		traverse(rsc, resourceType, rsc.id);
+	}
+	
 	function traverse(jsonObj, nodetype, nodeid, parent) {
 		if((jsonObj !== null) && (typeof jsonObj == "object")) {
 			Object.entries(jsonObj).forEach(([key, value]) => {
@@ -139,11 +152,14 @@ ClassMethod OnPage() As %Status
 				if(key=="reference"){
 					// if the id is a urn:uuid, lookup the resourceType and add it to the id (value)
 					if (value.split(':')[0]==="urn") {
+						console.log('urn ref value:'+value);
+						value = value.split(':')[2];
 						value = fhirResourceUrnUuids[value]+'/'+value;
+						console.log('urn ref value:'+value);
 					}
 					
 					createEdge(nodetype+'/'+nodeid, value, parent);
-					console.log('createEdge',nodetype,nodeid,value,parent);
+					console.log('createEdge(',nodetype+'/'+nodeid, value, parent,')');
 				}
 				traverse(value, nodetype, nodeid, key);
 			});
@@ -271,7 +287,7 @@ ClassMethod OnPage() As %Status
 	}
 	window.addEventListener("load", () => {
 		fhirResource = new Array();
-		fhirResourceUrnUuids = new Array();
+		fhirResourceUrnUuids = new Object();
 		
 		// create an array with nodes
 		nodes = new vis.DataSet();
