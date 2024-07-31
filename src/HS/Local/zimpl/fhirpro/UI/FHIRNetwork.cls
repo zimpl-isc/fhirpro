@@ -61,7 +61,7 @@ ClassMethod OnPage() As %Status
 	}
 	
 	function processEntry(entry) {
-		//console.log(entry.resource.resourceType);
+		console.log('processEntry:'+entry.resource.resourceType);
 		const rsc = entry.resource;
 		const resourceType = rsc.resourceType;
 
@@ -111,7 +111,7 @@ ClassMethod OnPage() As %Status
 			}
 
 		} else if(resourceType === 'Organization') {
-			display = rsc.name || rsc.identifier[0].value;
+			display = rsc.name || rsc.type[0].coding[0].display || rsc.identifier[0].value;
 
 		} else if(resourceType === 'Location') {
 			display = rsc.physicalType.coding[0].display + ' ' + rsc.identifier[0].value;
