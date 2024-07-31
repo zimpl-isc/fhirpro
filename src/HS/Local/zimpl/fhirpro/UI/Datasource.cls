@@ -53,6 +53,8 @@ $(document).ready(function(){
 <script type="text/javascript">
 async function fetchData()
 {
+	$('#LoadingMessage',window.parent.document).toggle(true);
+
 	let prettyPrint =  new String();
 	let pMPIID = $('#mpiid').val();
 	const FHIRService = $('#FHIRService').val();
@@ -99,6 +101,8 @@ async function fetchData()
 	setFhirData(prettyPrint);
 	setCurrent('sessionStorage',pMPIID);
 	listStorages();
+
+	$('#LoadingMessage',window.parent.document).toggle(false);
 }
 function listStorages() {
 	
@@ -107,11 +111,11 @@ function listStorages() {
 	
 	let key = new String();
 	
-	["localStorage","sessionStorage"].forEach(function(storageType){
+	["localStorage","sessionStorage"].forEach((storageType) => {
 		for (var i = 0; i < this[storageType].length; i++){
 			
 			// don't display other session variables
-			if ((this[storageType].key(i) == "mpiid") || (this[storageType].key(i) == "storageType")) {
+			if ((!this[storageType].key(i).startsWith("SDA#")) && (!this[storageType].key(i).startsWith("FHIR#"))) {
 				continue;
 			}
 		
@@ -218,6 +222,11 @@ function beautifyXML() {
 </script>
 <style> /* for overrides */
 body {padding:1em;}
+fieldset.infoBox {
+	display: flex;
+	justify-content: space-between;
+	gap: 3em;
+}
 #PreviewTable {width:96%;}
 textarea {
 	width: 99%;
@@ -250,29 +259,15 @@ dl {
 	font-size: small;
 	font-style: italic;
 }
-#DataNew, #DataStored {
-	xmargin-bottom: 1em;
-	xpadding-bottom: 1em;
+.storage {
 	width: fit-content;
 	display: inline-block;
 	vertical-align: top;
-	xmargin-right: 7em;
 }
 #DataSources {
 	justify-content: flex-start;
 	display: flex;
 	padding-bottom:1em;
-}
-#DataSources div {
-	padding-left: 3em;
-}
-#CurrentItemzzz {
-	border: 1px solid #bfbfbf;
-	padding: 1em !important;
-	border-radius: 0.7em 0;
-	background: white;
-	width: fit-content;
-	height: fit-content;
 }
 .active {
 	color: #00b5afb8;
@@ -283,7 +278,10 @@ dl {
 <body>
 <div id="DataSources">
 
-	<div id="CurrentItem" class="infoBox">
+<fieldset class="infoBox" id="DataAvailable">
+    <legend>available</legend>
+
+	<div id="CurrentItem" class="storage">
 		<b>current:</b> <span id="CurrentMPIID"></span>
 		<br />
 		<b>source:</b> <span id="CurrentSource"></span>
@@ -292,34 +290,39 @@ dl {
 		<button id="ButtonCopysessionStorage" onclick="copyToSessionStorage()">Save for this Session only</button>
 	</div>
 
-	<div id="DataStored">
+	<div id="SessionStorage" class="storage">
 		<dl id="StorageList">
 			<dt id="sessionStorageList" data-value="sessionStorage" title="Cached only for browser session">
 				<a class="wastebasket" onclick="deleteItem('sessionStorage', '*')">&#128465;&#65039;</a>
-				Session Items
+				Session Objects
 			</dt>
 		</dl>
 	</div>
 
-	<div id="DataStored">
+	<div id="LocalStorage" class="storage">
 		<dl id="StorageList">
 			<dt id="localStorageList" data-value="localStorage">
 				<a class="wastebasket" onclick="deleteItem('localStorage', '*')">&#128465;&#65039;</a>
-				Stored Items
+				Stored Objects
 			</dt>
 		</dl>
 	</div>
-	
-		<div id="DataNew">
-		<input id="mrn" name="mrn" placeholder="mrn...">
-		#(..AssigningAuthSelect())#
-			<br/> -- or -- <br/>
-		<input id="mpiid" name="mpiid" placeholder="mpiid...">
-			<br/>
-		#(..FHIRServiceSelect())#
-		<button onclick="fetchData()" style="float:right;">Fetch</button>
-		
-	</div>
+</fieldset>
+
+<fieldset class="infoBox">
+    <legend>fetch new</legend>
+		<div id="FetchNew">
+			<form onsubmit="fetchData(); return false;">
+				<input id="mrn" name="mrn" placeholder="mrn...">
+				#(..AssigningAuthSelect())#
+					<br/> -- or -- <br/>
+				<input id="mpiid" name="mpiid" placeholder="mpiid...">
+					<br/>
+				#(..FHIRServiceSelect())#
+				<input type="submit" onclick="fetchData();">
+			</form>
+		</div>
+</fieldset>
 
 </div>
 	

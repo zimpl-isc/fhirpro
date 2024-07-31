@@ -414,21 +414,10 @@ ClassMethod OnPage() As %Status
 		#VisNetworkPane {vertical-align:top; width:100%; height:100%;}
 		.nodeLabel {font-weight:bolder}
 		.nodeType {font-size:smaller}
-		#resourceTypeControlszzz {
-			position: absolute;
-			left: 1em;
-			top: 1em;
-			margin: 0;
-		}
-		#resourceTypeControls h1 {
-			font-size: larger;
-			color: #333895;
-			font-style: italic;
-			margin:0;
-		}
 		#resourceTypeControls ul {
 			list-style-type: none;
 			padding: 0px;
+			margin: 0 0.5em 0 1em;
 		}
 		#resourceTypeControls li {
 			text-align: right;
@@ -437,14 +426,19 @@ ClassMethod OnPage() As %Status
 			padding-left: 0.5em;
 			color: #868282;
 		}
+		fieldset.infoBox {
+			position: absolute;
+  			z-index: 999;
+		}
 	</style>
 </head>
 <body>
   	<div id="VizualizerPanel">
-		<div id="resourceTypeControls" class="infoBox positioned">
-			<h1>resource types</h1>
+		<fieldset class="infoBox" id="resourceTypeControls">
+    		<legend>resource types</legend>
 			<ul></ul>
-		</div>
+		</fieldset>
+
   		<div id="HiddenResourceTray"></div>
   		<div id="VisNetworkPane"></div>
   		<div id="ResourceInspector">

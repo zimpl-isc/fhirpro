@@ -23,11 +23,9 @@ ClassMethod OnPage() As %Status
 
   <style type="text/css">
 .hint {
-	text-align: right;
 	font-style: italic;
 	color: #adadad;
-	display: inline-block;
-	width: 80%;
+	padding-left: 2em;
 }
 #visualization, #patientData {
 	visibility: hidden;
@@ -45,10 +43,10 @@ ClassMethod OnPage() As %Status
 	#PatientName {
 		text-shadow: 0.1px 0.1px 1px gray;
 		font-weight: lighter;
+		margin: 0 0 0.5em;
 	}
 	#buttonRefit {
 		float: right;
-		margin-top: 1em;
 	}
 	#visualization {
 		background-color: white;
@@ -61,12 +59,17 @@ ClassMethod OnPage() As %Status
 	.Medications {xbackground-color:#ED5565;}
 	.Vaccinations {xbackground-color:white;}
 	
+	fieldset.infoBox {
+		min-width: 20%;
+		padding-left: 2.5em;
+	}
   </style>
   
 </head>
 <body>
 
-<div id="patientData" class="infoBox" style="margin:1em;">
+<fieldset class="infoBox" id="patientData">
+    <legend>patient</legend>
 	<svg id="buttonRefit" fill="#9c9c9c" height="20px" width="20px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
 	 viewBox="0 0 489.533 489.533" xml:space="preserve">
 		<g><path d="M268.175,488.161c98.2-11,176.9-89.5,188.1-187.7c14.7-128.4-85.1-237.7-210.2-239.1v-57.6c0-3.2-4-4.9-6.7-2.9
@@ -77,8 +80,9 @@ ClassMethod OnPage() As %Status
 	<h2 id="PatientName" />
 	<h3 id="PatientDemogs" />
 	<h3 id="PatientIds" />
-</div>
-<div class="hint">details in developer console</div>
+</fieldset>
+
+<div class="hint">details in browser console</div>
 <div id="visualization"></div>
 
 <script type="text/javascript">

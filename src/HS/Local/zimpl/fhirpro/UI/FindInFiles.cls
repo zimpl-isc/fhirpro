@@ -1,7 +1,7 @@
 /**
 * Search for a string in classes.
 *
-* @version 1.0 2024-03-27
+* @version 1.0 2024-07-31
 * @author Brandon Thomas
 
 API Doc:
@@ -31,34 +31,82 @@ API Doc:
 Class HS.Local.zimpl.fhirpro.UI.FindInFiles Extends HS.Local.zimpl.fhirpro.UI.Super
 {
 
+ClassMethod ShowClass(pClassname)
+{
+}
+
 ClassMethod OnPage() As %Status
 {
-	
+	set tClassname = $get(%request.Data("classname",1))
+	if (tClassname'="") {
+		return ..ShowClass(tClassname)
+	}
+
 	&html<<!DOCTYPE html>
 <html>
 <head>
-	<title>FHIR Bundle Visualizer</title>
-	#(..MetaTags())#
+	<title>Find In Files</title>
 	#(..LinkJS("jquery-3.7.1.min.js"))#
 	#(..LinkJS("jquery.dataTables.min.js"))#
 	#(..LinkCSS("jquery.dataTables.min.css"))#
 	#(..LinkCSS("DTLViewer.css"))#
+	#(..DefaultStyle())#
 
 <style>
+body {padding:5px;}
+h2 {display:none;}
 #Controls {
 	margin: 1em 0 2em 1em;
 }
-#Options {
-	margin: 0.5em;
+tr.odd,tr.even {
+	cursor: pointer;
 }
 </style>
 
 <script type="text/javascript">
-async function fetchData()
+async function ApiGetDoc(documentName)
+{
+	const host		= $('#host').val();
+	const namespace	= $('#namespace').val();
+	const location	= window.location.href.substring(0,window.location.href.search(/(?=[^\/]*$)/g));
+	const apiRsc	= host+'/api/atelier/v5/'+namespace+'/doc/'+documentName;
+
+	// Fetch
+	queryResponse = await fetch(apiRsc, {cache: "no-cache"})
+							.then(response => response.text()
+								.then(status = response.status));
+	
+	if (parseInt(status) !== 200) {
+		let tSc = 'Fetch failed with status code: ' + status;
+		console.log(tSc);
+	} else {
+		const results = JSON.parse(queryResponse).result;
+
+		let html = '<!DOCTYPE html><html><head><title>'+documentName+'</title>\n';
+		//html += "<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css'>\n";
+		html += "<link rel='stylesheet' href='"+location+"highlight.min.css'>\n";
+		html += "<script src='"+location+"highlight.min.js'><"+"/script>\n";
+		html += "</head><body>";
+		html += "<pre><code class='language-cos'>\n";
+			results.content.forEach((codeLine) => {
+				html += escapeHTML(codeLine)+'\n';
+			});
+		html += "</code></pre>";
+		html += "<script>hljs.highlightAll();<"+"/script>\n";
+		html += '</body></html>';
+
+		const blob = new Blob([html], { type: 'text/html'});
+		const url = URL.createObjectURL(blob);
+		window.open(url, '_blank');
+	}
+}
+async function ApiSearch()
 {
 	$('#LoadingMessage',window.parent.document).toggle(true);
 
-    const queryRsc  = '/api/atelier/v5/hscustom/action/search';
+	const host		= $('#host').val();
+	const namespace	= $('#namespace').val();
+    const apiRsc	= host+'/api/atelier/v5/'+namespace+'/action/search';
 	let query		= $('#queryString').val();
 	let documents	= $('#documents').val();
 	let regex		= $('#regex').val();
@@ -69,7 +117,10 @@ async function fetchData()
 	let querystr    = '?query='+query + '&documents='+documents + '&regex='+regex + '&sys='+sys + '&gen='+gen + '&max='+max;
 	
 	// Fetch
-	queryResponse = await fetch(queryRsc+querystr, {cache: "no-cache"})
+	let headers = new Headers();
+	headers.set('Authorization', 'Basic ' + btoa('_system' + ":" + 'SYS'));
+
+	queryResponse = await fetch(apiRsc+querystr, {cache: "no-cache", method:'GET', headers:headers})
 							.then(response => response.text()
 								.then(status = response.status));
 	
@@ -77,13 +128,12 @@ async function fetchData()
 		let tSc = 'Fetch failed with status code: ' + status;
 		console.log(tSc);
 	} else {
+		const results = JSON.parse(queryResponse).result;
 		dataSet = new Array();
-		const result = JSON.parse(queryResponse).result
-		result.forEach((e)=>{
-			let doc=e.doc; 
-			e.matches.forEach((m)=>{
-				dataSet.push([doc,m.attr||"",m.member||"", jQuery('<div />').text(m.text).html()])
-				})
+		results.forEach((result) => {
+			result.matches.forEach((match) => {
+				dataSet.push([result.doc, match.attr||"", match.member||"", escapeHTML(match.text)]);
+			});
 		});
 		
 		$('#queryResults').DataTable({
@@ -92,7 +142,10 @@ async function fetchData()
 				"search": "Filter rows:"
 			},
 			columns: [
-				{ title: 'Classname' },
+				{ title: 'Classname', render: function (data, type, row, meta) {
+    											return "<a onclick='ApiGetDoc(this.innerHTML)'>"+data+'</a>';
+												}
+      			},
 				{ title: 'Attr' },
 				{ title: 'Member' },
 				{ title: 'Text' },
@@ -103,23 +156,28 @@ async function fetchData()
 	$('#LoadingMessage',window.parent.document).toggle(false);
 }
 
-$(document).ready(function(){
-	$('#queryString').on('keypress', function(event) {
-		if ( event.which == 13 ) {
-			$('#searchButton').trigger('click');
-		}
-	});
-});
+function escapeHTML(html) {
+	return jQuery('<div />').text(html).html()
+}
+$(document).ready(function() {
+        //$('#host').val(window.location.href.substring(0,window.location.href.search(/(?=[^\/]*$)/g)));
+		$('#host').val(window.location.origin);
+    });
+
 </script>
 
 </head>
 <body>
-	<h2>Search in Files</h2>
-  	<div id="Controls">
-		<input id="queryString" placeholder="search for..." autofocus autocomplete="on"/>
-		<button id="searchButton" onclick="fetchData()">Search</button>
-		<div id="Options">
-			<input id="documents" value="*.cls,*.mac"/><br>
+	<h2>Find in Files</h2>
+  	<form id="Controls" onsubmit="ApiSearch(); return false;">
+		<input id="host" title="host"><input id="namespace" value="hscustom" title="namespace">
+		<input id="queryString" placeholder="search for..." autofocus autocomplete/>
+		<input type="submit"/>
+		<fieldset class="infoBox">
+        	<legend>options</legend>
+			<input id="documents" value="HS.Local.*.cls" title="search in documents..."/>
+			<span class="comment">comma-delimited list (e.g. *.cls,*.mac,*.int)</span>
+			<br>
 
 			<input type="checkbox" id="sys">
 				<label for="sys">System items</label><br>
@@ -130,10 +188,10 @@ $(document).ready(function(){
 			<input type="checkbox" id="gen">
 				<label for="gen">Generated items</label><br>
 
-			<input type="number" id="max" size="4" value="200">
+			<input type="number" id="max" size="5" value="200" step="100">
 				<label for="max">Maximum rows</label><br>
-		</div>
-    </div>
+		</fieldset>
+    </form>
 	<div id="Results">
 		<table id="queryResults" class="display" width="100%"></table>
 	</div>
