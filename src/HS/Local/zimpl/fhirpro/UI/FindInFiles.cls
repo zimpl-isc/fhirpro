@@ -31,16 +31,8 @@ API Doc:
 Class HS.Local.zimpl.fhirpro.UI.FindInFiles Extends HS.Local.zimpl.fhirpro.UI.Super
 {
 
-ClassMethod ShowClass(pClassname)
-{
-}
-
 ClassMethod OnPage() As %Status
 {
-	set tClassname = $get(%request.Data("classname",1))
-	if (tClassname'="") {
-		return ..ShowClass(tClassname)
-	}
 
 	&html<<!DOCTYPE html>
 <html>
@@ -64,42 +56,6 @@ tr.odd,tr.even {
 </style>
 
 <script type="text/javascript">
-async function ApiGetDoc(documentName)
-{
-	const host		= $('#host').val();
-	const namespace	= $('#namespace').val();
-	const location	= window.location.href.substring(0,window.location.href.search(/(?=[^\/]*$)/g));
-	const apiRsc	= host+'/api/atelier/v5/'+namespace+'/doc/'+documentName;
-
-	// Fetch
-	queryResponse = await fetch(apiRsc, {cache: "no-cache"})
-							.then(response => response.text()
-								.then(status = response.status));
-	
-	if (parseInt(status) !== 200) {
-		let tSc = 'Fetch failed with status code: ' + status;
-		console.log(tSc);
-	} else {
-		const results = JSON.parse(queryResponse).result;
-
-		let html = '<!DOCTYPE html><html><head><title>'+documentName+'</title>\n';
-		//html += "<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css'>\n";
-		html += "<link rel='stylesheet' href='"+location+"highlight.min.css'>\n";
-		html += "<script src='"+location+"highlight.min.js'><"+"/script>\n";
-		html += "</head><body>";
-		html += "<pre><code class='language-cos'>\n";
-			results.content.forEach((codeLine) => {
-				html += escapeHTML(codeLine)+'\n';
-			});
-		html += "</code></pre>";
-		html += "<script>hljs.highlightAll();<"+"/script>\n";
-		html += '</body></html>';
-
-		const blob = new Blob([html], { type: 'text/html'});
-		const url = URL.createObjectURL(blob);
-		window.open(url, '_blank');
-	}
-}
 async function ApiSearch()
 {
 	$('#LoadingMessage',window.parent.document).toggle(true);
@@ -143,7 +99,7 @@ async function ApiSearch()
 			},
 			columns: [
 				{ title: 'Classname', render: function (data, type, row, meta) {
-    											return "<a onclick='ApiGetDoc(this.innerHTML)'>"+data+'</a>';
+    											return "<a href='HS.Local.zimpl.fhirpro.UI.FileViewer.cls?doc="+data+"&ns="+namespace+"&st="+query+"' target=_blank>"+data+'</a>';
 												}
       			},
 				{ title: 'Attr' },
