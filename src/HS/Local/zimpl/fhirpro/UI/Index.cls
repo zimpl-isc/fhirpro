@@ -24,12 +24,13 @@ ClassMethod OnPage() As %Status
 	.side_menu {
 		background-color: #f7f7f7;
 		/*background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23d5ddf6' fill-opacity='0.7' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");*/
-		border-right: 2px ridge lightgray;
+		/*border-right: 2px ridge lightgray;*/
 		height: 100vh;
 		left: 0;
 		position: fixed;
 		top: 1em;
 		width: 42px;
+		box-shadow: 1px 0px 1px 0px #3339969c;
 	}
 	.side_menu .container {
 		padding: 0 0.5em;
@@ -78,11 +79,12 @@ ClassMethod OnPage() As %Status
 	z-index: 100;
 	width: 100%;
 	background: linear-gradient(45deg, #333695, #44c7c2 40%);
-	border-bottom: 2px silver ridge;
+	/*border-bottom: 2px silver ridge;*/
 	font-size: 0.7em;
 	font-style: italic;
 	padding-left: 2em;
 	color: whitesmoke;
+	box-shadow: 0px 1px 1px 0px #3339969c;
 }
 	#PageDescr {
 	float: right;

@@ -9,7 +9,7 @@ XData ProductionDefinition
   <Item Name="HS.Util.Trace.Operations" Category="" ClassName="HS.Util.Trace.Operations" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
   </Item>
   <Item Name="GATEWAY" Category="" ClassName="HS.Gateway.Access.RemoteOperations" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
-    <Setting Target="Host" Name="ServiceName">dembp18bthomas.local:HSACCESS</Setting>
+    <Setting Target="Host" Name="ServiceName">dembpm3bthomas.local:HSACCESS</Setting>
     <Setting Target="Host" Name="ReplyCodeActions">E=C</Setting>
     <Setting Target="Host" Name="TraceOperations">*FULL*</Setting>
   </Item>

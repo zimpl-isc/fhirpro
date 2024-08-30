@@ -93,6 +93,10 @@ ClassMethod OnPage() As %Status
 			display = rsc.code.coding[0].code + ' ' + rsc.code.coding[0].display.substr(0,50)+'...';
 			title = rsc.code.coding[0].display;
 
+		} else if(resourceType === 'Observation') {
+			display = rsc.code.coding[0].code.substr(0,10) + ' ' + rsc.code.coding[0].display.substr(0,50)+'...';
+			title = rsc.code.coding[0].display;
+
 		} else if(resourceType === 'Procedure') {
 			display = rsc.code.coding[0].code + ' ' + rsc.code.coding[0].display.substr(0,50)+'...';
 			title = rsc.code.coding[0].display;

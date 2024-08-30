@@ -63,11 +63,12 @@ async function ApiSearch()
 	const host		= $('#host').val();
 	const namespace	= $('#namespace').val();
     const apiRsc	= host+'/api/atelier/v5/'+namespace+'/action/search';
-	let query		= $('#queryString').val();
-	let documents	= $('#documents').val();
-	let regex		= $('#regex').val();
-	let sys			= $('#sys').val();
-	let gen			= $('#gen').val();
+	
+	let query		= encodeURI($('#queryString').val());
+	let documents	= encodeURI($('#documents').val());
+	let regex		= $('#regex').val()==="on";
+	let sys			= $('#sys').val()==="on";
+	let gen			= $('#gen').val()==="on";
 	let max			= $('#max').val();
 
 	let querystr    = '?query='+query + '&documents='+documents + '&regex='+regex + '&sys='+sys + '&gen='+gen + '&max='+max;

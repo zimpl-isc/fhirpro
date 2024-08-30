@@ -21,6 +21,15 @@ ClassMethod OnPage() As %Status
 
 <script type="text/javascript">
 $(document).ready(function(){
+	const localStorageLabel = 'window.localStorage';
+	const sessionStorageLabel = 'Session Cache';
+
+	$('#localStorageLabel').text(localStorageLabel);
+	$('#sessionStorageLabel').text(sessionStorageLabel);
+
+	$('#ButtonCopylocalStorage').text('Write to '+localStorageLabel);
+	$('#ButtonCopysessionStorage').text('Write to '+sessionStorageLabel);
+
 	listStorages();
 	
 	let mpiid = getMpiid();
@@ -167,8 +176,8 @@ function showCurrent(mpiid) {
 		$('#PreviewSDA').val(storage.getItem('SDA#'+mpiid));
 		$('#PreviewFHIR').val(storage.getItem('FHIR#'+mpiid));
 		$('#CurrentMPIID').html(mpiid);
-		$('#CurrentSource').html(storageType);
-		
+		$('#CurrentSource').html($('#'+storageType+'Label').text());
+
 		$('#ButtonCopysessionStorage').css({ display: storageType == "sessionStorage" ? 'none' : 'unset' });
 		$('#ButtonCopylocalStorage').css({ display: storageType == "localStorage" ? 'none' : 'unset' });
 		
@@ -273,6 +282,12 @@ dl {
 	color: #00b5afb8;
 	filter: drop-shadow(0 0 2px white);
 }
+.infoBox.new {
+	border: 1px solid #44c7c2;
+}
+.new legend {
+	background: #43c3c1;
+}
 </style>
 </head>
 <body>
@@ -286,15 +301,15 @@ dl {
 		<br />
 		<b>source:</b> <span id="CurrentSource"></span>
 		<br />
-		<button id="ButtonCopylocalStorage" onclick="copyToLocalStorage()">Save to Storage</button>
-		<button id="ButtonCopysessionStorage" onclick="copyToSessionStorage()">Save for this Session only</button>
+		<button id="ButtonCopylocalStorage" onclick="copyToLocalStorage()">Write to LocalStorage</button>
+		<button id="ButtonCopysessionStorage" onclick="copyToSessionStorage()">Write to Session Cache</button>
 	</div>
 
 	<div id="SessionStorage" class="storage">
 		<dl id="StorageList">
 			<dt id="sessionStorageList" data-value="sessionStorage" title="Cached only for browser session">
 				<a class="wastebasket" onclick="deleteItem('sessionStorage', '*')">&#128465;&#65039;</a>
-				Session Objects
+				<span id="sessionStorageLabel">Session Cache</span>
 			</dt>
 		</dl>
 	</div>
@@ -303,13 +318,13 @@ dl {
 		<dl id="StorageList">
 			<dt id="localStorageList" data-value="localStorage">
 				<a class="wastebasket" onclick="deleteItem('localStorage', '*')">&#128465;&#65039;</a>
-				Stored Objects
+				<span id="localStorageLabel">LocalStorage Objects</span>
 			</dt>
 		</dl>
 	</div>
 </fieldset>
 
-<fieldset class="infoBox">
+<fieldset class="infoBox new">
     <legend>fetch new</legend>
 		<div id="FetchNew">
 			<form onsubmit="fetchData(); return false;">

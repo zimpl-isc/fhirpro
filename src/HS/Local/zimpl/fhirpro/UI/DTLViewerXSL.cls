@@ -586,9 +586,7 @@ $(document).ready(function(){
 		<xsl:choose>
 			<xsl:when test="contains($description, 'https://')">
 				<xsl:value-of select="substring-before($description, 'https://')"/>
-				<a href="https://{substring-after($description, 'https://')}" target="_blank">https://
-					<xsl:value-of select="substring-after($description, 'https://')"/>
-				</a>
+				<a style="white-space:nowrap" href="https://{substring-after($description, 'https://')}" target="_blank">https://<xsl:value-of select="substring-after($description, 'https://')"/></a>
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:value-of select="$description" />
