@@ -14,7 +14,7 @@ ClassMethod OnPage() As %Status
 	&html<<!DOCTYPE html>
 <html>
 <head>
-	<title>File Viewer</title>
+	<title>#($piece($get(%request.Data("doc",1)), ".", *-1))#</title>
 	#(..LinkJS("jquery-3.7.1.min.js"))#
     #(..LinkJS("jquery-ui-1.13.3.min.js"))#
 	#(..LinkJS("highlight.min.js"))#
@@ -31,7 +31,7 @@ pre code.hljs {
     padding-top:0;
 }
 a {
-	cursor: pointer;
+	cursor: alias;
 }
 #Controls {
 	position: fixed;
@@ -101,9 +101,7 @@ $(document).ready(function() {
     $('#currentDoc').text(doc);
     $('#searchTerm').val(st);
     ApiGetDoc();
-    setTimeout(() => {
-        highlightSearchTerm(st);
-        }, "2000");
+    
     $('fieldset.infoBox').draggable();
     $('#searchTerm').select();
     
@@ -126,6 +124,9 @@ $(document).ready(function() {
         });
     }, 1000);
 
+    setTimeout(() => {
+        highlightSearchTerm(st);
+        }, "2000");
     
 
 });
@@ -222,7 +223,7 @@ function highlightSearchTerm(searchTerm = $('#searchTerm').val())
 </head>
 <body>
     <fieldset class="infoBox" id="Controls">
-		<legend>&#8984; find</legend>
+		<legend>&#128270; find</legend>
         <span id="currentDoc"></span><br>
 		<form onsubmit="highlightSearchTerm(); return false;">
             <input id="searchTerm" autofocus />

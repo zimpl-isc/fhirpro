@@ -1,7 +1,7 @@
 /**
 * Displays a network visualization of FHIR data.
 *
-* @version 1.0 2024-03-27
+* @version 1.5 2024-09-01
 * @author Brandon Thomas
 */
 
@@ -19,9 +19,67 @@ ClassMethod OnPage() As %Status
 	#(..LinkJS("jquery-3.7.1.min.js"))#
 	#(..LinkJS("vis-network.min.js"))#
 	#(..XDataJS("StorageHandler"))#
+	#(..LinkJS("highlight.min.js"))#
+	#(..LinkJS("highlightjs-line-numbers.min.js"))#
+	#(..LinkCSS("highlight.min.css"))#
 	#(..DefaultStyle())#
 
-	<script type="text/javascript">
+<style type="text/css">
+html,body,#VizualizerPanel {
+    height:100%;
+     width:100%;
+     font-family:Helvetica, Arial, sans-serif;
+}
+ #VisNetworkPane,#ResourceInspector {
+    display:inline-block;
+}
+ #ResourceInspector {
+    overflow:auto;
+    border-left:1px solid #333896;
+    background: linear-gradient(42deg, #cfddddc7, #ffffffc7);
+  	backdrop-filter: blur(3px);
+	position: fixed;
+	top: 0;
+	right: 0;
+	height: 100vh;
+}
+.hljs {
+	background: none !important;
+}
+pre, code {
+	padding-top: 0;
+	margin-top: 0;
+}
+ #VisNetworkPane {
+    vertical-align:top;
+     width:100vw;
+     height:100vh;
+}
+ .nodeLabel {
+    font-weight:bolder
+}
+ .nodeType {
+    font-size:smaller
+}
+ #resourceTypeControls ul {
+     list-style-type: none;
+     padding: 0px;
+     margin: 0 0.5em 0 1em;
+}
+ #resourceTypeControls li {
+     text-align: right;
+}
+ .typeCount {
+     padding-left: 0.5em;
+     color: #868282;
+}
+ fieldset.infoBox {
+     position: absolute;
+     z-index: 999;
+}
+</style>
+
+<script type="text/javascript">
 	let resourceTypesHidden = new Object();
 	let resourceTypes = new Object(); // createNode() updates a count,  updateTypeControls() draws a control
 
@@ -271,10 +329,13 @@ ClassMethod OnPage() As %Status
 	function focusInspector(nodeId) {
 		console.log(nodeId);
 		$('#resourceJSON').text(JSON.stringify(fhirResource[nodeId], null, 4));
+		$('#resourceJSON').attr('data-highlighted',''); // resets lib
+		hljs.highlightAll();
+		hljs.initLineNumbersOnLoad();
 		$('#HideResourceButton').attr('ref', nodeId);
-		$("#VisNetworkPane").animate({width:"59%"});
+		//$("#VisNetworkPane").animate({width:"59%"});
 		$("#ResourceInspector").show('fast');
-		$("#ResourceInspector").animate({width:"39%"});
+		$("#ResourceInspector").animate({width:"72%"},800);
 		network.moveTo({scale:2.5,});
 		network.focus(nodeId);
 	}
@@ -410,31 +471,6 @@ ClassMethod OnPage() As %Status
 		parse();
 	});
 	</script>
-
-	<style type="text/css">
-		html,body,#VizualizerPanel {height:100%; width:100%; font-family:Helvetica, Arial, sans-serif;}
-		#VisNetworkPane,#ResourceInspector {display:inline-block;}
-		#ResourceInspector {overflow:auto; border-left:1px silver dashed; height:90%; background-color:whitesmoke;}
-		#VisNetworkPane {vertical-align:top; width:100%; height:100%;}
-		.nodeLabel {font-weight:bolder}
-		.nodeType {font-size:smaller}
-		#resourceTypeControls ul {
-			list-style-type: none;
-			padding: 0px;
-			margin: 0 0.5em 0 1em;
-		}
-		#resourceTypeControls li {
-			text-align: right;
-		}
-		.typeCount {
-			padding-left: 0.5em;
-			color: #868282;
-		}
-		fieldset.infoBox {
-			position: absolute;
-  			z-index: 999;
-		}
-	</style>
 </head>
 <body>
   	<div id="VizualizerPanel">
@@ -452,7 +488,7 @@ ClassMethod OnPage() As %Status
   							unfocusInspector();">
   				hide this resource on map
 			</button>
-		    <pre id="resourceJSON"></pre>
+		    <pre><code id="resourceJSON" class='language-json' autocomplete="off" readonly placeholder="FHIR Data..."></code></pre>
   		</div>
   	</div>
 </body>

@@ -1,7 +1,7 @@
 /**
 * Displays a comparison of SDA3 and FHIR data.
 *
-* @version 1.0 2024-03-27
+* @version 2.0 2024-09-01
 * @author Brandon Thomas
 */
 
@@ -18,88 +18,81 @@ ClassMethod OnPage() As %Status [ ServerOnly = 1 ]
 	<title>HSFHIRToolkit | SDA3 & FHIR</title>
 	#(..MetaTags())#
 	#(..LinkJS("jquery-3.7.1.min.js"))#
+	#(..LinkJS("jquery-ui-1.13.3.min.js"))#
 	#(..XDataJS("BeautifyJS"))#
 	#(..XDataJS("StorageHandler"))#
+	#(..LinkJS("highlight.min.js"))#
+	#(..LinkJS("hightlight.xml.js"))#
+    #(..LinkJS("highlightjs-line-numbers.min.js"))#
+    #(..LinkCSS("highlight.min.css"))#
+
 	#(..DefaultStyle())#
 		
-	<style>
-	body {background-image:none;}
-	textarea {
-		width: 100%;
-		height: 100%;
-		overflow: scroll;
-	}
-	#container {
-		height:98vh;
-    	width: 100%;
-    	display: flex;
-	}
+<style>
+body {background-image:none;}
+#Controls {
+	position: fixed;
+	top: 0;
+	right: 10em;
+	cursor: move;
+}
+#container {
+	/*height:98vh;*/
+	width: 100%;
+	display: flex;
+}
+pre, code {
+	padding-top: 0;
+	margin-top: 0;
+}
+#separator {
+	cursor: col-resize;
+	background-color: #aaa;
+	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='30'><path d='M2 0 v30 M5 0 v30 M8 0 v30' fill='none' stroke='black'/></svg>");
+	background-repeat: no-repeat;
+	background-position: center;
+	min-width: 5px;
+	min-height: 100%;
 
-	#separator {
-	    cursor: col-resize;
-	    background-color: #aaa;
-	    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='30'><path d='M2 0 v30 M5 0 v30 M8 0 v30' fill='none' stroke='black'/></svg>");
-	    background-repeat: no-repeat;
-	    background-position: center;
-	    width: 5px;
-	    height: 100%;
+	/* Prevent the browser's built-in drag from interfering */
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
 
-	    /* Prevent the browser's built-in drag from interfering */
-	    -moz-user-select: none;
-	    -ms-user-select: none;
-	    user-select: none;
-	}
+#sdaSource {
+	background-color: rgba(51, 54, 149, 0.01);
+	height: 100%;
+	min-width: 10px;
+}
 
-	#sdaSource {
-	    background-color: rgba(51, 54, 149, 0.01);
-	    width: 20%;
-	    height: 100%;
-	    min-width: 10px;
-	}
-
-	#fhirSource {
-	    background-color: rgba(0, 181, 175, 0.01);
-	    width: 80%;
-	    height: 100%;
-	    min-width: 10px;
-	}
+#fhirSource {
+	background-color: rgba(0, 181, 175, 0.01);
+	height: 100%;
+	min-width: 10px;
+}
+.highlight {
+	background-color: aqua;
+}
 </style>
 		
 <script type="text/javascript">
 $(document).ready(function(){
 	dragElement( document.getElementById("separator"), "H" );
 	parse();
-	/* TODO: create components to display and highlight search terms of the sda and fhir
-			reference: https://css-tricks.com/creating-an-editable-textarea-that-supports-syntax-highlighted-code/
-	$('.textarea').on('dblclick', function(ele){
-		
-		let searchTerm = window.getSelection().toString();
-		console.log('this', $(this));
-		console.log($(this).parent().attr('id'), searchTerm);
-		searchHighlight($(this).parent().attr('id'), searchTerm);
-		
-	});
-	*/
+	hljs.highlightAll();
+	hljs.initLineNumbersOnLoad();
+
+	setTimeout(() => {
+        $('.hljs-xmlval, .hljs-string').on('dblclick', highlightUserSelection);
+    }, 1000);
+
+	$('fieldset.infoBox').draggable();
 });
 
-function searchHighlight(sourceTextArea, searchTerm) {
-	let targetTextArea = (sourceTextArea==='sdaSource') ? 'fhirSource':'sdaSource';
-	let regex = new RegExp(`(${searchTerm})`, "gi");
-	let text = $('#'+targetTextArea).val();
-	console.log(text.match(regex));
-	
-	let parts = text.split(regex);
-	let highlightedText = parts
-        .map((part) =>
-          part.match(regex)
-            ? `<span style="background-color: yellow;">${part}</span>`
-            : part
-        )
-        .join("");
-      // Replace the original text with the highlighted version
-      $('#'+targetTextArea).html(highlightedText);
+function escapeHTML(html) {
+	return jQuery('<div />').text(html).html()
 }
-
 function parse() {
 		
 	let tMpiid = getMpiid();
@@ -112,16 +105,14 @@ function parse() {
 	if (tSDA === null) {
 		console.log("No SDA data found in localStorage. Search for a patient first.");
 	} else {
-		$('#sdaSource').val(vkbeautify.xml(tSDA, ' '));
-		//$('#sdaSource').html('<xmp class="textarea"><?xml version="1.0" encoding="UTF-8"?>'+vkbeautify.xml(tSDA, ' ')+'</xmp>');
+		$('#sdaSource').html(escapeHTML(tSDA, ' '));
 	}
 
 	let tFHIR = getFhirData();
 	if (tFHIR === null) {
 		console.log("No FHIR data found in localStorage. Search for a patient first.");
 	} else {
-		$('#fhirSource').val(vkbeautify.json(tFHIR, ' '));
-		//$('#fhirSource').html('<pre class="textarea">'+vkbeautify.json(tFHIR, ' ')+'</pre>');
+		$('#fhirSource').html(vkbeautify.json(tFHIR, ' '));
 	}
 	
 }
@@ -165,16 +156,75 @@ function dragElement(element, direction) {
 		}
 	}
 }
+function hscroll(direction = '+')
+{
+    if (direction === '+') {
+        currentHighlight = currentHighlight+1;
+        if (currentHighlight > (foundTerm.length-1)) {
+            currentHighlight = 0;
+        }
+    } else {
+        currentHighlight = currentHighlight-1;
+        if (currentHighlight < 0) {
+            currentHighlight = foundTerm.length-1;
+        }
+    }
+    $('#currentFound').text(currentHighlight+1);
+    $('html').animate({scrollTop:foundTerm[currentHighlight] },800);
+}
+function highlightUserSelection(jQueryEle) {
+	console.log($(this).text());
+	$('#searchTerm').val($(this).text());
+	highlightSearchTerm($(this).text());
+}
+function highlightSearchTerm(searchTerm)
+{
+    if (searchTerm==="" || searchTerm===null) {
+        return
+    }
+
+	$('.highlight').removeClass('highlight');
+
+    const regx = new RegExp(String.raw`${searchTerm}`, "g");
+
+    foundTerm = new Array();
+
+    $('.hljs-xmlval, .hljs-string').each(function(iter,blk){
+        if ($(this).html().match(regx)) {
+            console.log(iter,$(this).offset().top);
+            foundTerm.push($(this).offset().top);
+            //$(this).html($(this).html().replaceAll(searchTerm, '<mark>'+searchTerm+'</mark>'));
+			$(this).addClass('highlight');
+            currentHighlight = -1;
+        }
+        
+    });
+
+    $('#totalFound').text(foundTerm.length);
+    hscroll('+');
+}
 </script>
 </head>
 	<body>
+	<fieldset class="infoBox" id="Controls">
+		<legend>&#8984; find</legend>
+        <!--span id="currentDoc"></span><br-->
+		<table><tr>
+		<td><form onsubmit="highlightSearchTerm($('#searchTerm').val()); return false;">
+            <input id="searchTerm" autofocus />
+        </form></td>
+        <td><button onclick="hscroll('-')">&lt;</button></td>
+        <td><button onclick="hscroll('+')">&gt;</button></td>
+		</tr></table>
+            <br>
+        <button onclick="$('html').animate({scrollTop:0},800);">&#10514;</button>
+        <button onclick="$('html').animate({scrollTop:$(document).height()},800);">&#10515;</button>
+        <span class="comment">line <span id="currentFound"></span> of <span id="totalFound"></span></span>
+	</fieldset>
 		<div id="container">
-			<textarea id="sdaSource" autocomplete="off" readonly placeholder="SDA Data..."></textarea>
+			<div><pre><code id="sdaSource" class='language-xml' autocomplete="off" readonly placeholder="SDA Data..."></code></pre></div>
 			<div id="separator" ></div>
-			<textarea id="fhirSource" autocomplete="off" readonly placeholder="FHIR Data..."></textarea>
-			<!--div id="sdaSource" autocomplete="off" readonly placeholder="SDA Data..."></div>
-			<div id="separator" ></div>
-			<div id="fhirSource" autocomplete="off" readonly placeholder="FHIR Data..."></div-->
+			<div><pre><code id="fhirSource" class='language-json' autocomplete="off" readonly placeholder="FHIR Data..."></code></pre></div>
 		</div>	
 	</body>
 	</html>>

@@ -108,6 +108,7 @@ ClassMethod OnPage() As %Status
 		groupOrder: function (a, b) {
 			return a.value - b.value;
 		},
+		align: 'left',
 		editable: false,
 		configure: false, //displays configurable options on the webpage
 		locale: 'de',
