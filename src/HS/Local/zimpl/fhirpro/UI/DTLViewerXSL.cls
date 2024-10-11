@@ -16,6 +16,7 @@ XData XSL
 	xmlns:isc="http://extension-functions.intersystems.com" >
 	<xsl:output method="html" version="5.0" encoding="UTF-8" indent="yes"/>
 	<xsl:template match="/">
+	<xsl:text disable-output-escaping='yes'>&lt;!DOCTYPE html&gt;</xsl:text>
 		<html>
 			<head>
 				<link rel="icon" type="image/x-icon" href="favicon.ico" />
@@ -30,7 +31,7 @@ XData XSL
 			</head>
 			<body>
 				<h2 id="HeaderTitle" />
-				<a id="DTLEditor" target="_blank">edit</a>
+				<a id="DTLEditor" target="_blank"></a>
 				<div class="content">
 					<div>
 						<ul>
@@ -94,6 +95,7 @@ $(document).ready(function(){
 	var dtl = window.location.search.split('DTL=')[1];
 	$('#HeaderTitle').text(dtl);
 	$('#DTLEditor').attr('href', 'EnsPortal.DTLEditor.zen?DT='+dtl+'.dtl');
+	<xsl:text disable-output-escaping='yes'><![CDATA[$('#DTLEditor').html(" &#9998;");]]></xsl:text>
 	$(document).attr('title', '[DTL] '+dtl);
 	if(window.location.protocol == 'file:') {$("#DTLEditor").remove()}
 });
