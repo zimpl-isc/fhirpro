@@ -22,7 +22,7 @@ ClassMethod OnPage() As %Status [ ServerOnly = 1 ]
 	#(..XDataJS("BeautifyJS"))#
 	#(..XDataJS("StorageHandler"))#
 	#(..LinkJS("highlight.min.js"))#
-	#(..LinkJS("hightlight.xml.js"))#
+	#(..LinkJS("highlight.xml.js"))#
     #(..LinkJS("highlightjs-line-numbers.min.js"))#
     #(..LinkCSS("highlight.min.css"))#
 
@@ -44,6 +44,7 @@ body {background-image:none;}
 pre, code {
 	padding-top: 0;
 	margin-top: 0;
+	max-width: 75vw;
 }
 #separator {
 	cursor: col-resize;
@@ -73,6 +74,18 @@ pre, code {
 }
 .highlight {
 	background-color: aqua;
+}
+.hljs-tag, .hljs-name {
+	/* xml */
+	color: #444a;
+	font-weight: lighter;
+}
+.hljs-attr {
+	color: #22509f;
+}
+.hljs-xmlval {
+	color: #800;
+	font-weight: bolder;
 }
 </style>
 		
@@ -173,9 +186,9 @@ function hscroll(direction = '+')
     $('html').animate({scrollTop:foundTerm[currentHighlight] },800);
 }
 function highlightUserSelection(jQueryEle) {
-	console.log($(this).text());
-	$('#searchTerm').val($(this).text());
-	highlightSearchTerm($(this).text());
+	let userSelection = $(this).text().replaceAll('"','');
+	$('#searchTerm').val(userSelection);
+	highlightSearchTerm(userSelection);
 }
 function highlightSearchTerm(searchTerm)
 {
@@ -207,7 +220,7 @@ function highlightSearchTerm(searchTerm)
 </head>
 	<body>
 	<fieldset class="infoBox" id="Controls">
-		<legend>&#8984; find</legend>
+		<legend>&#128270; find</legend>
         <!--span id="currentDoc"></span><br-->
 		<table><tr>
 		<td><form onsubmit="highlightSearchTerm($('#searchTerm').val()); return false;">
