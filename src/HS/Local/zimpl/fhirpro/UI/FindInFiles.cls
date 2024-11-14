@@ -50,6 +50,10 @@ h2 {display:none;}
 #Controls {
 	margin: 1em 0 2em 1em;
 }
+#filterForUnique {
+	float: right;
+	margin-right: 1em;
+}
 tr.odd,tr.even {
 	cursor: pointer;
 }
@@ -92,8 +96,17 @@ async function ApiSearch()
 				dataSet.push([result.doc, match.attr||"", match.member||"", escapeHTML(match.text)]);
 			});
 		});
-		
-		$('#queryResults').DataTable({
+
+		drawTable(dataSet);
+	}
+	$('#LoadingMessage',window.parent.document).toggle(false);
+}
+
+function drawTable(pData) {
+	let query		= encodeURI($('#queryString').val());
+	let namespace	= $('#namespace').val();
+
+	$('#queryResults').DataTable({
 			destroy: true,
 			language: {
 				"search": "Filter rows:"
@@ -107,18 +120,36 @@ async function ApiSearch()
 				{ title: 'Member' },
 				{ title: 'Text' },
 			],
-			data: dataSet
+			data: pData
 		});
+
+		$('#queryResults th').first().html('Classname <a id="filterForUnique">');
+		$('#filterForUnique').html('<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel" viewBox="0 0 16 16"><path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z"></path></svg>');
+		$('#filterForUnique').on('click', distill);
+		
+}
+
+function distill() {
+	/// https://stackoverflow.com/questions/9229645/remove-duplicate-values-from-js-array
+	function uniqBy(a, key) {
+		var seen = {};
+		return a.filter(function(item) {
+			var k = key(item[0]);
+			return seen.hasOwnProperty(k) ? false : (seen[k] = true);
+		})
 	}
-	$('#LoadingMessage',window.parent.document).toggle(false);
+
+	let dataSetDistilled = uniqBy(dataSet,JSON.stringify);
+
+	drawTable(dataSetDistilled);	
 }
 
 function escapeHTML(html) {
 	return jQuery('<div />').text(html).html()
 }
 $(document).ready(function() {
-        //$('#host').val(window.location.href.substring(0,window.location.href.search(/(?=[^\/]*$)/g)));
-		$('#host').val(window.location.origin);
+        //$('#host').val(window.location.origin);
+		$('#host').val(window.location.href.split('/csp')[0]);
     });
 
 </script>

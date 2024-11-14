@@ -10,7 +10,7 @@ Class HS.Local.zimpl.fhirpro.API.Installer
 
 ClassMethod Install()
 {
-	set tInstallation = $listbuild("ZIMPLFHIRPRO:HS.Local.zimpl.fhirpro.Production")
+	set tInstallation = $listbuild("ZIMPLFHIRPRO:HS.Local.zimpl.fhirpro.Production:1")
 	
 	for tIter = 1:1:$listlength(tInstallation) {
 		

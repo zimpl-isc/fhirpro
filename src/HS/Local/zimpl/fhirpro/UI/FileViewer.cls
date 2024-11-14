@@ -141,10 +141,11 @@ function escapeHTML(html) {
 async function ApiGetDoc(namespace,documentName,searchTerm)
 {
     const params    = new URLSearchParams(location.search);
+    const host      = window.location.href.split('/csp')[0];
     const doc       = documentName  || params.get("doc");
     const ns        = namespace     || params.get("ns");
     const st        = searchTerm    || params.get("st");
-	const api   	= '/api/atelier/v5/'+ns+'/doc/' + encodeURI(doc);
+	const api   	= host+'/api/atelier/v5/'+ns+'/doc/' + encodeURI(doc);
 
 	// Fetch
 	queryResponse = await fetch(api, {cache: "no-cache"})
