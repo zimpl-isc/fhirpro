@@ -205,7 +205,8 @@ function highlightSearchTerm(searchTerm = $('#searchTerm').val())
     $('body :not(script,#currentDoc)').contents().filter(function() {
         return this.nodeType === 3;
     }).replaceWith(function() {
-        if (this.nodeValue == searchTerm) {
+        //if (this.nodeValue == searchTerm) {
+        if (this.nodeValue.search(searchTerm) !== -1) {
             return this.nodeValue.replace(searchTerm,'<mark>'+searchTerm+'</mark>');
         } else {
             return escapeHTML(this.nodeValue);
