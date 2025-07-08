@@ -178,7 +178,9 @@ pre, code {
 		} else if(resourceType === 'Location') {
 			display = rsc.physicalType.coding[0].display + ' ' + rsc.identifier[0].value;
 			title = rsc.physicalType.coding[0].display;
-
+		} else if(resourceType === 'Device') {
+			title = rsc.deviceName[0].name;
+			console.log("Device!!!!");
 		} else if(typeof rsc.type!=='undefined') {
 			if((typeof rsc.type==='object') && (typeof rsc.type.coding!=='undefined')) {
 				display = rsc.type.coding[0].display || rsc.type.coding[0].code;
