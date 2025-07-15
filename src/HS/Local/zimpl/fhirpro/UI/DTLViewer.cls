@@ -170,14 +170,17 @@ ClassMethod OnPage() As %Status
 					#dim tTargetDocType	= $classmethod(tDTLClass, "GetTargetDocType")
 					
 					&html<
-					<tr onclick="window.open('?DTL=#(tDTLClass)#', '_blank');" style="cursor:pointer;">
-						<td> <a href="EnsPortal.DTLEditor.zen?DT=#(tDTLClass)#.dtl" target="_blank">&#9998;</a> #(tDTLClass)#</td>
-						<td>#(tSourceType)#>
+					<tr class="result">
+						<td class="dataField" data-doc="#(tDTLClass)#">
+							<a class="dataLinkEditor">&#9998;</a>
+							<a class="dataLinkViewer">#(tDTLClass)#</a>
+						</td>
+						<td class="sourcetype">#(tSourceType)#>
 						if (tSourceDocType'="") {
 							&html<<span class="docType">#(tSourceDocType)#</span>>
 						}
 				&html<</td>
-						<td>#(tTargetType)#>
+						<td class="targettype">#(tTargetType)#>
 						if (tTargetDocType'="") {
 							&html<<span class="docType">#(tTargetDocType)#</span>>
 						}
@@ -187,27 +190,65 @@ ClassMethod OnPage() As %Status
 				}
 		
 		&html<</tbody></table>
-				<script type="text/javascript">
-				$(document).ready(function(){
-					$('#DTLList').DataTable({
-					  "language": {
-					    "search": "Filter records:"
-					  }});
-					$("#Search").select();
-					$("#Search").on('keyup', function (e) {
-					    if (e.key === 'Enter' || e.keyCode === 13) {
-						    var package = $("#PackageName").val();
-						    var search = $("#Search").val();
-					        window.open('?package='+package+'&search='+search,'_self');
-					    }
-					});
-					$('#DTLList a').click(function(e){
-						e.stopPropagation();
-					});
-				});
-				
-				</script>
-				<button onclick="exportDTLs()">Export DTL Documentation</button>
+	<script type="text/javascript">
+	$(document).ready(function(){
+		$('#DTLList').DataTable({
+			"language": {
+			"search": "Filter records:"
+			}});
+		$("#Search").select();
+		$("#Search").on('keyup', function (e) {
+			if (e.key === 'Enter' || e.keyCode === 13) {
+				var package = $("#PackageName").val();
+				var search = $("#Search").val();
+				window.open('?package='+package+'&search='+search,'_self');
+			}
+		});
+		$('#DTLList a').click(function(e){
+			e.stopPropagation();
+		});
+		$('.dataLinkEditor').each(function () {
+			const doc = $(this).parent().data("doc");
+			const href = 'EnsPortal.DTLEditor.zen?DT=' + doc + '.dtl';
+			$(this).attr({
+				href: href,
+				target: '_blank'
+			});
+		});
+		$('.dataLinkViewer').each(function () {
+			const doc = $(this).parent().data("doc");
+			const href = '?DTL=' + doc;
+			$(this).attr({
+				href: href,
+				target: '_blank'
+			});
+		});
+		let tooltipVisible = false;
+		$('.dataField').on('mouseenter', function (e) {
+			const iframeUrl = '?DTL=' + $(this).data('doc');
+			$('#tooltip-iframe').attr('src', iframeUrl);
+
+			$('#iframe-tooltip-container').css({
+				display: 'block'
+			});
+
+			tooltipVisible = true;
+		});
+		$('.dataField, #iframe-tooltip-container').on('mouseleave', function () {
+			setTimeout(() => {
+				if (!$('#iframe-tooltip-container').is(':hover') && !$('.dataField:hover').length) {
+					$('#iframe-tooltip-container').hide();
+					$('#tooltip-iframe').attr('src', '');
+					tooltipVisible = false;
+				}
+			}, 200);
+		});
+	});
+	</script>
+				<div id="iframe-tooltip-container">
+  					<iframe id="tooltip-iframe" src="" width="100%" height="100%" frameborder="0"></iframe>
+				</div>
+				<button class="exportButton" onclick="exportDTLs()">Export DTL Documentation</button>
 			</body>
 		</html>>
 		
@@ -328,7 +369,6 @@ ClassMethod Export(pPackage, pSearchTerm, pTargetDirectory) As %Status
 						"<th>Classname</th>"_"<th>Source Object Type</th>"_"<th>Target Object Type</th>"_
 					"</tr>"_"</thead>"_
 					"<tbody>")
-	
 	
 	set tRS = ##class(%ResultSet).%New()
 	do tRS.Prepare("select Name as tDTLClass,ClassCompileError,ClassDefinitionError from %Dictionary.CompiledClass "_

@@ -145,6 +145,7 @@ ClassMethod OnPage() As %Status
 		setCurrentItemInTitle(getMpiid());
 	}
 	function setCurrentItemInTitle(mpiid) {
+		console.log(mpiid);
 		$('#CurrentItem').html(' [' + mpiid + ']');
 	}
 	</script>

@@ -45,7 +45,6 @@ ClassMethod OnPage() As %Status
 	#(..DefaultStyle())#
 
 <style>
-body {padding:5px;}
 h2 {display:none;}
 #Controls {
 	margin: 1em 0 2em 1em;
@@ -116,15 +115,22 @@ function drawTable(pData) {
 				"search": "Filter rows:"
 			},
 			columns: [
-				{ title: 'Classname', render: function (data, type, row, meta) {
-    											return "<a href='HS.Local.zimpl.fhirpro.UI.FileViewer.cls?doc="+data+"&ns="+namespace+"&st="+query+"' target=_blank>"+data+'</a>';
-												}
+				{ title: 'Classname', 
+				  createdCell: function (td, cellData, rowData, row, col) {
+					$(td).addClass('dataField');
+                	$(td).attr('data-doc', rowData[0]); 
+				  },
+				  render: function (data, type, row, meta) {
+    							return "<a class='dataLink'>"+data+"</a>";
+							}
+				   
       			},
 				{ title: 'Attr' },
 				{ title: 'Member' },
 				{ title: 'Text' },
 			],
-			data: pData
+			data: pData,
+			drawCallback: updateTableLinks
 		});
 
 		$('#queryResults th').first().html($('#queryResults th').first().html() + '<a id="filterForUnique">');
@@ -161,9 +167,41 @@ function escapeHTML(html) {
 	return jQuery('<div />').text(html).html()
 }
 $(document).ready(function() {
-        //$('#host').val(window.location.origin);
-		$('#host').val(window.location.href.split('/csp')[0]);
+    $('#host').val(window.location.href.split('/csp')[0]);
+});
+
+function updateTableLinks() {
+	let tooltipVisible = false;
+	let query = encodeURI($('#queryString').val());
+	let namespace	= $('#namespace').val();
+	$('.dataLink').each(function () {
+		const doc = $(this).parent().data("doc");
+		const href = 'HS.Local.zimpl.fhirpro.UI.FileViewer.cls?doc=' + doc + '&ns=' + namespace + '&st=' + query;
+    	$(this).attr({
+			href: href,
+			target: '_blank'
+		});
+	});
+	$('.dataField').on('mouseenter', function (e) {
+		const iframeUrl = 'HS.Local.zimpl.fhirpro.UI.FileViewer.cls?doc='+$(this).data("doc")+'&ns='+namespace+'&st='+query;
+		$('#tooltip-iframe').attr('src', iframeUrl);
+
+		$('#iframe-tooltip-container').css({
+			display: 'block'
+		});
+
+		tooltipVisible = true;
     });
+	$('.dataField, #iframe-tooltip-container').on('mouseleave', function () {
+		setTimeout(() => {
+			if (!$('#iframe-tooltip-container').is(':hover') && !$('.dataField:hover').length) {
+				$('#iframe-tooltip-container').hide();
+				$('#tooltip-iframe').attr('src', '');
+				tooltipVisible = false;
+			}
+		}, 200);
+		});
+}
 
 </script>
 
@@ -195,6 +233,9 @@ $(document).ready(function() {
     </form>
 	<div id="Results">
 		<table id="queryResults" class="display" width="100%"></table>
+	</div>
+	<div id="iframe-tooltip-container">
+		<iframe id="tooltip-iframe" src="" width="100%" height="100%" frameborder="0"></iframe>
 	</div>
 </body>
 </html>>

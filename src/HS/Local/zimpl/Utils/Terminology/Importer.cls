@@ -34,7 +34,7 @@ ClassMethod MII(Output oResourcesArray)
     
     //set oResourcesArray("ICD10GM2023 CodeSystem") = $$$URL("CodeSystem/58851804-3afa-47a3-8d29-ee6aef7a680f")
     //set oResourcesArray("All ConceptMappings")    = $$$URL("ConceptMap?_count=2000")
-    set oResourcesArray("OPS Operationen- und Prozedurenschlüssel") = $$$URL("CodeSystem/fb3ddb69-7b2e-4415-85f8-3e6f92c8b524")
+    set oResourcesArray("OPS Operationen- und ProzedurenschlÃ¼ssel") = $$$URL("CodeSystem/fb3ddb69-7b2e-4415-85f8-3e6f92c8b524")
 }
 
 ClassMethod KBVImpfpass(Output oResourcesArray)
@@ -47,7 +47,7 @@ ClassMethod KBVImpfpass(Output oResourcesArray)
     set oResourcesArray("KBV_VS_MIO_Vaccination_Vaccine_ATC") = $$$URL("ValueSet/3531e0cd-dd2e-42f6-9bba-e2542ee6306f")
     set oResourcesArray("KBV_CM_MIO_Vaccination_Vaccine_ATC_Snomed") = $$$URL("ConceptMap/f4d88828-7145-4f7c-8ebc-e682de2805fc")
 
-    // TODO: Folgende Ressourcen zusammenführen. https://simplifier.net/im1x0/kbvvsmiovaccinationvaccine
+    // TODO: Folgende Ressourcen zusammenfÃ¼hren. https://simplifier.net/im1x0/kbvvsmiovaccinationvaccine
     set oResourcesArray("KBV_VS_MIO_Vaccination_Vaccine_List") = $$$URL("ValueSet/8a4e6169-fa0a-4855-b696-ba68cb828a3a")
     set oResourcesArray("KBV_VS_MIO_Vaccination_Vaccine_Immunoglobulin_List") = $$$URL("ValueSet/156151ed-ed6e-45e8-81ad-2ab8e16b7ecd")
     set oResourcesArray("KBV_VS_MIO_Vaccination_Vaccine_Brucella") = $$$URL("ValueSet/9f96b94c-8fc5-4846-9b8a-4bdb448b6bae")
