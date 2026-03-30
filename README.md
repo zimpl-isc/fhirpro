@@ -2,14 +2,13 @@
 *2026-03-30 • Brandon Thomas*
 
 ## Contents
-- [Scope](#scope)
+- [Overview](#overview)
 - [Installation](#installation)
     - [Classes and Dependencies](#classes-and-dependencies)
     - [Configure Production](#configure-production)
     - [Navigate to the Startpage](#navigate-to-the-startpage)
     - [Disclaimer](#disclaimer)
-- [Known Issues](#known-issues)
-- [Roadmap](#roadmap)
+- [Changelog](#changelog)
 - [License](#license)
 
 ## Overview
@@ -112,11 +111,7 @@ The following external libraries are contained in the included zip file:
 - [vis-timeline](https://visjs.org/)
 
 ---
-- [ ] Unzip and save the contents of 
-
-`zimplifhir_Dependencies-*.zip` 
-
-to the following directory:
+- [ ] Copy the contents of the csp_assets folder to the following directory:
 
 `{HealthShare Installation}/csp/healthshare/zimplifhir/`
 
