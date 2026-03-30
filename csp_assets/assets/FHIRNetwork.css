@@ -1,0 +1,845 @@
+html,
+body {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	overflow: hidden;
+	background: #f5f7fb;
+	box-sizing: border-box;
+	font-family: Arial, Helvetica, sans-serif;
+	color: #1f2937;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: inherit;
+}
+
+button,
+input,
+textarea,
+select {
+	font: inherit;
+}
+
+#pageShell {
+	height: 100%;
+	padding: 16px;
+	overflow: hidden;
+}
+
+#networkLayout {
+	position: relative;
+	height: 100%;
+	overflow: hidden;
+}
+
+.card {
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 12px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+/* MAIN AREA */
+#mainArea {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	min-width: 0;
+	min-height: 0;
+	overflow: hidden;
+}
+
+#NetworkCard {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	overflow: hidden;
+}
+
+#VisNetworkPane {
+	width: 100%;
+	height: 100%;
+	min-height: 620px;
+	background: #ffffff;
+	overflow: hidden;
+	touch-action: none;
+}
+
+/* TOP LEFT TOOLBAR */
+#NetworkToolbar {
+	position: absolute;
+	top: 16px;
+	left: 16px;
+	z-index: 40;
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+}
+
+#RailToggleButton {
+	height: 36px;
+	min-width: 36px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid #cbd5e1;
+	border-radius: 10px;
+	background: rgba(255, 255, 255, 0.96);
+	color: #334155;
+	font-size: 18px;
+	line-height: 1;
+	cursor: pointer;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+#RailToggleButton:hover {
+	background: #f8fafc;
+}
+
+#NetworkZoomControls {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+#NetworkZoomControls button {
+	width: 36px;
+	height: 36px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid #cbd5e1;
+	border-radius: 10px;
+	background: rgba(255, 255, 255, 0.96);
+	color: #334155;
+	font-size: 16px;
+	line-height: 1;
+	cursor: pointer;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+#NetworkZoomControls button:hover {
+	background: #f8fafc;
+}
+
+/* BACKDROP */
+#DrawerBackdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(15, 23, 42, 0.18);
+	z-index: 25;
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	transition: opacity 180ms ease, visibility 180ms ease;
+}
+
+#DrawerBackdrop.open {
+	opacity: 1;
+	visibility: visible;
+	pointer-events: auto;
+}
+
+/* GENERIC DRAWER */
+.drawer {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	z-index: 35;
+	will-change: transform, opacity;
+	transition: transform 180ms ease, opacity 180ms ease, visibility 180ms ease;
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+}
+
+.drawer.open {
+	opacity: 1;
+	visibility: visible;
+	pointer-events: auto;
+}
+
+/* LEFT DRAWER */
+#leftRail {
+	top: 8px;
+	left: 8px;
+	bottom: 8px;
+	width: min(360px, calc(100vw - 64px));
+	transform: translateX(calc(-100% - 20px));
+	gap: 12px;
+	z-index: 50;
+}
+
+#leftRail.open {
+	transform: translateX(0);
+}
+
+#resourceTypeControls {
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	height: 100%;
+	overflow: hidden;
+}
+
+#resourceTypeControlsHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 14px 16px 10px 16px;
+	border-bottom: 1px solid #e5e7eb;
+	font-size: 16px;
+	font-weight: 600;
+	flex: 0 0 auto;
+}
+
+#ToggleAllResourceTypesButton {
+	height: 28px;
+	min-width: 28px;
+	padding: 0 8px;
+	border: 1px solid #cbd5e1;
+	border-radius: 8px;
+	background: #ffffff;
+	color: #334155;
+	cursor: pointer;
+	font-size: 14px;
+	line-height: 1;
+}
+
+#ToggleAllResourceTypesButton:hover {
+	background: #f8fafc;
+}
+
+#resourceTypeControlsBody {
+	padding: 12px 16px 16px 16px;
+	overflow: auto;
+	min-height: 0;
+}
+
+#resourceTypeControls ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+#resourceTypeControls li {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	padding: 7px 0;
+	border-bottom: 1px solid #f1f5f9;
+}
+
+#resourceTypeControls li:last-child {
+	border-bottom: none;
+}
+
+.typeLeft {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	min-width: 0;
+}
+
+.typeLabel {
+	color: #334155;
+	font-size: 14px;
+	font-weight: 500;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.typeCount {
+	color: #94a3b8;
+	font-size: 13px;
+}
+
+.typeToggle {
+	width: 16px;
+	height: 16px;
+	cursor: pointer;
+}
+
+#HiddenResourceTray {
+	margin-top: 12px;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.unhideButton {
+	border: 1px solid #cbd5e1;
+	background: #ffffff;
+	color: #334155;
+	border-radius: 8px;
+	padding: 6px 10px;
+	font-size: 12px;
+	line-height: 1.2;
+	cursor: pointer;
+}
+
+.unhideButton:hover {
+	background: #f8fafc;
+}
+
+/* RIGHT DRAWER / INSPECTOR */
+#ResourceInspector {
+	right: 0;
+	width: min(760px, calc(100vw - 48px));
+	transform: translateX(calc(100% + 12px));
+	overflow: hidden;
+	margin: 8px;
+}
+
+#ResourceInspector.open {
+	transform: translateX(0);
+}
+
+#ResourceInspectorHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 14px 16px;
+	border-bottom: 1px solid #e5e7eb;
+	background: #ffffff;
+	flex: 0 0 auto;
+}
+
+#ResourceInspectorTitle {
+	font-size: 16px;
+	font-weight: 600;
+	color: #1f2937;
+	min-width: 0;
+}
+
+#ResourceInspectorActions {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex: 0 0 auto;
+}
+
+#HideResourceButton,
+#CloseInspectorButton {
+	height: 32px;
+	padding: 0 10px;
+	border: 1px solid #cbd5e1;
+	border-radius: 8px;
+	background: #ffffff;
+	color: #334155;
+	cursor: pointer;
+	white-space: nowrap;
+}
+
+#HideResourceButton:hover,
+#CloseInspectorButton:hover {
+	background: #f8fafc;
+}
+
+#ResourceInspectorBody {
+	flex: 1 1 auto;
+	min-height: 0;
+	overflow: auto;
+	padding: 8px;
+	background: #ffffff;
+	font-size: 12px;
+}
+
+/* CODE */
+#ResourceInspectorBody pre {
+	background: #f8fafc;
+	border: 1px solid #e5e7eb;
+	border-radius: 10px;
+	padding: 10px;
+	overflow: auto;
+	line-height: 1.35;
+	min-height: 100%;
+}
+
+#ResourceInspectorBody code {
+	font-family: Consolas, Monaco, monospace;
+	font-size: 12px;
+	line-height: 1.35;
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+pre,
+code {
+	margin: 0;
+	padding-top: 0;
+}
+
+#PresetSelector {
+	appearance: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	min-width: 260px;
+	max-width: 360px;
+	height: 32px;
+	border: 1px solid #cbd5e1;
+	background-color: #ffffff;
+	color: #334155;
+	border-radius: 8px;
+	padding: 6px 34px 6px 10px;
+	font-size: 13px;
+	line-height: 18px;
+	font-family: inherit;
+	cursor: pointer;
+	box-shadow: none;
+	background-image: linear-gradient(45deg, transparent 50%, #64748b 50%), linear-gradient(135deg, #64748b 50%, transparent 50%);
+	background-position: calc(100% - 16px) 13px, calc(100% - 11px) 13px;
+	background-size: 5px 5px, 5px 5px;
+	background-repeat: no-repeat;
+}
+
+#validationControls {
+	margin-bottom: 12px;
+}
+
+#validationControlsHeader {
+	padding: 12px 16px 8px 16px;
+	font-weight: 600;
+	border-bottom: 1px solid #e3e6ea;
+}
+
+#validationControlsBody {
+	padding: 12px 16px 16px 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+#validationControls .formRow {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+#validationControls label {
+	font-size: 0.9rem;
+	font-weight: 500;
+	color: #444;
+}
+
+#ValidationProfileSelector {
+	width: 100%;
+	padding: 8px 10px;
+	border: 1px solid #cfd6dd;
+	border-radius: 6px;
+	background: #fff;
+	font-size: 0.95rem;
+}
+
+#RunValidationButton {
+	width: 100%;
+	padding: 9px 12px;
+	border: 1px solid #c7d0d9;
+	border-radius: 6px;
+	background: #f7f9fb;
+	cursor: pointer;
+	font-weight: 600;
+}
+
+#RunValidationButton:hover {
+	background: #eef3f7;
+}
+
+.validationSummary {
+	padding: 8px 10px;
+	border-radius: 6px;
+	font-size: 0.9rem;
+	line-height: 1.35;
+	border: 1px solid transparent;
+}
+
+.validationSummary.is-hidden {
+	display: none;
+}
+
+.validationSummary.is-info {
+	background: #f4f8fc;
+	border-color: #d6e4f2;
+}
+
+.validationSummary.is-success {
+	background: #f2faf4;
+	border-color: #cfe8d4;
+}
+
+.validationSummary.is-warning {
+	background: #fff8e8;
+	border-color: #ecd9a2;
+}
+
+.validationSummary.is-error {
+	background: #fff3f3;
+	border-color: #ebc7c7;
+}
+
+/* MOBILE / NARROW */
+@media (max-width: 900px) {
+	#pageShell {
+		padding: 10px;
+	}
+
+	#leftRail {
+		width: min(340px, calc(100vw - 20px));
+	}
+
+	#ResourceInspector {
+		width: calc(100vw - 20px);
+	}
+
+	#NetworkToolbar {
+		top: 10px;
+		left: 10px;
+	}
+}
+
+/* VALIDATION: LEFT RAIL */
+#ValidationBundleIssues {
+	margin-top: 4px;
+	padding: 8px 10px;
+	border: 1px solid #e5e7eb;
+	border-radius: 8px;
+	background: #fafbfc;
+	font-size: 0.9rem;
+	line-height: 1.35;
+}
+
+#ValidationBundleIssues.is-hidden {
+	display: none;
+}
+
+#ValidationBundleIssues .validationSectionTitle {
+	font-weight: 600;
+	margin-bottom: 8px;
+	color: #1f2937;
+}
+
+/* VALIDATION: INSPECTOR */
+#InspectorValidationPanel {
+	margin-bottom: 10px;
+	padding: 10px;
+	border: 1px solid #e5e7eb;
+	border-radius: 10px;
+	background: #ffffff;
+}
+
+#InspectorValidationPanel.is-hidden {
+	display: none;
+}
+
+#InspectorValidationHeader {
+	font-size: 14px;
+	font-weight: 600;
+	color: #1f2937;
+	margin-bottom: 8px;
+}
+
+#InspectorValidationSummary {
+	font-size: 12px;
+	color: #475569;
+	margin-bottom: 8px;
+}
+
+/* VALIDATION ISSUES */
+.val-issue {
+	border: 1px solid #e5e7eb;
+	border-left-width: 4px;
+	border-radius: 8px;
+	background: #ffffff;
+	padding: 8px 10px;
+	margin-top: 8px;
+	font-size: 12px;
+	line-height: 1.4;
+	color: #1f2937;
+}
+
+.val-issue:first-child {
+	margin-top: 0;
+}
+
+.val-issue .val-location {
+	margin: 4px 0;
+	font-family: Consolas, Monaco, monospace;
+	font-size: 11px;
+	color: #64748b;
+	word-break: break-word;
+}
+
+.val-issue .val-code {
+	display: inline-block;
+	margin-left: 6px;
+	font-size: 11px;
+	color: #64748b;
+}
+
+.val-information {
+	border-left-color: #0ea5e9;
+	background: #f8fcff;
+}
+
+.val-warning {
+	border-left-color: #f59e0b;
+	background: #fffdf7;
+}
+
+.val-error,
+.val-fatal {
+	border-left-color: #dc2626;
+	background: #fff8f8;
+}
+
+/* VALIDATION SUMMARY STATES */
+.validationSummary .summaryRow {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.validationSummary .summaryMetric {
+	font-weight: 600;
+}
+
+.validationSummary .summaryMetric.error {
+	color: #b91c1c;
+}
+
+.validationSummary .summaryMetric.warning {
+	color: #b45309;
+}
+
+.validationSummary .summaryMetric.ok {
+	color: #166534;
+}
+
+/* OPTIONAL: make validation button feel more primary */
+#RunValidationButton:disabled {
+	opacity: 0.65;
+	cursor: default;
+}
+
+/* OPTIONAL: inspector spacing when validation panel is shown above JSON */
+#ResourceInspectorBody > #InspectorValidationPanel + pre {
+	margin-top: 0;
+}
+
+#ValidationBundleIssues,
+#InspectorValidationIssues {
+	max-height: 260px;
+	overflow: auto;
+}
+
+#InspectorValidationPanel.collapsed #InspectorValidationSummary,
+#InspectorValidationPanel.collapsed #InspectorValidationIssues {
+	display: none;
+}
+
+#validationControlsBody.collapsed #ValidationSummary,
+#validationControlsBody.collapsed #ValidationBundleIssues {
+	display: none;
+}
+
+#InspectorValidationIssues {
+	max-height: 260px;
+	overflow: auto;
+}
+
+#ValidationBundleIssues {
+	max-height: 220px;
+	overflow: auto;
+}
+
+.val-issue.is-clickable {
+	cursor: pointer;
+}
+
+.val-issue.is-clickable:hover {
+	box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.18);
+}
+
+.val-resourcekey {
+	margin: 4px 0;
+	font-size: 11px;
+	font-weight: 600;
+	color: #2563eb;
+	word-break: break-word;
+}
+
+.inspectorValidationPanel {
+	margin: 0 0 10px 0;
+	border: 1px solid #e5e7eb;
+	border-radius: 10px;
+	background: #f8fafc;
+	overflow: hidden;
+}
+
+.inspectorValidationPanel.is-hidden {
+	display: none;
+}
+
+#InspectorValidationHeaderRow {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	padding: 10px 12px;
+	border-bottom: 1px solid #e5e7eb;
+	background: #ffffff;
+}
+
+#InspectorValidationTitle {
+	font-size: 13px;
+	font-weight: 600;
+	color: #334155;
+}
+
+#InspectorValidationToggleButton {
+	height: 28px;
+	padding: 0 10px;
+	border: 1px solid #cbd5e1;
+	border-radius: 8px;
+	background: #ffffff;
+	color: #334155;
+	cursor: pointer;
+}
+
+#InspectorValidationToggleButton:hover {
+	background: #f8fafc;
+}
+
+#InspectorValidationIssues {
+	max-height: 220px;
+	overflow: auto;
+	padding: 8px;
+}
+
+.inspectorValidationPanel.is-collapsed #InspectorValidationIssues {
+	display: none;
+}
+
+.val-issue {
+	padding: 8px 10px;
+	border: 1px solid transparent;
+	border-radius: 8px;
+	margin-bottom: 8px;
+	font-size: 12px;
+	line-height: 1.35;
+	background: #ffffff;
+}
+
+.val-error {
+	border-color: #efb4b4;
+	background: #fff5f5;
+}
+
+.val-warning {
+	border-color: #ead9a6;
+	background: #fffbea;
+}
+
+.val-information,
+.val-info {
+	border-color: #cfe0f2;
+	background: #f4f8fc;
+}
+
+.val-msg {
+	color: #1f2937;
+}
+
+.val-loc {
+	margin-top: 4px;
+	color: #64748b;
+	font-family: Consolas, Monaco, monospace;
+	font-size: 11px;
+	word-break: break-word;
+}
+
+#InspectorValidationHeaderRow {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 10px;
+}
+
+.valCount {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 4px 8px;
+	border-radius: 999px;
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 1;
+}
+
+.valCount-error {
+	background: #fef2f2;
+	color: #b91c1c;
+	border: 1px solid #fecaca;
+}
+
+.valCount-warning {
+	background: #fff7ed;
+	color: #c2410c;
+	border: 1px solid #fdba74;
+}
+
+.valCount-info {
+	background: #eff6ff;
+	color: #1d4ed8;
+	border: 1px solid #bfdbfe;
+}
+
+#InspectorValidationHeaderRow {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	margin-bottom: 10px;
+	padding-bottom: 8px;
+	border-bottom: 1px solid #d9dee5;
+}
+
+.validationSectionTitle {
+	font-size: 14px;
+	font-weight: 700;
+	color: #334155;
+	line-height: 1.2;
+}
+
+.validationCountGroup {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.valCount {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 4px 10px;
+	border-radius: 999px;
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 1;
+	white-space: nowrap;
+}
+
+#ToggleValidationPanelButton {
+	display: none;
+}

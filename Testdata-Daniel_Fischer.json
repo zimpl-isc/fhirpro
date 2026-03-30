@@ -1,0 +1,4865 @@
+{
+ "resourceType": "Bundle",
+ "id": "4cda766c-23ad-11f1-9f9e-603e5f45073a",
+ "type": "searchset",
+ "timestamp": "2026-03-19T16:04:25Z",
+ "total": 85,
+ "link": [
+  {
+   "relation": "self",
+   "url": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Patient/100000028/$everything"
+  }
+ ],
+ "entry": [
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Patient/100000028",
+   "resource": {
+    "resourceType": "Patient",
+    "address": [
+     {
+      "city": "Musterstadt",
+      "country": "DEU",
+      "line": [
+       "BergstraÃe 12"
+      ],
+      "_line": [
+       {
+        "extension": [
+         {
+          "url": "http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-streetName",
+          "valueString": "BergstraÃe"
+         },
+         {
+          "url": "http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-houseNumber",
+          "valueString": "12"
+         }
+        ]
+       }
+      ],
+      "postalCode": "54321",
+      "text": "BergstraÃe 12, 54321, Musterstadt, DEU",
+      "type": "both"
+     },
+     {
+      "city": "Musterstadt",
+      "country": "DEU",
+      "line": [
+       "Bergstraße 12"
+      ],
+      "_line": [
+       {
+        "extension": [
+         {
+          "url": "http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-streetName",
+          "valueString": "Bergstraße"
+         },
+         {
+          "url": "http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-houseNumber",
+          "valueString": "12"
+         }
+        ]
+       }
+      ],
+      "postalCode": "54321",
+      "text": "Bergstraße 12, 54321, Musterstadt, DEU",
+      "type": "both"
+     }
+    ],
+    "birthDate": "1979-02-14",
+    "deceasedBoolean": false,
+    "extension": [
+     {
+      "url": "http://hl7.org/fhir/StructureDefinition/patient-religion",
+      "valueCodeableConcept": {
+       "coding": [
+        {
+         "code": "VAR",
+         "display": "VAR"
+        }
+       ]
+      }
+     }
+    ],
+    "gender": "male",
+    "identifier": [
+     {
+      "system": "urn:oid:1.3.6.1.4.1.21367.2010.1.2.300",
+      "type": {
+       "coding": [
+        {
+         "code": "PI",
+         "system": "http://terminology.hl7.org/CodeSystem/v2-0203"
+        }
+       ],
+       "text": "MPIID"
+      },
+      "value": "100000028"
+     },
+     {
+      "assigner": {
+       "identifier": {
+        "use": "official"
+       }
+      },
+      "type": {
+       "coding": [
+        {
+         "code": "MR",
+         "system": "http://terminology.hl7.org/CodeSystem/v2-0203"
+        }
+       ],
+       "text": "MRN"
+      },
+      "value": "9103003"
+     },
+     {
+      "assigner": {
+       "identifier": {
+        "use": "official"
+       }
+      },
+      "type": {
+       "coding": [
+        {
+         "code": "MR",
+         "system": "http://terminology.hl7.org/CodeSystem/v2-0203"
+        }
+       ],
+       "text": "MRN"
+      },
+      "value": "9103003"
+     },
+     {
+      "assigner": {
+       "identifier": {
+        "use": "official"
+       }
+      },
+      "type": {
+       "coding": [
+        {
+         "code": "MR",
+         "system": "http://terminology.hl7.org/CodeSystem/v2-0203"
+        }
+       ],
+       "text": "MRN"
+      },
+      "value": "9103003"
+     }
+    ],
+    "maritalStatus": {
+     "coding": [
+      {
+       "code": "UNK",
+       "system": "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus"
+      }
+     ]
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-person/StructureDefinition/Patient|2.0.0-alpha3"
+     ],
+     "source": "http://intersystems.com/fhir/meta/source",
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "2"
+    },
+    "name": [
+     {
+      "family": "Fischer",
+      "given": [
+       "Daniel"
+      ],
+      "text": "Daniel",
+      "use": "official"
+     }
+    ],
+    "telecom": [
+     {
+      "system": "phone",
+      "use": "home",
+      "value": "k.a."
+     }
+    ],
+    "id": "100000028"
+   },
+   "search": {
+    "mode": "match"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Organization/3204",
+   "resource": {
+    "resourceType": "Organization",
+    "name": "HomeCommunity",
+    "active": true,
+    "id": "3204",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Organization/1106",
+   "resource": {
+    "resourceType": "Organization",
+    "active": true,
+    "id": "1106",
+    "meta": {
+     "lastUpdated": "2025-10-24T10:50:27Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Provenance/100000028",
+   "resource": {
+    "resourceType": "Provenance",
+    "recorded": "2026-03-18T18:45:14+01:00",
+    "agent": [
+     {
+      "type": {
+       "coding": [
+        {
+         "system": "http://terminology.hl7.org/CodeSystem/provenance-participant-type",
+         "code": "author"
+        }
+       ]
+      },
+      "who": {
+       "reference": "Organization/3204"
+      }
+     },
+     {
+      "type": {
+       "coding": [
+        {
+         "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type",
+         "code": "transmitter"
+        }
+       ]
+      },
+      "who": {
+       "reference": "Organization/3204"
+      }
+     }
+    ],
+    "target": [
+     {
+      "reference": "Organization/1106"
+     },
+     {
+      "reference": "Organization/1106"
+     },
+     {
+      "reference": "Organization/1106"
+     },
+     {
+      "reference": "Patient/100000028"
+     },
+     {
+      "reference": "Organization/3204"
+     }
+    ],
+    "id": "100000028",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "2"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Observation/3206",
+   "resource": {
+    "resourceType": "Observation",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "vital-signs",
+        "display": "Vital Signs",
+        "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+       }
+      ],
+      "text": "Vital Signs"
+     }
+    ],
+    "code": {
+     "coding": [
+      {
+       "code": "85354-9",
+       "display": "Blood pressure panel with all children optional",
+       "system": "http://loinc.org"
+      }
+     ]
+    },
+    "component": [
+     {
+      "code": {
+       "coding": [
+        {
+         "code": "8462-4",
+         "display": "BP Diastolic",
+         "system": "http://loinc.org"
+        }
+       ]
+      },
+      "extension": [
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-encounter-number",
+        "valueString": "55003144"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-group",
+        "valueString": "42-18"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-id",
+        "valueString": "42-6"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-time",
+        "valueDateTime": "2026-03-01T18:00:00-05:00"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-value-type",
+        "valueString": "NM"
+       }
+      ],
+      "valueQuantity": {
+       "value": 95
+      }
+     },
+     {
+      "code": {
+       "coding": [
+        {
+         "code": "8480-6",
+         "display": "BP Systolic",
+         "system": "http://loinc.org"
+        }
+       ]
+      },
+      "extension": [
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-encounter-number",
+        "valueString": "55003144"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-group",
+        "valueString": "42-18"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-id",
+        "valueString": "42-7"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-time",
+        "valueDateTime": "2026-03-01T18:00:00-05:00"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-value-type",
+        "valueString": "NM"
+       }
+      ],
+      "valueQuantity": {
+       "value": 160
+      }
+     }
+    ],
+    "effectiveDateTime": "2026-03-01T18:00:00-05:00",
+    "encounter": {
+     "reference": "urn:uuid:0827b7a8-23a5-11f1-9f98-603e5f45073a"
+    },
+    "status": "unknown",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "id": "3206",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Observation/3209",
+   "resource": {
+    "resourceType": "Observation",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "vital-signs",
+        "display": "Vital Signs",
+        "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+       }
+      ],
+      "text": "Vital Signs"
+     }
+    ],
+    "code": {
+     "coding": [
+      {
+       "code": "85354-9",
+       "display": "Blood pressure panel with all children optional",
+       "system": "http://loinc.org"
+      }
+     ]
+    },
+    "component": [
+     {
+      "code": {
+       "coding": [
+        {
+         "code": "8462-4",
+         "display": "BP Diastolic",
+         "system": "http://loinc.org"
+        }
+       ]
+      },
+      "extension": [
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-encounter-number",
+        "valueString": "55003144"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-group",
+        "valueString": "42-19"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-id",
+        "valueString": "42-11"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-time",
+        "valueDateTime": "2026-03-01T20:00:00-05:00"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-value-type",
+        "valueString": "NM"
+       }
+      ],
+      "valueQuantity": {
+       "value": 92
+      }
+     },
+     {
+      "code": {
+       "coding": [
+        {
+         "code": "8480-6",
+         "display": "BP Systolic",
+         "system": "http://loinc.org"
+        }
+       ]
+      },
+      "extension": [
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-encounter-number",
+        "valueString": "55003144"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-group",
+        "valueString": "42-19"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-id",
+        "valueString": "42-12"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-time",
+        "valueDateTime": "2026-03-01T20:00:00-05:00"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-value-type",
+        "valueString": "NM"
+       }
+      ],
+      "valueQuantity": {
+       "value": 154
+      }
+     }
+    ],
+    "effectiveDateTime": "2026-03-01T20:00:00-05:00",
+    "encounter": {
+     "reference": "urn:uuid:082994d8-23a5-11f1-9f98-603e5f45073a"
+    },
+    "status": "unknown",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "id": "3209",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Observation/3211",
+   "resource": {
+    "resourceType": "Observation",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "vital-signs",
+        "display": "Vital Signs",
+        "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+       }
+      ],
+      "text": "Vital Signs"
+     }
+    ],
+    "code": {
+     "coding": [
+      {
+       "code": "85354-9",
+       "display": "Blood pressure panel with all children optional",
+       "system": "http://loinc.org"
+      }
+     ]
+    },
+    "component": [
+     {
+      "code": {
+       "coding": [
+        {
+         "code": "8462-4",
+         "display": "BP Diastolic",
+         "system": "http://loinc.org"
+        }
+       ]
+      },
+      "extension": [
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-encounter-number",
+        "valueString": "55003144"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-group",
+        "valueString": "42-20"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-id",
+        "valueString": "42-16"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-time",
+        "valueDateTime": "2026-03-01T22:00:00-05:00"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-value-type",
+        "valueString": "NM"
+       }
+      ],
+      "valueQuantity": {
+       "value": 90
+      }
+     },
+     {
+      "code": {
+       "coding": [
+        {
+         "code": "8480-6",
+         "display": "BP Systolic",
+         "system": "http://loinc.org"
+        }
+       ]
+      },
+      "extension": [
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-encounter-number",
+        "valueString": "55003144"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-group",
+        "valueString": "42-20"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-id",
+        "valueString": "42-17"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-time",
+        "valueDateTime": "2026-03-01T22:00:00-05:00"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-value-type",
+        "valueString": "NM"
+       }
+      ],
+      "valueQuantity": {
+       "value": 148
+      }
+     }
+    ],
+    "effectiveDateTime": "2026-03-01T22:00:00-05:00",
+    "encounter": {
+     "reference": "urn:uuid:082a97c0-23a5-11f1-9f98-603e5f45073a"
+    },
+    "status": "unknown",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "id": "3211",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Observation/3213",
+   "resource": {
+    "resourceType": "Observation",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "vital-signs",
+        "display": "Vital Signs",
+        "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+       }
+      ],
+      "text": "Vital Signs"
+     }
+    ],
+    "code": {
+     "coding": [
+      {
+       "code": "85354-9",
+       "display": "Blood pressure panel with all children optional",
+       "system": "http://loinc.org"
+      }
+     ]
+    },
+    "component": [
+     {
+      "code": {
+       "coding": [
+        {
+         "code": "8462-4",
+         "display": "BP Diastolic",
+         "system": "http://loinc.org"
+        }
+       ]
+      },
+      "extension": [
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-encounter-number",
+        "valueString": "55003144"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-group",
+        "valueString": "42-28"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-id",
+        "valueString": "42-24"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-time",
+        "valueDateTime": "2026-03-03T10:00:00-05:00"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-value-type",
+        "valueString": "NM"
+       }
+      ],
+      "valueQuantity": {
+       "value": 90
+      }
+     },
+     {
+      "code": {
+       "coding": [
+        {
+         "code": "8480-6",
+         "display": "BP Systolic",
+         "system": "http://loinc.org"
+        }
+       ]
+      },
+      "extension": [
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-encounter-number",
+        "valueString": "55003144"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-group",
+        "valueString": "42-28"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-id",
+        "valueString": "42-25"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-time",
+        "valueDateTime": "2026-03-03T10:00:00-05:00"
+       },
+       {
+        "url": "http://intersystems.com/fhir/extn/sda3/lib/observation-observation-value-type",
+        "valueString": "NM"
+       }
+      ],
+      "valueQuantity": {
+       "value": 148
+      }
+     }
+    ],
+    "effectiveDateTime": "2026-03-03T10:00:00-05:00",
+    "encounter": {
+     "reference": "urn:uuid:082b6d80-23a5-11f1-9f98-603e5f45073a"
+    },
+    "status": "unknown",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "id": "3213",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Observation/3215",
+   "resource": {
+    "resourceType": "Observation",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "vital-signs",
+        "display": "Vital Signs",
+        "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+       }
+      ],
+      "text": "Vital Signs"
+     }
+    ],
+    "code": {
+     "coding": [
+      {
+       "code": "9279-1",
+       "display": "Respiratory Rate"
+      }
+     ]
+    },
+    "effectiveDateTime": "2026-03-01T20:00:00-05:00",
+    "encounter": {
+     "reference": "urn:uuid:082c934a-23a5-11f1-9f98-603e5f45073a"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-person/StructureDefinition/Vitalstatus"
+     ],
+     "source": "http://intersystems.com/fhir/meta/source",
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    },
+    "status": "final",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "valueQuantity": {
+     "value": 23
+    },
+    "id": "3215"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Observation/3217",
+   "resource": {
+    "resourceType": "Observation",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "vital-signs",
+        "display": "Vital Signs",
+        "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+       }
+      ],
+      "text": "Vital Signs"
+     }
+    ],
+    "code": {
+     "coding": [
+      {
+       "code": "8867-4",
+       "display": "Heart Rate"
+      }
+     ]
+    },
+    "effectiveDateTime": "2026-03-01T22:00:00-05:00",
+    "encounter": {
+     "reference": "urn:uuid:082efdc4-23a5-11f1-9f98-603e5f45073a"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-person/StructureDefinition/Vitalstatus"
+     ],
+     "source": "http://intersystems.com/fhir/meta/source",
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    },
+    "status": "final",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "valueQuantity": {
+     "value": 106
+    },
+    "id": "3217"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Observation/3219",
+   "resource": {
+    "resourceType": "Observation",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "vital-signs",
+        "display": "Vital Signs",
+        "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+       }
+      ],
+      "text": "Vital Signs"
+     }
+    ],
+    "code": {
+     "coding": [
+      {
+       "code": "8310-5",
+       "display": "Body Temperature"
+      }
+     ]
+    },
+    "effectiveDateTime": "2026-03-01T22:00:00-05:00",
+    "encounter": {
+     "reference": "urn:uuid:08300f8e-23a5-11f1-9f98-603e5f45073a"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-person/StructureDefinition/Vitalstatus"
+     ],
+     "source": "http://intersystems.com/fhir/meta/source",
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    },
+    "status": "final",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "valueQuantity": {
+     "value": 38.7
+    },
+    "id": "3219"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Observation/3221",
+   "resource": {
+    "resourceType": "Observation",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "vital-signs",
+        "display": "Vital Signs",
+        "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+       }
+      ],
+      "text": "Vital Signs"
+     }
+    ],
+    "code": {
+     "coding": [
+      {
+       "code": "9279-1",
+       "display": "Respiratory Rate"
+      }
+     ]
+    },
+    "effectiveDateTime": "2026-03-01T22:00:00-05:00",
+    "encounter": {
+     "reference": "urn:uuid:0830fb10-23a5-11f1-9f98-603e5f45073a"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-person/StructureDefinition/Vitalstatus"
+     ],
+     "source": "http://intersystems.com/fhir/meta/source",
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    },
+    "status": "final",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "valueQuantity": {
+     "value": 24
+    },
+    "id": "3221"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Observation/3223",
+   "resource": {
+    "resourceType": "Observation",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "vital-signs",
+        "display": "Vital Signs",
+        "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+       }
+      ],
+      "text": "Vital Signs"
+     }
+    ],
+    "code": {
+     "coding": [
+      {
+       "code": "8867-4",
+       "display": "Heart Rate"
+      }
+     ]
+    },
+    "effectiveDateTime": "2026-03-03T10:00:00-05:00",
+    "encounter": {
+     "reference": "urn:uuid:08328c78-23a5-11f1-9f98-603e5f45073a"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-person/StructureDefinition/Vitalstatus"
+     ],
+     "source": "http://intersystems.com/fhir/meta/source",
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    },
+    "status": "final",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "valueQuantity": {
+     "value": 112
+    },
+    "id": "3223"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Observation/3225",
+   "resource": {
+    "resourceType": "Observation",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "vital-signs",
+        "display": "Vital Signs",
+        "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+       }
+      ],
+      "text": "Vital Signs"
+     }
+    ],
+    "code": {
+     "coding": [
+      {
+       "code": "8310-5",
+       "display": "Body Temperature"
+      }
+     ]
+    },
+    "effectiveDateTime": "2026-03-03T10:00:00-05:00",
+    "encounter": {
+     "reference": "urn:uuid:08339cb2-23a5-11f1-9f98-603e5f45073a"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-person/StructureDefinition/Vitalstatus"
+     ],
+     "source": "http://intersystems.com/fhir/meta/source",
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    },
+    "status": "final",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "valueQuantity": {
+     "value": 38.8
+    },
+    "id": "3225"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Observation/3227",
+   "resource": {
+    "resourceType": "Observation",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "vital-signs",
+        "display": "Vital Signs",
+        "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+       }
+      ],
+      "text": "Vital Signs"
+     }
+    ],
+    "code": {
+     "coding": [
+      {
+       "code": "9279-1",
+       "display": "Respiratory Rate"
+      }
+     ]
+    },
+    "effectiveDateTime": "2026-03-03T10:00:00-05:00",
+    "encounter": {
+     "reference": "urn:uuid:0834b354-23a5-11f1-9f98-603e5f45073a"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-person/StructureDefinition/Vitalstatus"
+     ],
+     "source": "http://intersystems.com/fhir/meta/source",
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    },
+    "status": "final",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "valueQuantity": {
+     "value": 26
+    },
+    "id": "3227"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Observation/3229",
+   "resource": {
+    "resourceType": "Observation",
+    "code": {
+     "coding": [
+      {
+       "code": "1988-5",
+       "display": "C reactive protein"
+      }
+     ]
+    },
+    "effectiveDateTime": "2026-03-03T10:00:00-05:00",
+    "encounter": {
+     "reference": "urn:uuid:08362144-23a5-11f1-9f98-603e5f45073a"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-person/StructureDefinition/Vitalstatus"
+     ],
+     "source": "http://intersystems.com/fhir/meta/source",
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    },
+    "status": "final",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "valueQuantity": {
+     "value": 86
+    },
+    "id": "3229"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Observation/3231",
+   "resource": {
+    "resourceType": "Observation",
+    "code": {
+     "coding": [
+      {
+       "code": "6690-2",
+       "display": "Leukocytes"
+      }
+     ]
+    },
+    "effectiveDateTime": "2026-03-03T10:00:00-05:00",
+    "encounter": {
+     "reference": "urn:uuid:08371860-23a5-11f1-9f98-603e5f45073a"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-person/StructureDefinition/Vitalstatus"
+     ],
+     "source": "http://intersystems.com/fhir/meta/source",
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    },
+    "status": "final",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "valueQuantity": {
+     "value": 14.2
+    },
+    "id": "3231"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Observation/3233",
+   "resource": {
+    "resourceType": "Observation",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "vital-signs",
+        "display": "Vital Signs",
+        "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+       }
+      ],
+      "text": "Vital Signs"
+     }
+    ],
+    "code": {
+     "coding": [
+      {
+       "code": "8867-4",
+       "display": "Heart Rate"
+      }
+     ]
+    },
+    "effectiveDateTime": "2026-03-01T18:00:00-05:00",
+    "encounter": {
+     "reference": "urn:uuid:0837eb1e-23a5-11f1-9f98-603e5f45073a"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-person/StructureDefinition/Vitalstatus"
+     ],
+     "source": "http://intersystems.com/fhir/meta/source",
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    },
+    "status": "final",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "valueQuantity": {
+     "value": 104
+    },
+    "id": "3233"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Observation/3235",
+   "resource": {
+    "resourceType": "Observation",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "vital-signs",
+        "display": "Vital Signs",
+        "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+       }
+      ],
+      "text": "Vital Signs"
+     }
+    ],
+    "code": {
+     "coding": [
+      {
+       "code": "8310-5",
+       "display": "Body Temperature"
+      }
+     ]
+    },
+    "effectiveDateTime": "2026-03-01T18:00:00-05:00",
+    "encounter": {
+     "reference": "urn:uuid:08390b84-23a5-11f1-9f98-603e5f45073a"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-person/StructureDefinition/Vitalstatus"
+     ],
+     "source": "http://intersystems.com/fhir/meta/source",
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    },
+    "status": "final",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "valueQuantity": {
+     "value": 38.2
+    },
+    "id": "3235"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Observation/3237",
+   "resource": {
+    "resourceType": "Observation",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "vital-signs",
+        "display": "Vital Signs",
+        "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+       }
+      ],
+      "text": "Vital Signs"
+     }
+    ],
+    "code": {
+     "coding": [
+      {
+       "code": "9279-1",
+       "display": "Respiratory Rate"
+      }
+     ]
+    },
+    "effectiveDateTime": "2026-03-01T18:00:00-05:00",
+    "encounter": {
+     "reference": "urn:uuid:0839fa62-23a5-11f1-9f98-603e5f45073a"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-person/StructureDefinition/Vitalstatus"
+     ],
+     "source": "http://intersystems.com/fhir/meta/source",
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    },
+    "status": "final",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "valueQuantity": {
+     "value": 22
+    },
+    "id": "3237"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Observation/3239",
+   "resource": {
+    "resourceType": "Observation",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "vital-signs",
+        "display": "Vital Signs",
+        "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+       }
+      ],
+      "text": "Vital Signs"
+     }
+    ],
+    "code": {
+     "coding": [
+      {
+       "code": "8867-4",
+       "display": "Heart Rate"
+      }
+     ]
+    },
+    "effectiveDateTime": "2026-03-01T20:00:00-05:00",
+    "encounter": {
+     "reference": "urn:uuid:083b6b5e-23a5-11f1-9f98-603e5f45073a"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-person/StructureDefinition/Vitalstatus"
+     ],
+     "source": "http://intersystems.com/fhir/meta/source",
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    },
+    "status": "final",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "valueQuantity": {
+     "value": 102
+    },
+    "id": "3239"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Observation/3241",
+   "resource": {
+    "resourceType": "Observation",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "vital-signs",
+        "display": "Vital Signs",
+        "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+       }
+      ],
+      "text": "Vital Signs"
+     }
+    ],
+    "code": {
+     "coding": [
+      {
+       "code": "8310-5",
+       "display": "Body Temperature"
+      }
+     ]
+    },
+    "effectiveDateTime": "2026-03-01T20:00:00-05:00",
+    "encounter": {
+     "reference": "urn:uuid:083c512c-23a5-11f1-9f98-603e5f45073a"
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-person/StructureDefinition/Vitalstatus"
+     ],
+     "source": "http://intersystems.com/fhir/meta/source",
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    },
+    "status": "final",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "valueQuantity": {
+     "value": 38.4
+    },
+    "id": "3241"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Condition/3243",
+   "resource": {
+    "resourceType": "Condition",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "encounter-diagnosis",
+        "display": "Encounter Diagnosis",
+        "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+       }
+      ],
+      "text": "Encounter Diagnosis"
+     },
+     {
+      "coding": [
+       {
+        "code": "F",
+        "display": "F"
+       }
+      ]
+     }
+    ],
+    "clinicalStatus": {
+     "coding": [
+      {
+       "code": "active",
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "J18.9",
+       "display": "Pneumonie, nicht näher bezeichnet"
+      }
+     ]
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-diagnose/StructureDefinition/Diagnose|2.0.0-alpha3"
+     ],
+     "source": "http://intersystems.com/fhir/meta/source",
+     "lastUpdated": "2026-03-19T15:05:14Z",
+     "versionId": "1"
+    },
+    "note": [
+     {
+      "text": "Pneumonie"
+     }
+    ],
+    "recordedDate": "2026-03-03T14:00:00-05:00",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "id": "3243"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Condition/3245",
+   "resource": {
+    "resourceType": "Condition",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "encounter-diagnosis",
+        "display": "Encounter Diagnosis",
+        "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+       }
+      ],
+      "text": "Encounter Diagnosis"
+     },
+     {
+      "coding": [
+       {
+        "code": "F",
+        "display": "F"
+       }
+      ]
+     }
+    ],
+    "clinicalStatus": {
+     "coding": [
+      {
+       "code": "active",
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "I10",
+       "display": "Essentielle (primäre) Hypertonie"
+      }
+     ]
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-diagnose/StructureDefinition/Diagnose|2.0.0-alpha3"
+     ],
+     "source": "http://intersystems.com/fhir/meta/source",
+     "lastUpdated": "2026-03-19T15:05:14Z",
+     "versionId": "1"
+    },
+    "note": [
+     {
+      "text": "Hypertonie"
+     }
+    ],
+    "recordedDate": "2026-03-03T14:00:00-05:00",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "id": "3245"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Condition/3247",
+   "resource": {
+    "resourceType": "Condition",
+    "category": [
+     {
+      "coding": [
+       {
+        "code": "encounter-diagnosis",
+        "display": "Encounter Diagnosis",
+        "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+       }
+      ],
+      "text": "Encounter Diagnosis"
+     },
+     {
+      "coding": [
+       {
+        "code": "F",
+        "display": "F"
+       }
+      ]
+     }
+    ],
+    "clinicalStatus": {
+     "coding": [
+      {
+       "code": "active",
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "code": "E11.9",
+       "display": "Diabetes mellitus, Typ 2"
+      }
+     ]
+    },
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-diagnose/StructureDefinition/Diagnose|2.0.0-alpha3"
+     ],
+     "source": "http://intersystems.com/fhir/meta/source",
+     "lastUpdated": "2026-03-19T15:05:14Z",
+     "versionId": "1"
+    },
+    "note": [
+     {
+      "text": "Diabetes mellitus Typ 2"
+     }
+    ],
+    "recordedDate": "2026-03-03T14:00:00-05:00",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "id": "3247"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Practitioner/2895",
+   "resource": {
+    "resourceType": "Practitioner",
+    "identifier": [
+     {
+      "value": "HA"
+     }
+    ],
+    "name": [
+     {
+      "family": "Avion",
+      "given": [
+       "Hecter"
+      ]
+     }
+    ],
+    "id": "2895",
+    "meta": {
+     "lastUpdated": "2026-03-18T12:45:21Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Procedure/HI7UFZQFNFI36PM2GN5WBIZZSDK7SZE3",
+   "resource": {
+    "resourceType": "Procedure",
+    "code": {
+     "coding": [
+      {
+       "code": "71045",
+       "display": "Chest X-ray"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "urn:uuid:0846c332-23a5-11f1-9f98-603e5f45073a"
+    },
+    "identifier": [
+     {
+      "type": {
+       "text": "ExternalId"
+      },
+      "use": "official",
+      "value": "PR30000001"
+     }
+    ],
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-prozedur/StructureDefinition/Procedure|2.0.0-alpha2"
+     ],
+     "source": "http://intersystems.com/fhir/meta/source",
+     "lastUpdated": "2026-03-19T15:05:14Z",
+     "versionId": "1"
+    },
+    "performedDateTime": "2026-03-02T12:00:00-05:00",
+    "performer": [
+     {
+      "actor": {
+       "reference": "Practitioner/2895"
+      }
+     }
+    ],
+    "status": "unknown",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "id": "HI7UFZQFNFI36PM2GN5WBIZZSDK7SZE3"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Procedure/K5RXNTST4QAQBL5F76SZ6KO4SXBZO57G",
+   "resource": {
+    "resourceType": "Procedure",
+    "code": {
+     "coding": [
+      {
+       "code": "31622",
+       "display": "Bronchoscopy"
+      }
+     ]
+    },
+    "encounter": {
+     "reference": "urn:uuid:0848c5f6-23a5-11f1-9f98-603e5f45073a"
+    },
+    "identifier": [
+     {
+      "type": {
+       "text": "ExternalId"
+      },
+      "use": "official",
+      "value": "PR30000002"
+     }
+    ],
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-prozedur/StructureDefinition/Procedure|2.0.0-alpha2"
+     ],
+     "source": "http://intersystems.com/fhir/meta/source",
+     "lastUpdated": "2026-03-19T15:05:14Z",
+     "versionId": "1"
+    },
+    "performedDateTime": "2026-03-05T12:00:00-05:00",
+    "performer": [
+     {
+      "actor": {
+       "reference": "Practitioner/2895"
+      }
+     }
+    ],
+    "status": "unknown",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "id": "K5RXNTST4QAQBL5F76SZ6KO4SXBZO57G"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Organization/351",
+   "resource": {
+    "resourceType": "Organization",
+    "active": true,
+    "address": [
+     {
+      "city": "Cambridge",
+      "country": "USA",
+      "line": [
+       "One Memorial Drive"
+      ],
+      "postalCode": "02142",
+      "state": "MA",
+      "text": "One Memorial Drive",
+      "type": "both"
+     }
+    ],
+    "identifier": [
+     {
+      "value": "HOME"
+     }
+    ],
+    "type": [
+     {
+      "coding": [
+       {
+        "code": "KHS",
+        "display": "Krankenhaus",
+        "system": "https://www.medizininformatik-initiative.de/fhir/ext/modul-struktur/CodeSystem/mii-cs-struktur-organisationstyp"
+       }
+      ]
+     }
+    ],
+    "id": "351",
+    "meta": {
+     "lastUpdated": "2025-03-24T22:54:41Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Encounter/RRMYGU4C2VUNT46ZKVLLFXMDVGLZXZPU",
+   "resource": {
+    "resourceType": "Encounter",
+    "class": {
+     "code": "AMB",
+     "system": "EncounterClassDE"
+    },
+    "hospitalization": {
+     "admitSource": {
+      "coding": [
+       {
+        "code": "E",
+        "system": "Aufnahmeanlass"
+       }
+      ]
+     },
+     "dischargeDisposition": {
+      "coding": [
+       {
+        "code": "01"
+       }
+      ]
+     }
+    },
+    "identifier": [
+     {
+      "system": "PHLS_VN",
+      "type": {
+       "coding": [
+        {
+         "code": "VN",
+         "system": "http://terminology.hl7.org/CodeSystem/v2-0203"
+        }
+       ],
+       "text": "EncounterNumber"
+      },
+      "use": "official",
+      "value": "55003144"
+     }
+    ],
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-fall/StructureDefinition/KontaktGesundheitseinrichtung|2025.0.0"
+     ],
+     "source": "ORBIS",
+     "lastUpdated": "2026-03-19T15:05:14Z",
+     "versionId": "2"
+    },
+    "period": {
+     "end": "2026-03-12T15:00:00.000+01:00",
+     "start": "2026-03-01T08:30:00.000+01:00"
+    },
+    "serviceProvider": {
+     "reference": "Organization/351"
+    },
+    "status": "finished",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "type": [
+     {
+      "coding": [
+       {
+        "code": "einrichtungskontakt",
+        "display": "Einrichtungskontakt",
+        "system": "Kontaktebene"
+       }
+      ]
+     }
+    ],
+    "id": "RRMYGU4C2VUNT46ZKVLLFXMDVGLZXZPU"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Organization/1178",
+   "resource": {
+    "resourceType": "Organization",
+    "active": true,
+    "address": [
+     {
+      "city": "Cambridge",
+      "country": "USA",
+      "line": [
+       "One Memorial Drive"
+      ],
+      "postalCode": "02142",
+      "state": "MA",
+      "text": "One Memorial Drive",
+      "type": "both"
+     }
+    ],
+    "identifier": [
+     {
+      "system": "https://UKAny.de/fhir/CodeSystem/Fachabteilung",
+      "value": "N13"
+     }
+    ],
+    "name": "N13",
+    "partOf": {
+     "reference": "Organization/351"
+    },
+    "type": [
+     {
+      "coding": [
+       {
+        "code": "DPT",
+        "display": "Department",
+        "system": "https://simplifier.net/medizininformatikinitiative-modulstrukturdaten/cs-mii-struktur-organisationstyp"
+       }
+      ]
+     }
+    ],
+    "id": "1178",
+    "meta": {
+     "lastUpdated": "2025-10-24T12:25:54Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Encounter/AAOZOY64LSCPY5CHT5DOOHYYYQ66LZNF",
+   "resource": {
+    "resourceType": "Encounter",
+    "class": {
+     "code": "AMB",
+     "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode"
+    },
+    "identifier": [
+     {
+      "system": "urn:oid:1.3.6.1.4.1.21367.2010.1.2.300.2.5",
+      "type": {
+       "text": "EncounterNumber"
+      },
+      "use": "official",
+      "value": "55003144-920001-AK"
+     }
+    ],
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-fall/StructureDefinition/KontaktGesundheitseinrichtung|2025.0.0"
+     ],
+     "source": "ORBIS",
+     "lastUpdated": "2026-03-19T15:05:14Z",
+     "versionId": "1"
+    },
+    "partOf": {
+     "reference": "Encounter/RRMYGU4C2VUNT46ZKVLLFXMDVGLZXZPU"
+    },
+    "period": {
+     "end": "2026-03-02T09:00:00.000+01:00",
+     "start": "2026-03-01T08:30:00.000+01:00"
+    },
+    "serviceProvider": {
+     "display": "N13",
+     "reference": "Organization/1178"
+    },
+    "serviceType": {
+     "coding": [
+      {
+       "code": "0107",
+       "display": "0107",
+       "system": "Fachabteilungsschluessel"
+      }
+     ]
+    },
+    "status": "finished",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "type": [
+     {
+      "coding": [
+       {
+        "code": "abteilungskontakt",
+        "display": "Abteilungskontakt",
+        "system": "Kontaktebene"
+       }
+      ]
+     }
+    ],
+    "id": "AAOZOY64LSCPY5CHT5DOOHYYYQ66LZNF"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Encounter/AOVAKAA6JDFIUEJ7BKAHGYOESMHTITYV",
+   "resource": {
+    "resourceType": "Encounter",
+    "class": {
+     "code": "AMB",
+     "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode"
+    },
+    "identifier": [
+     {
+      "system": "urn:oid:1.3.6.1.4.1.21367.2010.1.2.300.2.5",
+      "type": {
+       "text": "EncounterNumber"
+      },
+      "use": "official",
+      "value": "55003144-920001-VK"
+     }
+    ],
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-fall/StructureDefinition/KontaktGesundheitseinrichtung|2025.0.0"
+     ],
+     "source": "ORBIS",
+     "lastUpdated": "2026-03-19T15:05:14Z",
+     "versionId": "1"
+    },
+    "partOf": {
+     "reference": "Encounter/AAOZOY64LSCPY5CHT5DOOHYYYQ66LZNF"
+    },
+    "period": {
+     "end": "2026-03-02T09:00:00.000+01:00",
+     "start": "2026-03-01T08:30:00.000+01:00"
+    },
+    "status": "finished",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "type": [
+     {
+      "coding": [
+       {
+        "code": "versorgungsstellenkontakt",
+        "display": "Versorgungsstellenkontakt",
+        "system": "Kontaktebene"
+       }
+      ]
+     }
+    ],
+    "id": "AOVAKAA6JDFIUEJ7BKAHGYOESMHTITYV"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Encounter/C4E5SUSCMG4RCOPOLS4FKK4CVJSBPCPS",
+   "resource": {
+    "resourceType": "Encounter",
+    "class": {
+     "code": "AMB",
+     "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode"
+    },
+    "identifier": [
+     {
+      "system": "urn:oid:1.3.6.1.4.1.21367.2010.1.2.300.2.5",
+      "type": {
+       "text": "EncounterNumber"
+      },
+      "use": "official",
+      "value": "55003144-920002-AK"
+     }
+    ],
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-fall/StructureDefinition/KontaktGesundheitseinrichtung|2025.0.0"
+     ],
+     "source": "ORBIS",
+     "tag": [
+      {
+       "code": "A04",
+       "display": "Konsil / OP",
+       "system": "http://healthshare/mii/tags"
+      }
+     ],
+     "lastUpdated": "2026-03-19T15:05:14Z",
+     "versionId": "1"
+    },
+    "partOf": {
+     "reference": "Encounter/RRMYGU4C2VUNT46ZKVLLFXMDVGLZXZPU"
+    },
+    "period": {
+     "end": "2026-03-01T10:00:00.000+01:00",
+     "start": "2026-03-01T10:00:00.000+01:00"
+    },
+    "serviceProvider": {
+     "display": "N13",
+     "reference": "Organization/1178"
+    },
+    "serviceType": {
+     "coding": [
+      {
+       "code": "0107",
+       "display": "0107",
+       "system": "Fachabteilungsschluessel"
+      }
+     ]
+    },
+    "status": "unknown",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "type": [
+     {
+      "coding": [
+       {
+        "code": "abteilungskontakt",
+        "display": "Abteilungskontakt",
+        "system": "Kontaktebene"
+       }
+      ]
+     }
+    ],
+    "id": "C4E5SUSCMG4RCOPOLS4FKK4CVJSBPCPS"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Encounter/3VGDACXW4N26LI6MWALPHTRLR35KEGYP",
+   "resource": {
+    "resourceType": "Encounter",
+    "class": {
+     "code": "AMB",
+     "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode"
+    },
+    "identifier": [
+     {
+      "system": "urn:oid:1.3.6.1.4.1.21367.2010.1.2.300.2.5",
+      "type": {
+       "text": "EncounterNumber"
+      },
+      "use": "official",
+      "value": "55003144-920002-VK"
+     }
+    ],
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-fall/StructureDefinition/KontaktGesundheitseinrichtung|2025.0.0"
+     ],
+     "source": "ORBIS",
+     "tag": [
+      {
+       "code": "A04",
+       "display": "Konsil / OP",
+       "system": "http://healthshare/mii/tags"
+      }
+     ],
+     "lastUpdated": "2026-03-19T15:05:14Z",
+     "versionId": "1"
+    },
+    "partOf": {
+     "reference": "Encounter/C4E5SUSCMG4RCOPOLS4FKK4CVJSBPCPS"
+    },
+    "period": {
+     "end": "2026-03-01T10:00:00.000+01:00",
+     "start": "2026-03-01T10:00:00.000+01:00"
+    },
+    "status": "unknown",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "type": [
+     {
+      "coding": [
+       {
+        "code": "versorgungsstellenkontakt",
+        "display": "Versorgungsstellenkontakt",
+        "system": "Kontaktebene"
+       }
+      ]
+     }
+    ],
+    "id": "3VGDACXW4N26LI6MWALPHTRLR35KEGYP"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Organization/1181",
+   "resource": {
+    "resourceType": "Organization",
+    "active": true,
+    "address": [
+     {
+      "city": "Cambridge",
+      "country": "USA",
+      "line": [
+       "One Memorial Drive"
+      ],
+      "postalCode": "02142",
+      "state": "MA",
+      "text": "One Memorial Drive",
+      "type": "both"
+     }
+    ],
+    "identifier": [
+     {
+      "system": "https://UKAny.de/fhir/CodeSystem/Fachabteilung",
+      "value": "NCHI"
+     }
+    ],
+    "name": "NCHI",
+    "partOf": {
+     "reference": "Organization/351"
+    },
+    "type": [
+     {
+      "coding": [
+       {
+        "code": "DPT",
+        "display": "Department",
+        "system": "https://simplifier.net/medizininformatikinitiative-modulstrukturdaten/cs-mii-struktur-organisationstyp"
+       }
+      ]
+     }
+    ],
+    "id": "1181",
+    "meta": {
+     "lastUpdated": "2025-10-24T12:25:54Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Encounter/W3OQIO2UN6N2DNX4VL53QQI7AJVKKQ5T",
+   "resource": {
+    "resourceType": "Encounter",
+    "class": {
+     "code": "IMP",
+     "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode"
+    },
+    "identifier": [
+     {
+      "system": "urn:oid:1.3.6.1.4.1.21367.2010.1.2.300.2.5",
+      "type": {
+       "text": "EncounterNumber"
+      },
+      "use": "official",
+      "value": "55003144-920003-AK"
+     }
+    ],
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-fall/StructureDefinition/KontaktGesundheitseinrichtung|2025.0.0"
+     ],
+     "source": "ORBIS",
+     "lastUpdated": "2026-03-19T15:05:14Z",
+     "versionId": "1"
+    },
+    "partOf": {
+     "reference": "Encounter/RRMYGU4C2VUNT46ZKVLLFXMDVGLZXZPU"
+    },
+    "period": {
+     "end": "2026-03-09T11:00:00.000+01:00",
+     "start": "2026-03-02T09:00:00.000+01:00"
+    },
+    "serviceProvider": {
+     "display": "NCHI",
+     "reference": "Organization/1181"
+    },
+    "serviceType": {
+     "coding": [
+      {
+       "code": "0107",
+       "display": "0107",
+       "system": "Fachabteilungsschluessel"
+      }
+     ]
+    },
+    "status": "finished",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "type": [
+     {
+      "coding": [
+       {
+        "code": "abteilungskontakt",
+        "display": "Abteilungskontakt",
+        "system": "Kontaktebene"
+       }
+      ]
+     }
+    ],
+    "id": "W3OQIO2UN6N2DNX4VL53QQI7AJVKKQ5T"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Location/2723",
+   "resource": {
+    "resourceType": "Location",
+    "identifier": [
+     {
+      "system": "https://UKAny.de/fhir/CodeSystem/Ward",
+      "value": "NC"
+     }
+    ],
+    "managingOrganization": {
+     "reference": "Organization/351"
+    },
+    "name": "NC",
+    "physicalType": {
+     "coding": [
+      {
+       "code": "wa",
+       "display": "Ward",
+       "system": "http://hl7.org/fhir/ValueSet/location-physical-type"
+      }
+     ]
+    },
+    "id": "2723",
+    "meta": {
+     "lastUpdated": "2026-03-16T20:11:50Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Encounter/V5RD5YFP3MVW7HDGA3TVHG6OCL27OPCW",
+   "resource": {
+    "resourceType": "Encounter",
+    "class": {
+     "code": "IMP",
+     "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode"
+    },
+    "identifier": [
+     {
+      "system": "urn:oid:1.3.6.1.4.1.21367.2010.1.2.300.2.5",
+      "type": {
+       "text": "EncounterNumber"
+      },
+      "use": "official",
+      "value": "55003144-920003-VK"
+     }
+    ],
+    "location": [
+     {
+      "location": {
+       "display": "NC",
+       "identifier": {
+        "system": "https://UKAny.de/fhir/CodeSystem/Ward",
+        "value": "NC"
+       },
+       "reference": "Location/2723"
+      },
+      "physicalType": {
+       "coding": [
+        {
+         "code": "wa",
+         "display": "Ward",
+         "system": "http://terminology.hl7.org/CodeSystem/location-physical-type"
+        }
+       ]
+      }
+     }
+    ],
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-fall/StructureDefinition/KontaktGesundheitseinrichtung|2025.0.0"
+     ],
+     "source": "ORBIS",
+     "lastUpdated": "2026-03-19T15:05:14Z",
+     "versionId": "1"
+    },
+    "partOf": {
+     "reference": "Encounter/W3OQIO2UN6N2DNX4VL53QQI7AJVKKQ5T"
+    },
+    "period": {
+     "end": "2026-03-03T14:00:00.000+01:00",
+     "start": "2026-03-02T09:00:00.000+01:00"
+    },
+    "status": "finished",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "type": [
+     {
+      "coding": [
+       {
+        "code": "versorgungsstellenkontakt",
+        "display": "Versorgungsstellenkontakt",
+        "system": "Kontaktebene"
+       }
+      ]
+     }
+    ],
+    "id": "V5RD5YFP3MVW7HDGA3TVHG6OCL27OPCW"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Location/1183",
+   "resource": {
+    "resourceType": "Location",
+    "identifier": [
+     {
+      "system": "https://UKAny.de/fhir/CodeSystem/Ward",
+      "value": "NSNCN"
+     }
+    ],
+    "managingOrganization": {
+     "reference": "Organization/351"
+    },
+    "name": "NSNCN",
+    "physicalType": {
+     "coding": [
+      {
+       "code": "wa",
+       "display": "Ward",
+       "system": "http://hl7.org/fhir/ValueSet/location-physical-type"
+      }
+     ]
+    },
+    "id": "1183",
+    "meta": {
+     "lastUpdated": "2025-10-24T12:25:54Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Location/1188",
+   "resource": {
+    "resourceType": "Location",
+    "identifier": [
+     {
+      "system": "https://UKAny.de/fhir/CodeSystem/Room",
+      "value": "NSNCN_8111-E04-451"
+     }
+    ],
+    "name": "8111-E04-451",
+    "partOf": {
+     "reference": "Location/1183"
+    },
+    "physicalType": {
+     "coding": [
+      {
+       "code": "ro",
+       "display": "Room",
+       "system": "http://hl7.org/fhir/ValueSet/location-physical-type"
+      }
+     ]
+    },
+    "id": "1188",
+    "meta": {
+     "lastUpdated": "2025-10-24T12:25:54Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Location/1189",
+   "resource": {
+    "resourceType": "Location",
+    "identifier": [
+     {
+      "system": "https://UKAny.de/fhir/CodeSystem/Bed",
+      "value": "NSNCN_8111-E04-451_3"
+     }
+    ],
+    "name": "3",
+    "partOf": {
+     "reference": "Location/1188"
+    },
+    "physicalType": {
+     "coding": [
+      {
+       "code": "bd",
+       "display": "Bed",
+       "system": "http://hl7.org/fhir/ValueSet/location-physical-type"
+      }
+     ]
+    },
+    "id": "1189",
+    "meta": {
+     "lastUpdated": "2025-10-24T12:25:54Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Encounter/BZXXVIQTIW5J566TZA34MBSCY2IOXDLZ",
+   "resource": {
+    "resourceType": "Encounter",
+    "class": {
+     "code": "IMP",
+     "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode"
+    },
+    "identifier": [
+     {
+      "system": "urn:oid:1.3.6.1.4.1.21367.2010.1.2.300.2.5",
+      "type": {
+       "text": "EncounterNumber"
+      },
+      "use": "official",
+      "value": "55003144-920004-VK"
+     }
+    ],
+    "location": [
+     {
+      "location": {
+       "display": "NSNCN",
+       "identifier": {
+        "system": "https://UKAny.de/fhir/CodeSystem/Ward",
+        "value": "NSNCN"
+       },
+       "reference": "Location/1183"
+      },
+      "physicalType": {
+       "coding": [
+        {
+         "code": "wa",
+         "display": "Ward",
+         "system": "http://terminology.hl7.org/CodeSystem/location-physical-type"
+        }
+       ]
+      }
+     },
+     {
+      "location": {
+       "display": "8111-E04-451",
+       "identifier": {
+        "system": "https://UKAny.de/fhir/CodeSystem/Room",
+        "value": "NSNCN_8111-E04-451"
+       },
+       "reference": "Location/1188"
+      },
+      "physicalType": {
+       "coding": [
+        {
+         "code": "ro",
+         "display": "Room",
+         "system": "http://terminology.hl7.org/CodeSystem/location-physical-type"
+        }
+       ]
+      }
+     },
+     {
+      "location": {
+       "display": "3",
+       "identifier": {
+        "system": "https://UKAny.de/fhir/CodeSystem/Bed",
+        "value": "NSNCN_8111-E04-451_3"
+       },
+       "reference": "Location/1189"
+      },
+      "physicalType": {
+       "coding": [
+        {
+         "code": "bd",
+         "display": "Bed",
+         "system": "http://terminology.hl7.org/CodeSystem/location-physical-type"
+        }
+       ]
+      }
+     }
+    ],
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-fall/StructureDefinition/KontaktGesundheitseinrichtung|2025.0.0"
+     ],
+     "source": "ORBIS",
+     "lastUpdated": "2026-03-19T15:05:14Z",
+     "versionId": "1"
+    },
+    "partOf": {
+     "reference": "Encounter/W3OQIO2UN6N2DNX4VL53QQI7AJVKKQ5T"
+    },
+    "period": {
+     "end": "2026-03-05T10:00:00.000+01:00",
+     "start": "2026-03-03T14:00:00.000+01:00"
+    },
+    "status": "finished",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "type": [
+     {
+      "coding": [
+       {
+        "code": "versorgungsstellenkontakt",
+        "display": "Versorgungsstellenkontakt",
+        "system": "Kontaktebene"
+       }
+      ]
+     }
+    ],
+    "id": "BZXXVIQTIW5J566TZA34MBSCY2IOXDLZ"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Location/2726",
+   "resource": {
+    "resourceType": "Location",
+    "identifier": [
+     {
+      "system": "https://UKAny.de/fhir/CodeSystem/Bed",
+      "value": "NSNCN_8111-E04-451_2"
+     }
+    ],
+    "name": "2",
+    "partOf": {
+     "reference": "Location/1188"
+    },
+    "physicalType": {
+     "coding": [
+      {
+       "code": "bd",
+       "display": "Bed",
+       "system": "http://hl7.org/fhir/ValueSet/location-physical-type"
+      }
+     ]
+    },
+    "id": "2726",
+    "meta": {
+     "lastUpdated": "2026-03-16T20:11:50Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Encounter/56KCIR2MB2Q3D5K26PK44N55IAO6BO4S",
+   "resource": {
+    "resourceType": "Encounter",
+    "class": {
+     "code": "IMP",
+     "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode"
+    },
+    "identifier": [
+     {
+      "system": "urn:oid:1.3.6.1.4.1.21367.2010.1.2.300.2.5",
+      "type": {
+       "text": "EncounterNumber"
+      },
+      "use": "official",
+      "value": "55003144-920005-VK"
+     }
+    ],
+    "location": [
+     {
+      "location": {
+       "display": "NSNCN",
+       "identifier": {
+        "system": "https://UKAny.de/fhir/CodeSystem/Ward",
+        "value": "NSNCN"
+       },
+       "reference": "Location/1183"
+      },
+      "physicalType": {
+       "coding": [
+        {
+         "code": "wa",
+         "display": "Ward",
+         "system": "http://terminology.hl7.org/CodeSystem/location-physical-type"
+        }
+       ]
+      }
+     },
+     {
+      "location": {
+       "display": "8111-E04-451",
+       "identifier": {
+        "system": "https://UKAny.de/fhir/CodeSystem/Room",
+        "value": "NSNCN_8111-E04-451"
+       },
+       "reference": "Location/1188"
+      },
+      "physicalType": {
+       "coding": [
+        {
+         "code": "ro",
+         "display": "Room",
+         "system": "http://terminology.hl7.org/CodeSystem/location-physical-type"
+        }
+       ]
+      }
+     },
+     {
+      "location": {
+       "display": "2",
+       "identifier": {
+        "system": "https://UKAny.de/fhir/CodeSystem/Bed",
+        "value": "NSNCN_8111-E04-451_2"
+       },
+       "reference": "Location/2726"
+      },
+      "physicalType": {
+       "coding": [
+        {
+         "code": "bd",
+         "display": "Bed",
+         "system": "http://terminology.hl7.org/CodeSystem/location-physical-type"
+        }
+       ]
+      }
+     }
+    ],
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-fall/StructureDefinition/KontaktGesundheitseinrichtung|2025.0.0"
+     ],
+     "source": "ORBIS",
+     "lastUpdated": "2026-03-19T15:05:14Z",
+     "versionId": "1"
+    },
+    "partOf": {
+     "reference": "Encounter/W3OQIO2UN6N2DNX4VL53QQI7AJVKKQ5T"
+    },
+    "period": {
+     "end": "2026-03-09T11:00:00.000+01:00",
+     "start": "2026-03-05T10:00:00.000+01:00"
+    },
+    "status": "finished",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "type": [
+     {
+      "coding": [
+       {
+        "code": "versorgungsstellenkontakt",
+        "display": "Versorgungsstellenkontakt",
+        "system": "Kontaktebene"
+       }
+      ]
+     }
+    ],
+    "id": "56KCIR2MB2Q3D5K26PK44N55IAO6BO4S"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Encounter/WQ3YUI4AI5RPXZEAJ5VXLU3WJQNQF4LC",
+   "resource": {
+    "resourceType": "Encounter",
+    "class": {
+     "code": "IMP",
+     "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode"
+    },
+    "identifier": [
+     {
+      "system": "urn:oid:1.3.6.1.4.1.21367.2010.1.2.300.2.5",
+      "type": {
+       "text": "EncounterNumber"
+      },
+      "use": "official",
+      "value": "55003144-920006-AK"
+     }
+    ],
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-fall/StructureDefinition/KontaktGesundheitseinrichtung|2025.0.0"
+     ],
+     "source": "ORBIS",
+     "tag": [
+      {
+       "code": "A04",
+       "display": "Konsil / OP",
+       "system": "http://healthshare/mii/tags"
+      }
+     ],
+     "lastUpdated": "2026-03-19T15:05:14Z",
+     "versionId": "1"
+    },
+    "partOf": {
+     "reference": "Encounter/RRMYGU4C2VUNT46ZKVLLFXMDVGLZXZPU"
+    },
+    "period": {
+     "end": "2026-03-05T11:30:00.000+01:00",
+     "start": "2026-03-05T11:30:00.000+01:00"
+    },
+    "serviceProvider": {
+     "display": "NCHI",
+     "reference": "Organization/1181"
+    },
+    "serviceType": {
+     "coding": [
+      {
+       "code": "0107",
+       "display": "0107",
+       "system": "Fachabteilungsschluessel"
+      }
+     ]
+    },
+    "status": "unknown",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "type": [
+     {
+      "coding": [
+       {
+        "code": "abteilungskontakt",
+        "display": "Abteilungskontakt",
+        "system": "Kontaktebene"
+       }
+      ]
+     }
+    ],
+    "id": "WQ3YUI4AI5RPXZEAJ5VXLU3WJQNQF4LC"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Encounter/KWNRFT2XOYLSUFFJUAQODFKHKI2FNXUE",
+   "resource": {
+    "resourceType": "Encounter",
+    "class": {
+     "code": "IMP",
+     "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode"
+    },
+    "identifier": [
+     {
+      "system": "urn:oid:1.3.6.1.4.1.21367.2010.1.2.300.2.5",
+      "type": {
+       "text": "EncounterNumber"
+      },
+      "use": "official",
+      "value": "55003144-920006-VK"
+     }
+    ],
+    "location": [
+     {
+      "location": {
+       "display": "NSNCN",
+       "identifier": {
+        "system": "https://UKAny.de/fhir/CodeSystem/Ward",
+        "value": "NSNCN"
+       },
+       "reference": "Location/1183"
+      },
+      "physicalType": {
+       "coding": [
+        {
+         "code": "wa",
+         "display": "Ward",
+         "system": "http://terminology.hl7.org/CodeSystem/location-physical-type"
+        }
+       ]
+      }
+     },
+     {
+      "location": {
+       "display": "8111-E04-451",
+       "identifier": {
+        "system": "https://UKAny.de/fhir/CodeSystem/Room",
+        "value": "NSNCN_8111-E04-451"
+       },
+       "reference": "Location/1188"
+      },
+      "physicalType": {
+       "coding": [
+        {
+         "code": "ro",
+         "display": "Room",
+         "system": "http://terminology.hl7.org/CodeSystem/location-physical-type"
+        }
+       ]
+      }
+     },
+     {
+      "location": {
+       "display": "2",
+       "identifier": {
+        "system": "https://UKAny.de/fhir/CodeSystem/Bed",
+        "value": "NSNCN_8111-E04-451_2"
+       },
+       "reference": "Location/2726"
+      },
+      "physicalType": {
+       "coding": [
+        {
+         "code": "bd",
+         "display": "Bed",
+         "system": "http://terminology.hl7.org/CodeSystem/location-physical-type"
+        }
+       ]
+      }
+     }
+    ],
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-fall/StructureDefinition/KontaktGesundheitseinrichtung|2025.0.0"
+     ],
+     "source": "ORBIS",
+     "tag": [
+      {
+       "code": "A04",
+       "display": "Konsil / OP",
+       "system": "http://healthshare/mii/tags"
+      }
+     ],
+     "lastUpdated": "2026-03-19T15:05:14Z",
+     "versionId": "1"
+    },
+    "partOf": {
+     "reference": "Encounter/WQ3YUI4AI5RPXZEAJ5VXLU3WJQNQF4LC"
+    },
+    "period": {
+     "end": "2026-03-05T11:30:00.000+01:00",
+     "start": "2026-03-05T11:30:00.000+01:00"
+    },
+    "status": "unknown",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "type": [
+     {
+      "coding": [
+       {
+        "code": "versorgungsstellenkontakt",
+        "display": "Versorgungsstellenkontakt",
+        "system": "Kontaktebene"
+       }
+      ]
+     }
+    ],
+    "id": "KWNRFT2XOYLSUFFJUAQODFKHKI2FNXUE"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Organization/1194",
+   "resource": {
+    "resourceType": "Organization",
+    "active": true,
+    "address": [
+     {
+      "city": "Cambridge",
+      "country": "USA",
+      "line": [
+       "One Memorial Drive"
+      ],
+      "postalCode": "02142",
+      "state": "MA",
+      "text": "One Memorial Drive",
+      "type": "both"
+     }
+    ],
+    "identifier": [
+     {
+      "system": "https://UKAny.de/fhir/CodeSystem/Fachabteilung",
+      "value": "KIM1"
+     }
+    ],
+    "name": "KIM1",
+    "partOf": {
+     "reference": "Organization/351"
+    },
+    "type": [
+     {
+      "coding": [
+       {
+        "code": "DPT",
+        "display": "Department",
+        "system": "https://simplifier.net/medizininformatikinitiative-modulstrukturdaten/cs-mii-struktur-organisationstyp"
+       }
+      ]
+     }
+    ],
+    "id": "1194",
+    "meta": {
+     "lastUpdated": "2025-10-24T12:25:55Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Encounter/VEYQTLUHFZCCYZDJQ5XXKREZRTYNSGLV",
+   "resource": {
+    "resourceType": "Encounter",
+    "class": {
+     "code": "IMP",
+     "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode"
+    },
+    "identifier": [
+     {
+      "system": "urn:oid:1.3.6.1.4.1.21367.2010.1.2.300.2.5",
+      "type": {
+       "text": "EncounterNumber"
+      },
+      "use": "official",
+      "value": "55003144-920008-AK"
+     }
+    ],
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-fall/StructureDefinition/KontaktGesundheitseinrichtung|2025.0.0"
+     ],
+     "source": "ORBIS",
+     "lastUpdated": "2026-03-19T15:05:14Z",
+     "versionId": "1"
+    },
+    "partOf": {
+     "reference": "Encounter/RRMYGU4C2VUNT46ZKVLLFXMDVGLZXZPU"
+    },
+    "period": {
+     "end": "2026-03-12T15:00:00.000+01:00",
+     "start": "2026-03-09T11:00:00.000+01:00"
+    },
+    "serviceProvider": {
+     "display": "KIM1",
+     "reference": "Organization/1194"
+    },
+    "serviceType": {
+     "coding": [
+      {
+       "code": "0107",
+       "display": "0107",
+       "system": "Fachabteilungsschluessel"
+      }
+     ]
+    },
+    "status": "finished",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "type": [
+     {
+      "coding": [
+       {
+        "code": "abteilungskontakt",
+        "display": "Abteilungskontakt",
+        "system": "Kontaktebene"
+       }
+      ]
+     }
+    ],
+    "id": "VEYQTLUHFZCCYZDJQ5XXKREZRTYNSGLV"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Location/1196",
+   "resource": {
+    "resourceType": "Location",
+    "identifier": [
+     {
+      "system": "https://UKAny.de/fhir/CodeSystem/Ward",
+      "value": "HCH2"
+     }
+    ],
+    "managingOrganization": {
+     "reference": "Organization/351"
+    },
+    "name": "HCH2",
+    "physicalType": {
+     "coding": [
+      {
+       "code": "wa",
+       "display": "Ward",
+       "system": "http://hl7.org/fhir/ValueSet/location-physical-type"
+      }
+     ]
+    },
+    "id": "1196",
+    "meta": {
+     "lastUpdated": "2025-10-24T12:25:55Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Location/1198",
+   "resource": {
+    "resourceType": "Location",
+    "identifier": [
+     {
+      "system": "https://UKAny.de/fhir/CodeSystem/Room",
+      "value": "HCH2_01 8111-E09-903"
+     }
+    ],
+    "name": "01 8111-E09-903",
+    "partOf": {
+     "reference": "Location/1196"
+    },
+    "physicalType": {
+     "coding": [
+      {
+       "code": "ro",
+       "display": "Room",
+       "system": "http://hl7.org/fhir/ValueSet/location-physical-type"
+      }
+     ]
+    },
+    "id": "1198",
+    "meta": {
+     "lastUpdated": "2025-10-24T12:25:55Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Location/1199",
+   "resource": {
+    "resourceType": "Location",
+    "identifier": [
+     {
+      "system": "https://UKAny.de/fhir/CodeSystem/Bed",
+      "value": "HCH2_01 8111-E09-903_1"
+     }
+    ],
+    "name": "1",
+    "partOf": {
+     "reference": "Location/1198"
+    },
+    "physicalType": {
+     "coding": [
+      {
+       "code": "bd",
+       "display": "Bed",
+       "system": "http://hl7.org/fhir/ValueSet/location-physical-type"
+      }
+     ]
+    },
+    "id": "1199",
+    "meta": {
+     "lastUpdated": "2025-10-24T12:25:55Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Encounter/EV7JBBYWNY4S646WZIF24HADHABFVW5L",
+   "resource": {
+    "resourceType": "Encounter",
+    "class": {
+     "code": "IMP",
+     "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode"
+    },
+    "identifier": [
+     {
+      "system": "urn:oid:1.3.6.1.4.1.21367.2010.1.2.300.2.5",
+      "type": {
+       "text": "EncounterNumber"
+      },
+      "use": "official",
+      "value": "55003144-920008-VK"
+     }
+    ],
+    "location": [
+     {
+      "location": {
+       "display": "HCH2",
+       "identifier": {
+        "system": "https://UKAny.de/fhir/CodeSystem/Ward",
+        "value": "HCH2"
+       },
+       "reference": "Location/1196"
+      },
+      "physicalType": {
+       "coding": [
+        {
+         "code": "wa",
+         "display": "Ward",
+         "system": "http://terminology.hl7.org/CodeSystem/location-physical-type"
+        }
+       ]
+      }
+     },
+     {
+      "location": {
+       "display": "01 8111-E09-903",
+       "identifier": {
+        "system": "https://UKAny.de/fhir/CodeSystem/Room",
+        "value": "HCH2_01 8111-E09-903"
+       },
+       "reference": "Location/1198"
+      },
+      "physicalType": {
+       "coding": [
+        {
+         "code": "ro",
+         "display": "Room",
+         "system": "http://terminology.hl7.org/CodeSystem/location-physical-type"
+        }
+       ]
+      }
+     },
+     {
+      "location": {
+       "display": "1",
+       "identifier": {
+        "system": "https://UKAny.de/fhir/CodeSystem/Bed",
+        "value": "HCH2_01 8111-E09-903_1"
+       },
+       "reference": "Location/1199"
+      },
+      "physicalType": {
+       "coding": [
+        {
+         "code": "bd",
+         "display": "Bed",
+         "system": "http://terminology.hl7.org/CodeSystem/location-physical-type"
+        }
+       ]
+      }
+     }
+    ],
+    "meta": {
+     "profile": [
+      "https://www.medizininformatik-initiative.de/fhir/core/modul-fall/StructureDefinition/KontaktGesundheitseinrichtung|2025.0.0"
+     ],
+     "source": "ORBIS",
+     "lastUpdated": "2026-03-19T15:05:14Z",
+     "versionId": "1"
+    },
+    "partOf": {
+     "reference": "Encounter/VEYQTLUHFZCCYZDJQ5XXKREZRTYNSGLV"
+    },
+    "period": {
+     "end": "2026-03-12T15:00:00.000+01:00",
+     "start": "2026-03-09T11:00:00.000+01:00"
+    },
+    "status": "finished",
+    "subject": {
+     "reference": "Patient/100000028"
+    },
+    "type": [
+     {
+      "coding": [
+       {
+        "code": "versorgungsstellenkontakt",
+        "display": "Versorgungsstellenkontakt",
+        "system": "Kontaktebene"
+       }
+      ]
+     }
+    ],
+    "id": "EV7JBBYWNY4S646WZIF24HADHABFVW5L"
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Organization/2896",
+   "resource": {
+    "resourceType": "Organization",
+    "active": true,
+    "identifier": [
+     {
+      "value": "MGH"
+     }
+    ],
+    "name": "MGH",
+    "id": "2896",
+    "meta": {
+     "lastUpdated": "2026-03-18T12:45:21Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Provenance/MGH.43-5",
+   "resource": {
+    "resourceType": "Provenance",
+    "recorded": "2026-03-03T14:00:00-05:00",
+    "agent": [
+     {
+      "type": {
+       "coding": [
+        {
+         "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type",
+         "code": "transmitter",
+         "display": "Transmitter"
+        }
+       ],
+       "text": "Transmitter"
+      },
+      "who": {
+       "reference": "Organization/2896"
+      }
+     }
+    ],
+    "target": [
+     {
+      "reference": "Organization/2896"
+     },
+     {
+      "reference": "Condition/3243"
+     },
+     {
+      "reference": "Organization/2896"
+     }
+    ],
+    "id": "MGH.43-5",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:14Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Provenance/MGH.43-6",
+   "resource": {
+    "resourceType": "Provenance",
+    "recorded": "2026-03-03T14:00:00-05:00",
+    "agent": [
+     {
+      "type": {
+       "coding": [
+        {
+         "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type",
+         "code": "transmitter",
+         "display": "Transmitter"
+        }
+       ],
+       "text": "Transmitter"
+      },
+      "who": {
+       "reference": "Organization/2896"
+      }
+     }
+    ],
+    "target": [
+     {
+      "reference": "Organization/2896"
+     },
+     {
+      "reference": "Condition/3245"
+     },
+     {
+      "reference": "Organization/2896"
+     }
+    ],
+    "id": "MGH.43-6",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:14Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Provenance/MGH.43-7",
+   "resource": {
+    "resourceType": "Provenance",
+    "recorded": "2026-03-03T14:00:00-05:00",
+    "agent": [
+     {
+      "type": {
+       "coding": [
+        {
+         "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type",
+         "code": "transmitter",
+         "display": "Transmitter"
+        }
+       ],
+       "text": "Transmitter"
+      },
+      "who": {
+       "reference": "Organization/2896"
+      }
+     }
+    ],
+    "target": [
+     {
+      "reference": "Organization/2896"
+     },
+     {
+      "reference": "Condition/3247"
+     },
+     {
+      "reference": "Organization/2896"
+     }
+    ],
+    "id": "MGH.43-7",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:14Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Practitioner/3266",
+   "resource": {
+    "resourceType": "Practitioner",
+    "extension": [
+     {
+      "url": "http://intersystems.com/fhir/extn/sda3/lib/code-table-detail-description",
+      "valueString": "RUECKJU"
+     }
+    ],
+    "identifier": [
+     {
+      "value": "RUECKJU"
+     }
+    ],
+    "id": "3266",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:14Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Organization/349",
+   "resource": {
+    "resourceType": "Organization",
+    "active": true,
+    "identifier": [
+     {
+      "value": "PHLS"
+     }
+    ],
+    "name": "PHLS",
+    "id": "349",
+    "meta": {
+     "lastUpdated": "2025-03-24T22:54:41Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Practitioner/665",
+   "resource": {
+    "resourceType": "Practitioner",
+    "identifier": [
+     {
+      "value": "UNBEKANNT"
+     }
+    ],
+    "name": [
+     {
+      "family": "Unbek. ext. Arzt"
+     }
+    ],
+    "id": "665",
+    "meta": {
+     "lastUpdated": "2025-03-24T22:54:45Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Practitioner/666",
+   "resource": {
+    "resourceType": "Practitioner",
+    "identifier": [
+     {
+      "value": "999999999"
+     }
+    ],
+    "id": "666",
+    "meta": {
+     "lastUpdated": "2025-03-24T22:54:45Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Practitioner/667",
+   "resource": {
+    "resourceType": "Practitioner",
+    "extension": [
+     {
+      "url": "http://intersystems.com/fhir/extn/sda3/lib/code-table-detail-referral-doctor-description",
+      "valueString": "Ambulanz - Zentrale Notaufnahme"
+     }
+    ],
+    "identifier": [
+     {
+      "value": "AMBU_ZNA"
+     }
+    ],
+    "name": [
+     {
+      "family": "Ambulanz - Zentrale Notaufnahme"
+     }
+    ],
+    "id": "667",
+    "meta": {
+     "lastUpdated": "2025-03-24T22:54:45Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Provenance/PHLS.41-2",
+   "resource": {
+    "resourceType": "Provenance",
+    "recorded": "2026-03-01T08:00:00-05:00",
+    "agent": [
+     {
+      "type": {
+       "coding": [
+        {
+         "system": "http://terminology.hl7.org/CodeSystem/provenance-participant-type",
+         "code": "author",
+         "display": "Author"
+        }
+       ],
+       "text": "Author"
+      },
+      "who": {
+       "reference": "Practitioner/3266"
+      },
+      "onBehalfOf": {
+       "reference": "Organization/349"
+      }
+     },
+     {
+      "type": {
+       "coding": [
+        {
+         "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type",
+         "code": "transmitter",
+         "display": "Transmitter"
+        }
+       ],
+       "text": "Transmitter"
+      },
+      "who": {
+       "reference": "Organization/349"
+      }
+     }
+    ],
+    "target": [
+     {
+      "reference": "Practitioner/665"
+     },
+     {
+      "reference": "Practitioner/665"
+     },
+     {
+      "reference": "Practitioner/666"
+     },
+     {
+      "reference": "Practitioner/666"
+     },
+     {
+      "reference": "Organization/349"
+     },
+     {
+      "reference": "Practitioner/667"
+     },
+     {
+      "reference": "Organization/351"
+     },
+     {
+      "reference": "Encounter/RRMYGU4C2VUNT46ZKVLLFXMDVGLZXZPU"
+     },
+     {
+      "reference": "Practitioner/665"
+     },
+     {
+      "reference": "Practitioner/665"
+     },
+     {
+      "reference": "Practitioner/666"
+     },
+     {
+      "reference": "Practitioner/666"
+     },
+     {
+      "reference": "Organization/349"
+     },
+     {
+      "reference": "Organization/351"
+     },
+     {
+      "reference": "Organization/1178"
+     },
+     {
+      "reference": "Practitioner/667"
+     },
+     {
+      "reference": "Encounter/AAOZOY64LSCPY5CHT5DOOHYYYQ66LZNF"
+     },
+     {
+      "reference": "Practitioner/665"
+     },
+     {
+      "reference": "Practitioner/665"
+     },
+     {
+      "reference": "Practitioner/666"
+     },
+     {
+      "reference": "Practitioner/666"
+     },
+     {
+      "reference": "Organization/349"
+     },
+     {
+      "reference": "Practitioner/667"
+     },
+     {
+      "reference": "Encounter/AOVAKAA6JDFIUEJ7BKAHGYOESMHTITYV"
+     },
+     {
+      "reference": "Practitioner/665"
+     },
+     {
+      "reference": "Practitioner/665"
+     },
+     {
+      "reference": "Practitioner/666"
+     },
+     {
+      "reference": "Practitioner/666"
+     },
+     {
+      "reference": "Organization/349"
+     },
+     {
+      "reference": "Organization/351"
+     },
+     {
+      "reference": "Organization/1178"
+     },
+     {
+      "reference": "Practitioner/667"
+     },
+     {
+      "reference": "Encounter/C4E5SUSCMG4RCOPOLS4FKK4CVJSBPCPS"
+     },
+     {
+      "reference": "Practitioner/665"
+     },
+     {
+      "reference": "Practitioner/665"
+     },
+     {
+      "reference": "Practitioner/666"
+     },
+     {
+      "reference": "Practitioner/666"
+     },
+     {
+      "reference": "Organization/349"
+     },
+     {
+      "reference": "Practitioner/667"
+     },
+     {
+      "reference": "Encounter/3VGDACXW4N26LI6MWALPHTRLR35KEGYP"
+     },
+     {
+      "reference": "Practitioner/665"
+     },
+     {
+      "reference": "Practitioner/665"
+     },
+     {
+      "reference": "Practitioner/666"
+     },
+     {
+      "reference": "Practitioner/666"
+     },
+     {
+      "reference": "Organization/349"
+     },
+     {
+      "reference": "Organization/351"
+     },
+     {
+      "reference": "Organization/1181"
+     },
+     {
+      "reference": "Practitioner/667"
+     },
+     {
+      "reference": "Encounter/W3OQIO2UN6N2DNX4VL53QQI7AJVKKQ5T"
+     },
+     {
+      "reference": "Practitioner/665"
+     },
+     {
+      "reference": "Practitioner/665"
+     },
+     {
+      "reference": "Practitioner/666"
+     },
+     {
+      "reference": "Practitioner/666"
+     },
+     {
+      "reference": "Organization/349"
+     },
+     {
+      "reference": "Practitioner/667"
+     },
+     {
+      "reference": "Organization/351"
+     },
+     {
+      "reference": "Location/2723"
+     },
+     {
+      "reference": "Encounter/V5RD5YFP3MVW7HDGA3TVHG6OCL27OPCW"
+     },
+     {
+      "reference": "Practitioner/665"
+     },
+     {
+      "reference": "Practitioner/665"
+     },
+     {
+      "reference": "Practitioner/666"
+     },
+     {
+      "reference": "Practitioner/666"
+     },
+     {
+      "reference": "Organization/349"
+     },
+     {
+      "reference": "Practitioner/667"
+     },
+     {
+      "reference": "Organization/351"
+     },
+     {
+      "reference": "Location/1183"
+     },
+     {
+      "reference": "Organization/351"
+     },
+     {
+      "reference": "Location/1188"
+     },
+     {
+      "reference": "Organization/351"
+     },
+     {
+      "reference": "Location/1189"
+     },
+     {
+      "reference": "Encounter/BZXXVIQTIW5J566TZA34MBSCY2IOXDLZ"
+     },
+     {
+      "reference": "Practitioner/665"
+     },
+     {
+      "reference": "Practitioner/665"
+     },
+     {
+      "reference": "Practitioner/666"
+     },
+     {
+      "reference": "Practitioner/666"
+     },
+     {
+      "reference": "Organization/349"
+     },
+     {
+      "reference": "Practitioner/667"
+     },
+     {
+      "reference": "Organization/351"
+     },
+     {
+      "reference": "Location/1183"
+     },
+     {
+      "reference": "Organization/351"
+     },
+     {
+      "reference": "Location/1188"
+     },
+     {
+      "reference": "Organization/351"
+     },
+     {
+      "reference": "Location/2726"
+     },
+     {
+      "reference": "Encounter/56KCIR2MB2Q3D5K26PK44N55IAO6BO4S"
+     },
+     {
+      "reference": "Practitioner/665"
+     },
+     {
+      "reference": "Practitioner/665"
+     },
+     {
+      "reference": "Practitioner/666"
+     },
+     {
+      "reference": "Practitioner/666"
+     },
+     {
+      "reference": "Organization/349"
+     },
+     {
+      "reference": "Organization/351"
+     },
+     {
+      "reference": "Organization/1181"
+     },
+     {
+      "reference": "Practitioner/667"
+     },
+     {
+      "reference": "Encounter/WQ3YUI4AI5RPXZEAJ5VXLU3WJQNQF4LC"
+     },
+     {
+      "reference": "Practitioner/665"
+     },
+     {
+      "reference": "Practitioner/665"
+     },
+     {
+      "reference": "Practitioner/666"
+     },
+     {
+      "reference": "Practitioner/666"
+     },
+     {
+      "reference": "Organization/349"
+     },
+     {
+      "reference": "Practitioner/667"
+     },
+     {
+      "reference": "Organization/351"
+     },
+     {
+      "reference": "Location/1183"
+     },
+     {
+      "reference": "Organization/351"
+     },
+     {
+      "reference": "Location/1188"
+     },
+     {
+      "reference": "Organization/351"
+     },
+     {
+      "reference": "Location/2726"
+     },
+     {
+      "reference": "Encounter/KWNRFT2XOYLSUFFJUAQODFKHKI2FNXUE"
+     },
+     {
+      "reference": "Practitioner/665"
+     },
+     {
+      "reference": "Practitioner/665"
+     },
+     {
+      "reference": "Practitioner/666"
+     },
+     {
+      "reference": "Practitioner/666"
+     },
+     {
+      "reference": "Organization/349"
+     },
+     {
+      "reference": "Organization/351"
+     },
+     {
+      "reference": "Organization/1194"
+     },
+     {
+      "reference": "Practitioner/667"
+     },
+     {
+      "reference": "Encounter/VEYQTLUHFZCCYZDJQ5XXKREZRTYNSGLV"
+     },
+     {
+      "reference": "Practitioner/665"
+     },
+     {
+      "reference": "Practitioner/665"
+     },
+     {
+      "reference": "Practitioner/666"
+     },
+     {
+      "reference": "Practitioner/666"
+     },
+     {
+      "reference": "Organization/349"
+     },
+     {
+      "reference": "Practitioner/667"
+     },
+     {
+      "reference": "Organization/351"
+     },
+     {
+      "reference": "Location/1196"
+     },
+     {
+      "reference": "Organization/351"
+     },
+     {
+      "reference": "Location/1198"
+     },
+     {
+      "reference": "Organization/351"
+     },
+     {
+      "reference": "Location/1199"
+     },
+     {
+      "reference": "Encounter/EV7JBBYWNY4S646WZIF24HADHABFVW5L"
+     },
+     {
+      "reference": "Encounter/RRMYGU4C2VUNT46ZKVLLFXMDVGLZXZPU"
+     },
+     {
+      "reference": "Practitioner/3266"
+     },
+     {
+      "reference": "Organization/349"
+     }
+    ],
+    "id": "PHLS.41-2",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:14Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Organization/3207",
+   "resource": {
+    "resourceType": "Organization",
+    "active": true,
+    "name": "CGH",
+    "identifier": [
+     {
+      "value": "CGH"
+     }
+    ],
+    "id": "3207",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Provenance/CGH.42-18",
+   "resource": {
+    "resourceType": "Provenance",
+    "recorded": "2026-03-18T18:45:13-04:00",
+    "agent": [
+     {
+      "type": {
+       "coding": [
+        {
+         "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type",
+         "code": "transmitter",
+         "display": "Transmitter"
+        }
+       ],
+       "text": "Transmitter"
+      },
+      "who": {
+       "reference": "Organization/3207"
+      }
+     }
+    ],
+    "target": [
+     {
+      "reference": "Observation/3206"
+     },
+     {
+      "reference": "Organization/3207"
+     }
+    ],
+    "id": "CGH.42-18",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Provenance/CGH.42-19",
+   "resource": {
+    "resourceType": "Provenance",
+    "recorded": "2026-03-18T18:45:13-04:00",
+    "agent": [
+     {
+      "type": {
+       "coding": [
+        {
+         "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type",
+         "code": "transmitter",
+         "display": "Transmitter"
+        }
+       ],
+       "text": "Transmitter"
+      },
+      "who": {
+       "reference": "Organization/3207"
+      }
+     }
+    ],
+    "target": [
+     {
+      "reference": "Observation/3209"
+     },
+     {
+      "reference": "Organization/3207"
+     }
+    ],
+    "id": "CGH.42-19",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Provenance/CGH.42-20",
+   "resource": {
+    "resourceType": "Provenance",
+    "recorded": "2026-03-18T18:45:13-04:00",
+    "agent": [
+     {
+      "type": {
+       "coding": [
+        {
+         "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type",
+         "code": "transmitter",
+         "display": "Transmitter"
+        }
+       ],
+       "text": "Transmitter"
+      },
+      "who": {
+       "reference": "Organization/3207"
+      }
+     }
+    ],
+    "target": [
+     {
+      "reference": "Observation/3211"
+     },
+     {
+      "reference": "Organization/3207"
+     }
+    ],
+    "id": "CGH.42-20",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Provenance/CGH.42-28",
+   "resource": {
+    "resourceType": "Provenance",
+    "recorded": "2026-03-18T18:45:13-04:00",
+    "agent": [
+     {
+      "type": {
+       "coding": [
+        {
+         "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type",
+         "code": "transmitter",
+         "display": "Transmitter"
+        }
+       ],
+       "text": "Transmitter"
+      },
+      "who": {
+       "reference": "Organization/3207"
+      }
+     }
+    ],
+    "target": [
+     {
+      "reference": "Observation/3213"
+     },
+     {
+      "reference": "Organization/3207"
+     }
+    ],
+    "id": "CGH.42-28",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Provenance/CGH.42-10",
+   "resource": {
+    "resourceType": "Provenance",
+    "recorded": "2026-03-18T18:45:13-04:00",
+    "agent": [
+     {
+      "type": {
+       "coding": [
+        {
+         "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type",
+         "code": "transmitter",
+         "display": "Transmitter"
+        }
+       ],
+       "text": "Transmitter"
+      },
+      "who": {
+       "reference": "Organization/3207"
+      }
+     }
+    ],
+    "target": [
+     {
+      "reference": "Observation/3215"
+     },
+     {
+      "reference": "Organization/3207"
+     }
+    ],
+    "id": "CGH.42-10",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Provenance/CGH.42-13",
+   "resource": {
+    "resourceType": "Provenance",
+    "recorded": "2026-03-18T18:45:13-04:00",
+    "agent": [
+     {
+      "type": {
+       "coding": [
+        {
+         "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type",
+         "code": "transmitter",
+         "display": "Transmitter"
+        }
+       ],
+       "text": "Transmitter"
+      },
+      "who": {
+       "reference": "Organization/3207"
+      }
+     }
+    ],
+    "target": [
+     {
+      "reference": "Observation/3217"
+     },
+     {
+      "reference": "Organization/3207"
+     }
+    ],
+    "id": "CGH.42-13",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Provenance/CGH.42-14",
+   "resource": {
+    "resourceType": "Provenance",
+    "recorded": "2026-03-18T18:45:13-04:00",
+    "agent": [
+     {
+      "type": {
+       "coding": [
+        {
+         "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type",
+         "code": "transmitter",
+         "display": "Transmitter"
+        }
+       ],
+       "text": "Transmitter"
+      },
+      "who": {
+       "reference": "Organization/3207"
+      }
+     }
+    ],
+    "target": [
+     {
+      "reference": "Observation/3219"
+     },
+     {
+      "reference": "Organization/3207"
+     }
+    ],
+    "id": "CGH.42-14",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Provenance/CGH.42-15",
+   "resource": {
+    "resourceType": "Provenance",
+    "recorded": "2026-03-18T18:45:13-04:00",
+    "agent": [
+     {
+      "type": {
+       "coding": [
+        {
+         "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type",
+         "code": "transmitter",
+         "display": "Transmitter"
+        }
+       ],
+       "text": "Transmitter"
+      },
+      "who": {
+       "reference": "Organization/3207"
+      }
+     }
+    ],
+    "target": [
+     {
+      "reference": "Observation/3221"
+     },
+     {
+      "reference": "Organization/3207"
+     }
+    ],
+    "id": "CGH.42-15",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Provenance/CGH.42-21",
+   "resource": {
+    "resourceType": "Provenance",
+    "recorded": "2026-03-18T18:45:13-04:00",
+    "agent": [
+     {
+      "type": {
+       "coding": [
+        {
+         "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type",
+         "code": "transmitter",
+         "display": "Transmitter"
+        }
+       ],
+       "text": "Transmitter"
+      },
+      "who": {
+       "reference": "Organization/3207"
+      }
+     }
+    ],
+    "target": [
+     {
+      "reference": "Observation/3223"
+     },
+     {
+      "reference": "Organization/3207"
+     }
+    ],
+    "id": "CGH.42-21",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Provenance/CGH.42-22",
+   "resource": {
+    "resourceType": "Provenance",
+    "recorded": "2026-03-18T18:45:13-04:00",
+    "agent": [
+     {
+      "type": {
+       "coding": [
+        {
+         "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type",
+         "code": "transmitter",
+         "display": "Transmitter"
+        }
+       ],
+       "text": "Transmitter"
+      },
+      "who": {
+       "reference": "Organization/3207"
+      }
+     }
+    ],
+    "target": [
+     {
+      "reference": "Observation/3225"
+     },
+     {
+      "reference": "Organization/3207"
+     }
+    ],
+    "id": "CGH.42-22",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Provenance/CGH.42-23",
+   "resource": {
+    "resourceType": "Provenance",
+    "recorded": "2026-03-18T18:45:13-04:00",
+    "agent": [
+     {
+      "type": {
+       "coding": [
+        {
+         "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type",
+         "code": "transmitter",
+         "display": "Transmitter"
+        }
+       ],
+       "text": "Transmitter"
+      },
+      "who": {
+       "reference": "Organization/3207"
+      }
+     }
+    ],
+    "target": [
+     {
+      "reference": "Observation/3227"
+     },
+     {
+      "reference": "Organization/3207"
+     }
+    ],
+    "id": "CGH.42-23",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Provenance/CGH.42-26",
+   "resource": {
+    "resourceType": "Provenance",
+    "recorded": "2026-03-18T18:45:13-04:00",
+    "agent": [
+     {
+      "type": {
+       "coding": [
+        {
+         "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type",
+         "code": "transmitter",
+         "display": "Transmitter"
+        }
+       ],
+       "text": "Transmitter"
+      },
+      "who": {
+       "reference": "Organization/3207"
+      }
+     }
+    ],
+    "target": [
+     {
+      "reference": "Observation/3229"
+     },
+     {
+      "reference": "Organization/3207"
+     }
+    ],
+    "id": "CGH.42-26",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Provenance/CGH.42-27",
+   "resource": {
+    "resourceType": "Provenance",
+    "recorded": "2026-03-18T18:45:13-04:00",
+    "agent": [
+     {
+      "type": {
+       "coding": [
+        {
+         "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type",
+         "code": "transmitter",
+         "display": "Transmitter"
+        }
+       ],
+       "text": "Transmitter"
+      },
+      "who": {
+       "reference": "Organization/3207"
+      }
+     }
+    ],
+    "target": [
+     {
+      "reference": "Observation/3231"
+     },
+     {
+      "reference": "Organization/3207"
+     }
+    ],
+    "id": "CGH.42-27",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Provenance/CGH.42-3",
+   "resource": {
+    "resourceType": "Provenance",
+    "recorded": "2026-03-18T18:45:13-04:00",
+    "agent": [
+     {
+      "type": {
+       "coding": [
+        {
+         "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type",
+         "code": "transmitter",
+         "display": "Transmitter"
+        }
+       ],
+       "text": "Transmitter"
+      },
+      "who": {
+       "reference": "Organization/3207"
+      }
+     }
+    ],
+    "target": [
+     {
+      "reference": "Observation/3233"
+     },
+     {
+      "reference": "Organization/3207"
+     }
+    ],
+    "id": "CGH.42-3",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Provenance/CGH.42-4",
+   "resource": {
+    "resourceType": "Provenance",
+    "recorded": "2026-03-18T18:45:13-04:00",
+    "agent": [
+     {
+      "type": {
+       "coding": [
+        {
+         "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type",
+         "code": "transmitter",
+         "display": "Transmitter"
+        }
+       ],
+       "text": "Transmitter"
+      },
+      "who": {
+       "reference": "Organization/3207"
+      }
+     }
+    ],
+    "target": [
+     {
+      "reference": "Observation/3235"
+     },
+     {
+      "reference": "Organization/3207"
+     }
+    ],
+    "id": "CGH.42-4",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Provenance/CGH.42-5",
+   "resource": {
+    "resourceType": "Provenance",
+    "recorded": "2026-03-18T18:45:13-04:00",
+    "agent": [
+     {
+      "type": {
+       "coding": [
+        {
+         "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type",
+         "code": "transmitter",
+         "display": "Transmitter"
+        }
+       ],
+       "text": "Transmitter"
+      },
+      "who": {
+       "reference": "Organization/3207"
+      }
+     }
+    ],
+    "target": [
+     {
+      "reference": "Observation/3237"
+     },
+     {
+      "reference": "Organization/3207"
+     }
+    ],
+    "id": "CGH.42-5",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Provenance/CGH.42-8",
+   "resource": {
+    "resourceType": "Provenance",
+    "recorded": "2026-03-18T18:45:13-04:00",
+    "agent": [
+     {
+      "type": {
+       "coding": [
+        {
+         "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type",
+         "code": "transmitter",
+         "display": "Transmitter"
+        }
+       ],
+       "text": "Transmitter"
+      },
+      "who": {
+       "reference": "Organization/3207"
+      }
+     }
+    ],
+    "target": [
+     {
+      "reference": "Observation/3239"
+     },
+     {
+      "reference": "Organization/3207"
+     }
+    ],
+    "id": "CGH.42-8",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Provenance/CGH.42-9",
+   "resource": {
+    "resourceType": "Provenance",
+    "recorded": "2026-03-18T18:45:13-04:00",
+    "agent": [
+     {
+      "type": {
+       "coding": [
+        {
+         "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type",
+         "code": "transmitter",
+         "display": "Transmitter"
+        }
+       ],
+       "text": "Transmitter"
+      },
+      "who": {
+       "reference": "Organization/3207"
+      }
+     }
+    ],
+    "target": [
+     {
+      "reference": "Observation/3241"
+     },
+     {
+      "reference": "Organization/3207"
+     }
+    ],
+    "id": "CGH.42-9",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:13Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Provenance/100000006",
+   "resource": {
+    "resourceType": "Provenance",
+    "recorded": "2025-04-17T16:28:32+02:00",
+    "agent": [
+     {
+      "type": {
+       "coding": [
+        {
+         "system": "http://terminology.hl7.org/CodeSystem/provenance-participant-type",
+         "code": "author"
+        }
+       ]
+      },
+      "who": {
+       "reference": "Organization/3204"
+      }
+     },
+     {
+      "type": {
+       "coding": [
+        {
+         "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type",
+         "code": "transmitter"
+        }
+       ]
+      },
+      "who": {
+       "reference": "Organization/3204"
+      }
+     }
+    ],
+    "target": [
+     {
+      "reference": "Organization/1106"
+     },
+     {
+      "display": "Patient reference redacted by $everything; outside scope of operation"
+     },
+     {
+      "reference": "Organization/3204"
+     }
+    ],
+    "id": "100000006",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:50:00Z",
+     "versionId": "3",
+     "tag": [
+      {
+       "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+       "code": "SUBSETTED",
+       "display": "Resource content reduced because Patient reference(s) redacted by $everything; outside scope of operation"
+      }
+     ]
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Provenance/MGH.43-3",
+   "resource": {
+    "resourceType": "Provenance",
+    "recorded": "2026-03-18T18:45:14-04:00",
+    "agent": [
+     {
+      "type": {
+       "coding": [
+        {
+         "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type",
+         "code": "transmitter",
+         "display": "Transmitter"
+        }
+       ],
+       "text": "Transmitter"
+      },
+      "who": {
+       "reference": "Organization/2896"
+      }
+     }
+    ],
+    "target": [
+     {
+      "reference": "Practitioner/2895"
+     },
+     {
+      "reference": "Organization/2896"
+     },
+     {
+      "reference": "Procedure/HI7UFZQFNFI36PM2GN5WBIZZSDK7SZE3"
+     },
+     {
+      "reference": "Organization/2896"
+     }
+    ],
+    "id": "MGH.43-3",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:14Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  },
+  {
+   "fullUrl": "https://dembpm3bthomas.local:23443/hs20242b/csp/healthshare/hsods/fhir/r4/Provenance/MGH.43-4",
+   "resource": {
+    "resourceType": "Provenance",
+    "recorded": "2026-03-18T18:45:14-04:00",
+    "agent": [
+     {
+      "type": {
+       "coding": [
+        {
+         "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type",
+         "code": "transmitter",
+         "display": "Transmitter"
+        }
+       ],
+       "text": "Transmitter"
+      },
+      "who": {
+       "reference": "Organization/2896"
+      }
+     }
+    ],
+    "target": [
+     {
+      "reference": "Practitioner/2895"
+     },
+     {
+      "reference": "Organization/2896"
+     },
+     {
+      "reference": "Procedure/K5RXNTST4QAQBL5F76SZ6KO4SXBZO57G"
+     },
+     {
+      "reference": "Organization/2896"
+     }
+    ],
+    "id": "MGH.43-4",
+    "meta": {
+     "lastUpdated": "2026-03-19T15:05:14Z",
+     "versionId": "1"
+    }
+   },
+   "search": {
+    "mode": "include"
+   }
+  }
+ ]
+}

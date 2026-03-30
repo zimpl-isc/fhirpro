@@ -1,0 +1,312 @@
+html,
+body {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	background: #f5f7fb;
+	font-family: Arial, Helvetica, sans-serif;
+	color: #1f2937;
+	overflow: hidden;
+}
+
+/* HEADER */
+
+#AppHeader {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 64px;
+	background: #ffffff;
+	border-bottom: 1px solid #e5e7eb;
+	z-index: 200;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0 18px 0 18px;
+	box-sizing: border-box;
+	border-top: 2px solid #333695;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+#HeaderLeft {
+	display: flex;
+	align-items: center;
+	gap: 18px;
+	min-width: 0;
+}
+
+#Brand {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	min-width: 0;
+}
+
+#Brand {
+	cursor: pointer;
+}
+
+#BrandLogo {
+	width: 34px;
+	height: 34px;
+	flex: 0 0 auto;
+}
+
+#BrandText {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	line-height: 1.05;
+	min-width: 0;
+}
+
+#AppName {
+	font-size: 19px;
+	font-weight: 700;
+	letter-spacing: 0.1px;
+	color: #334155;
+}
+
+#AppName .fhir {
+	color: #333695;
+}
+
+#PageName {
+	font-size: 13px;
+	font-weight: 600;
+	color: #64748b;
+	margin-top: 2px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+#HeaderRight {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+/* PATIENT NAV */
+
+#PatientNav {
+	display: none;
+	position: relative;
+}
+
+#PatientButton {
+	border: 1px solid #d1d5db;
+	background: #ffffff;
+	color: #1f2937;
+	border-radius: 10px;
+	padding: 8px 12px;
+	font-size: 13px;
+	line-height: 1.2;
+	cursor: pointer;
+	min-width: 240px;
+	text-align: left;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+#PatientButton:hover {
+	background: #f8fafc;
+}
+
+#PatientButton .meta {
+	color: #64748b;
+	font-size: 12px;
+	display: block;
+	margin-top: 2px;
+}
+
+#PatientDropdown {
+	display: none;
+	position: absolute;
+	right: 0;
+	top: 46px;
+	width: 330px;
+	background: #ffffff;
+	border: 1px solid #d1d5db;
+	border-radius: 12px;
+	box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+	padding: 12px;
+	z-index: 250;
+	box-sizing: border-box;
+}
+
+#PatientDropdown .title {
+	font-weight: 600;
+	color: #111827;
+	margin-bottom: 6px;
+}
+
+#PatientDropdown .line {
+	font-size: 13px;
+	color: #475569;
+	margin-bottom: 4px;
+}
+
+#PatientDropdown .muted {
+	color: #64748b;
+}
+
+#PatientDropdown .actions {
+	margin-top: 10px;
+	padding-top: 10px;
+	border-top: 1px solid #e5e7eb;
+}
+
+#PatientDropdown a {
+	color: #2563eb;
+	text-decoration: none;
+	font-size: 13px;
+	cursor: pointer;
+}
+
+#PatientDropdown a:hover {
+	text-decoration: underline;
+}
+
+#EnvBadge {
+	border: 1px solid #cbd5e1;
+	background: #f8fafc;
+	color: #475569;
+	border-radius: 999px;
+	padding: 5px 10px;
+	font-size: 12px;
+	font-weight: 600;
+}
+
+/* LEFT RAIL */
+
+.side_menu {
+	position: fixed;
+	top: 64px;
+	left: 0;
+	bottom: 0;
+	width: 64px;
+	background: #ffffff;
+	border-right: 1px solid #e5e7eb;
+	z-index: 150;
+	box-sizing: border-box;
+	padding-top: 12px;
+}
+
+.side_menu .container {
+	padding: 0;
+}
+
+.list_load {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.list_item {
+	width: 64px;
+	height: 52px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: background 0.15s ease-in-out;
+	position: relative;
+	filter: grayscale(20%);
+	opacity: 0.72;
+}
+
+.list_item:hover {
+	opacity: 1;
+}
+
+.list_item.active {
+	background: linear-gradient(90deg, #333695 3%, #f5f7fb 9%);
+	border-top: 1px solid #d9e2f2;
+	border-bottom: 1px solid #d9e2f2;
+	opacity: 1;
+}
+
+.list_item.active svg {
+	opacity: 1;
+	filter: none;
+}
+
+.list_item svg,
+.list_item img {
+	max-width: 24px;
+	max-height: 24px;
+	opacity: 0.6;
+}
+
+.separator {
+	border-top: 1px dotted #ccc;
+}
+
+/* MAIN FRAME */
+
+.frame {
+	position: fixed;
+	left: 64px;
+	right: 0;
+	bottom: 0;
+	top: 64px;
+	width: calc(100% - 64px);
+	height: calc(100% - 64px);
+	border: none;
+	background: #f5f7fb;
+}
+
+#LoadingMessage {
+	display: none;
+	background: rgba(248, 250, 252, 0.92);
+	z-index: 180;
+	color: #334155;
+	font-size: 18px;
+	font-weight: 600;
+	align-items: center;
+	justify-content: center;
+}
+
+#PatientButton {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	text-align: left;
+}
+
+#PatientButton .patient-text {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+#PatientButton::after {
+	content: "\25BE";
+	flex: 0 0 auto;
+	margin-left: 1rem;
+	font-size: 1.1rem;
+	line-height: 1;
+	color: #64748b;
+}
+
+.blink {
+	animation: blink 1s linear infinite;
+}
+
+/* Adds a shell to external pages, in line with general styling*/
+.extShell {
+	padding: 16px;
+	margin: 16px;
+	width: calc(100% - 8 * 16px) !important;
+	border: 1px solid #e5e7eb;
+  	border-radius: 12px;
+  	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+@keyframes blink {
+	50% {
+		opacity: 0.45;
+	}
+}

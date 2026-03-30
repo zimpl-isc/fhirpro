@@ -1,0 +1,255 @@
+html,
+body {
+	margin: 0;
+	padding: 0;
+	background: #f5f7fb;
+	box-sizing: border-box;
+	font-family: Arial, Helvetica, sans-serif;
+	color: #1f2937;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: inherit;
+}
+
+#pageShell {
+	padding: 16px;
+}
+
+.card {
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 12px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+	margin-bottom: 12px;
+}
+
+.toolbarCard {
+	padding: 16px;
+}
+
+.formGrid {
+	display: grid;
+	grid-template-columns: 420px 120px minmax(280px, 1fr) auto;
+	gap: 12px;
+	align-items: end;
+	margin-bottom: 12px;
+}
+
+.optionsGrid {
+	display: grid;
+	grid-template-columns: minmax(260px, 1fr) repeat(4, auto);
+	gap: 12px;
+	align-items: center;
+}
+
+.fieldGroup label,
+.optionLabel {
+	display: block;
+	font-size: 12px;
+	font-weight: 600;
+	color: #64748b;
+	margin-bottom: 6px;
+}
+
+input[type="text"],
+input[type="number"] {
+	width: 100%;
+	height: 36px;
+	padding: 0 10px;
+	border: 1px solid #cbd5e1;
+	border-radius: 8px;
+	background: #ffffff;
+	color: #1f2937;
+	font: inherit;
+}
+
+input[type="checkbox"] {
+	width: 16px;
+	height: 16px;
+	margin: 0 6px 0 0;
+	vertical-align: middle;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+	outline: none;
+	border-color: #6366f1;
+	box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+.primaryButton,
+.secondaryButton {
+	height: 36px;
+	padding: 0 12px;
+	border: 1px solid #cbd5e1;
+	border-radius: 8px;
+	font: inherit;
+	cursor: pointer;
+}
+
+.primaryButton {
+	background: #333695;
+	border-color: #333695;
+	color: #ffffff;
+}
+
+.primaryButton:hover {
+	background: #2b2f82;
+}
+
+.secondaryButton {
+	background: #ffffff;
+	color: #334155;
+}
+
+.secondaryButton:hover {
+	background: #f8fafc;
+}
+
+.checkboxRow {
+	display: flex;
+	align-items: center;
+	white-space: nowrap;
+	color: #334155;
+	font-size: 14px;
+}
+
+.comment {
+	display: block;
+	margin-top: 6px;
+	font-size: 12px;
+	color: #94a3b8;
+}
+
+.resultsCard {
+	padding: 12px 16px 16px 16px;
+	position: relative;
+}
+
+.resultsHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	margin-bottom: 10px;
+}
+
+.resultsTitle {
+	font-size: 16px;
+	font-weight: 600;
+	color: #1f2937;
+}
+
+div.dataTables_wrapper div.dataTables_filter {
+	float: left;
+}
+
+div.dataTables_wrapper div.dataTables_length {
+	margin-bottom: 10px;
+	font-size: 13px;
+	color: #64748b;
+	float: right;
+}
+
+table.dataTable thead th {
+	font-size: 12px;
+	font-weight: 700;
+	color: #64748b;
+	text-transform: uppercase;
+	letter-spacing: 0.02em;
+	border-bottom: 1px solid #e5e7eb !important;
+}
+
+table.dataTable tbody td {
+	vertical-align: middle;
+	font-size: 14px;
+	color: #1f2937;
+	border-bottom: 1px solid #f1f5f9 !important;
+}
+
+table.dataTable tbody tr:hover {
+	background: #f8fafc !important;
+}
+
+.dataField {
+	white-space: nowrap;
+}
+
+.dataLink {
+	color: #333695;
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.dataLink:hover {
+	text-decoration: underline;
+}
+
+#filterForUnique {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 30px;
+	height: 30px;
+	margin-left: 8px;
+	border: 1px solid #cbd5e1;
+	border-radius: 8px;
+	background: #ffffff;
+	cursor: pointer;
+	vertical-align: middle;
+}
+
+#filterForUnique:hover {
+	background: #f8fafc;
+}
+
+#filterForUnique svg {
+	fill: #64748b;
+}
+
+#filterForUnique svg.active {
+	fill: #333695;
+	filter: drop-shadow(0px 0px 2px rgba(51, 54, 149, 0.3));
+}
+
+#iframe-tooltip-container {
+	display: none;
+	position: fixed;
+	top: 24px;
+	right: 24px;
+	width: min(1100px, calc(100vw - 48px));
+	height: min(820px, calc(100vh - 48px));
+	background: #ffffff;
+	border: 1px solid #dbe2ea;
+	border-radius: 14px;
+	box-shadow: 0 20px 48px rgba(15, 23, 42, 0.18);
+	overflow: hidden;
+	z-index: 9999;
+}
+
+#tooltip-iframe {
+	width: 100%;
+	height: 100%;
+	border: 0;
+	background: #ffffff;
+}
+
+@media (max-width: 1200px) {
+
+	.formGrid,
+	.optionsGrid {
+		grid-template-columns: 1fr;
+	}
+
+	#iframe-tooltip-container {
+		width: calc(100vw - 32px);
+		height: calc(100vh - 32px);
+		left: 16px;
+		right: 16px;
+		top: 16px;
+		bottom: 16px;
+	}
+}

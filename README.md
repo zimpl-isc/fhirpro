@@ -1,5 +1,5 @@
-# zimpl:FHIR Profiling Toolkit for HealthShare
-*2024-03-27 • Brandon Thomas*
+# zimpliFHIR Profiling Toolkit for HealthShare
+*2026-03-30 • Brandon Thomas*
 
 ## Contents
 - [Scope](#scope)
@@ -12,34 +12,73 @@
 - [Roadmap](#roadmap)
 - [License](#license)
 
-## Scope
-This package provides a number of tools which were developed to aid in the implementation of the [German MII FHIR profiles](https://simplifier.net/organization/koordinationsstellemii) in [InterSystems HealthShare](https://www.intersystems.com/interoperability-platform/).  These tools are not intended for production use.
+## Overview
 
-Many thanks to our sponsor for this project, the University Hospital of Hamburg-Eppendorf, Germany :tada:
+FHIRPro is a **developer-focused toolkit** for working with FHIR in InterSystems HealthShare and IRIS. This package provides a number of tools which were developed to aid in the implementation of the [German MII FHIR profiles](https://simplifier.net/organization/koordinationsstellemii) in [InterSystems HealthShare](https://www.intersystems.com/interoperability-platform/).  These tools are not intended for production use.
 
-[<img src="README_img/UKE_logo_klassisch.png">](https://www.uke.de)
+It supports:
 
-The following screenshots narrate the basic functionality ...
+* development and debugging of FHIR profiles
+* transformation validation (HL7 --> SDA <--> FHIR)
+* inspection of relationships between FHIR resources
+* temporal visualization for understanding data behavior
 
----
-![Retrieval and viewer of SDA Containers and FHIR Bundles by MRN or MPIID for comparison](README_img/SAFI_Datasource.png)
+
+
+## Core Capabilities
+
+### 🔍 Data Exploration
+
+* Inspect FHIR resources in context
+* Navigate references and dependencies
+* Identify missing or inconsistent links
+
+### 🔄 Transformation Support
+
+* Compare SDA3 and FHIR representations
+* Inspect and debug DTL transformations
+
+### 🕒 Temporal Visualization
+
+* Timeline view of FHIR data (encounters, observations, medications, procedures, conditions)
+
+### 🧠 Relationship Analysis
+
+* Graph-based visualization of FHIR resources
+* Highlight reference chains and integrity issues
+
+### ✅ Validation (REST)
+
+The relationship graph view can call an external **FHIR validation service** via HTTP (configured through the Service Registry).
+
+Example validator (Docker):
+
+```bash
+docker run --rm -p 4567:4567 \
+  --name fhir-validator-core \
+  -e DISABLE_TX=true \
+  -e DISPLAY_ISSUES_ARE_WARNINGS=true \
+  infernocommunity/fhir-validator-service:latest
+```
+
+### Screenshots
+
+![Retrieval and viewer of SDA Containers and FHIR Bundles by MRN or MPIID for comparison](README_img/zimpliFHIR-Datasource.png)
 *Retrieve and compare SDA Containers with FHIR Bundles by MRN/AA or MPIID*
 
 ---
-![Network diagram which displays the hierarchy of all FHIR resources within a bundle](README_img/SAFI_FHIR-Network.png)
-*Network diagram which displays the hierarchy of all resources within a FHIR bundle*
+![Network diagram which displays the hierarchy of all FHIR resources within a bundle](README_img/zimpliFHIR-RelationshipGraph.png)
+*Network diagram which displays the hierarchy of all resources within a FHIR bundle. Resource Validation, inspection, and filtering available here.*
 
 ---
-![Timeline diagram of specific FHIR resources within a bundle](README_img/SAFI_FHIR-Timeline.png)
-*Timeline diagram of specific FHIR resources within a bundle*
+![Timeline diagram of specific FHIR resources within a bundle](README_img/zimpliFHIR-PatientJourney.png)
+*Timeline diagram of specific FHIR resources within a bundle. Expects MII Encounter hierarchies.*
 
 ---
-![DTL Viewer with search and filter capabilities](README_img/DTL-Viewer.png)
+![DTL Viewer with search and filter capabilities](README_img/zimpliFHIR-DTLViewer.png)
 *Extensible DTL Viewer with search, filter and export capabilities*
 
 ---
-![Integrated Management Portal](README_img/SMP.png)
-*Integrated Management Portal*
 
 
 ## Installation
@@ -51,7 +90,7 @@ A foundation-type production is required in HealthShare for retrieving SDA and F
 
 - [ ] From the terminal, use the installer script to setup the new namespace `ZIMPLFHIRPRO` and configure the production:
 ``` objectscript
-HSCUSTOM> do ##class(HS.Local.zimpl.fhirpro.API.Installer).Install()
+HSCUSTOM> do ##class(HS.Local.zimpli.fhir.API.Installer).Install()
 ```
 #### Now in the Management Portal:
 
@@ -75,26 +114,38 @@ The following external libraries are contained in the included zip file:
 ---
 - [ ] Unzip and save the contents of 
 
-`zimplfhirpro_Dependencies-*.zip` 
+`zimplifhir_Dependencies-*.zip` 
 
 to the following directory:
 
-`{HealthShare Installation}/csp/healthshare/zimplfhirpro/`
+`{HealthShare Installation}/csp/healthshare/zimplifhir/`
 
 ### Navigate to the Startpage
-<http://localhost:52774/csp/healthshare/zimplfhirpro/HS.Local.zimpl.fhirpro.UI.Index.cls>
+<http://localhost:52774/csp/healthshare/zimplifhir/HS.Local.zimpli.fhir.UI.Index.cls>
 
 ## Disclaimer
 :warning: This application is not supported by InterSystems Corporation. Please be notified that you use it at your own risk.
 
-## Known Issues & Caveats
-### 2024-01-12
-- custom DTLViewer classes should now extend 
-`HS.Local.zimpl.fhirpro.UI.DTLViewer`
+## Changelog
 
-## Roadmap
+### Current Release
+- Renamed Class structure (!)
+- UI cleanup and consolidation across all components
+- Improved encounter-centric visualization in **Patient Journey** timeline
+- Extended **FHIR Relationship Graph**:
+  - resource-type grouping
+  - support for external FHIR validation services (REST)
+- Various usability and interaction improvements
+
+### Roadmap
 - Add REST API in ODS to handle ReloadPatient(), etc from this tool
 - Add tools for managing ^ISCSOAP,^FSLOG; verify custom DTL package; Extension Mapping; FHIR validation
 
 ## License
 This and all external libraries included with this package are available as open source under the terms of the [MIT License](https://opensource.org/license/MIT).
+
+## Sponsors
+
+Many thanks to our sponsor, the University Hospital of Hamburg-Eppendorf (UKE), Germany, for supporting this project and enabling the development of its first comprehensive user interface :tada:
+
+[<img src="README_img/UKE_logo_klassisch.png">](https://www.uke.de)
