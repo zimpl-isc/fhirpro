@@ -87,19 +87,20 @@ docker run --rm -p 4567:4567 \
 ### Configure Production
 A foundation-type production is required in HealthShare for retrieving SDA and FHIR. An installer method will configure this for you.
 
-- [ ] From the terminal, use the installer script to setup the new namespace `ZIMPLFHIRPRO` and configure the production:
+- [ ] From the terminal, use the installer script to setup the new namespace `ZIMPLIFHIR` and configure the production:
 ``` objectscript
 HSCUSTOM> do ##class(HS.Local.zimpli.fhir.API.Installer).Install()
 ```
 #### Now in the Management Portal:
 
-- [ ] Configure the *Business Operation* **GATEWAY**
-    - The **ServiceName** setting needs to use an AccessGateway known in the Service Registry, for example: `dembp18bthomas.local:HSACCESS`
-- [ ] Configure the *Business Operation* **HS.FHIRServer.Interop.HTTPOperation**
-    - The **ServiceName** setting needs an HTTP Endpoint for FHIR (ODS), for example: `FHIR.Service.R4`  
-    Note: you may need to configure the `HTTPCredentialsConfig` and  `SSL Configuration` settings in the *Service Registry* entry.
-- [ ] :bulb: Optionally add the *Business Operation* **HS.Util.Trace.Operations** 
+- [ ] Configure the *Business Operation* **GATEWAY** for SDA retrieval:
+  - Set the **ServiceName** to an AccessGateway defined in the Service Registry, for example: `dembp18bthomas.local:HSACCESS`
 
+- [ ] Configure the *Business Operation* **HS.FHIRServer.Interop.HTTPOperation** for FHIR retrieval and validation:
+  - Set the **ServiceName** to an HTTP endpoint for FHIR (ODS), for example: `FHIR.Service.R4`  
+  - Note: You may need to configure `HTTPCredentialsConfig` and `SSL Configuration` in the corresponding Service Registry entry.
+
+- [ ] :bulb: Optionally add the *Business Operation* **HS.Util.Trace.Operations**
 - [ ] Start the production
 
 ### Web Dependencies
