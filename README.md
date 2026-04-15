@@ -48,6 +48,24 @@ It supports:
 The relationship graph view can call external **FHIR validation services** via HTTP.  
 Validators are configured through the **Service Registry** (see below).
 
+### Screenshots
+
+![Retrieval and viewer of SDA Containers and FHIR Bundles by MRN or MPIID for comparison](README_img/zimpliFHIR-Datasource.png)
+*Retrieve and compare SDA Containers with FHIR Bundles by MRN/AA or MPIID*
+
+---
+![Network diagram which displays the hierarchy of all FHIR resources within a bundle](README_img/zimpliFHIR-RelationshipGraph.png)
+*Network diagram which displays the hierarchy of all resources within a FHIR bundle. Resource Validation, inspection, and filtering available here.*
+
+---
+![Timeline diagram of specific FHIR resources within a bundle](README_img/zimpliFHIR-PatientJourney.png)
+*Timeline diagram of specific FHIR resources within a bundle. Expects MII Encounter hierarchies.*
+
+---
+![DTL Viewer with search and filter capabilities](README_img/zimpliFHIR-DTLViewer.png)
+*Extensible DTL Viewer with search, filter and export capabilities*
+
+
 ---
 
 ## Installation
