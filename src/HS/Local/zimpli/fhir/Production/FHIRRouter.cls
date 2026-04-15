@@ -22,7 +22,12 @@ Method OnRequest(pRequest As HS.FHIRServer.Interop.Request, Output pResponse As 
 
 Method CallValidationHost(pRequest As HS.FHIRServer.Interop.Request, Output pResponse As HS.FHIRServer.Interop.Response) As %Status
 {
-    set tProfile = "http://hl7.org/fhir/StructureDefinition/Bundle"
+    set tServiceName = pRequest.Request.AdditionalInfo.GetAt("ServiceName")
+    if (tServiceName '= "") {
+        set tService = ##class(HS.Registry.Service.HTTP).EndPointForNameType(tServiceName,"HTTP")
+        set pRequest.Request.RequestPath = tService.URL
+        set pRequest.Request.BaseURL = ""
+    }
 
     return ..SendRequestSync(..ValidationHost, pRequest, .pResponse)
 }

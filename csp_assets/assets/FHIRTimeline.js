@@ -262,6 +262,27 @@ function wireTimelineEvents() {
 		}
 	});
 
+	timeline.on('doubleClick', function (props) {
+		if (!props || !props.item) return;
+
+		var id = props.item;
+		var resource = fhirResource[fhirRef[id]];
+		if (!resource) return;
+
+		var fullUrl = resource.fullUrl || "";
+		var resourceId = resource.resource && resource.resource.id;
+
+		if (fullUrl) {
+			window.parent.toggle("Compare_SDA3_to_FHIR", {
+				fullUrl: fullUrl
+			});
+		} else if (resourceId) {
+			window.parent.toggle("Compare_SDA3_to_FHIR", {
+				resourceId: resourceId
+			});
+		}
+	});
+
 	timeline.on('rangechange', function () {
 		hideTooltip();
 	});

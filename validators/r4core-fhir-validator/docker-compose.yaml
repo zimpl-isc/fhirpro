@@ -1,0 +1,7 @@
+services:
+  fhir-validator-core:
+    image: infernocommunity/fhir-validator-service:latest
+    container_name: fhir-validator-core
+    restart: unless-stopped
+    ports:
+      - "4567:4567"

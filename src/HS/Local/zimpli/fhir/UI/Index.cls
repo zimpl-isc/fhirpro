@@ -33,7 +33,7 @@ ClassMethod OnPage() As %Status
 	<script type="text/javascript">
 		iframePages = {
 			"About": "HS.Local.zimpli.fhir.UI.About.cls",
-			"Compare_SDA3_to_FHIR": "HS.Local.zimpli.fhir.UI.SDA3uFHIRViewer.cls",
+			"Compare_SDA3_to_FHIR": "HS.Local.zimpli.fhir.UI.DataInspector.cls",
 			"Configure_Datasource": "HS.Local.zimpli.fhir.UI.Datasource.cls",
 			"FHIR_Relationship_Graph": "HS.Local.zimpli.fhir.UI.FHIRNetwork.cls",
 			"FHIR_3d": "HS.Local.zimpli.fhir.UI.FHIRForce3d.cls",

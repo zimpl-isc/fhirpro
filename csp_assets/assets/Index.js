@@ -19,17 +19,28 @@ function mainFrameReady() {
 	refreshPatientNav();
 }
 
-function toggle(activeElementId) {
+function toggle(activeElementId, queryParams) {
 	$('#LoadingMessage').css('display', 'flex');
 
 	$('.list_item').removeClass('active');
 	$('#' + activeElementId).addClass('active');
 
-	$('#MainFrame').attr('src', iframePages[activeElementId]);
+	let targetUrl = iframePages[activeElementId];
 
-	if ((activeElementId === 'Management_Portal')
-		|| (activeElementId === 'HL7_Annotations')
-		|| (activeElementId === 'Registry')) {
+	if (queryParams) {
+		const qs = new URLSearchParams(queryParams).toString();
+		if (qs) {
+			targetUrl += (targetUrl.indexOf('?') === -1 ? '?' : '&') + qs;
+		}
+	}
+
+	$('#MainFrame').attr('src', targetUrl);
+
+	if (
+		activeElementId === 'Management_Portal' ||
+		activeElementId === 'HL7_Annotations' ||
+		activeElementId === 'Registry'
+	) {
 		$('#MainFrame').css('background-color', 'white');
 		$('#MainFrame').addClass('extShell');
 	} else {
@@ -37,7 +48,7 @@ function toggle(activeElementId) {
 		$('#MainFrame').removeClass('extShell');
 	}
 
-	$('#PageName').html(activeElementId.replace(/\_/g, " "));
+	$('#PageName').html(activeElementId.replace(/\_/g, ' '));
 	refreshPatientNav();
 	setCurrentItemInTitle(getMpiid());
 }

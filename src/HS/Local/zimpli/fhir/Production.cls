@@ -23,6 +23,9 @@ XData ProductionDefinition
   </Item>
   <Item Name="HS.Local.zimpli.fhir.Production.FHIRRouter" Category="" ClassName="HS.Local.zimpli.fhir.Production.FHIRRouter" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
   </Item>
+  <Item Name="HS.Local.zimpli.fhir.Production.HTTPOperation" Category="" ClassName="HS.Local.zimpli.fhir.Production.HTTPOperation" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="true" Schedule="">
+    <Setting Target="Host" Name="TraceOperations">*FULL*</Setting>
+  </Item>
 </Production>
 }
 

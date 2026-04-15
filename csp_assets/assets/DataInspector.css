@@ -1,0 +1,416 @@
+html, body {
+	height: 100%;
+	margin: 0;
+	overflow: hidden;
+	font-family: Inter, "Segoe UI", Arial, sans-serif;
+	font-size: 14px;
+	background: #f4f6fa;
+	color: #243041;
+}
+
+body.resizing {
+	cursor: col-resize;
+	user-select: none;
+}
+
+.srOnly {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0,0,0,0);
+	border: 0;
+}
+
+#container {
+	position: absolute;
+	inset: 0;
+	display: grid;
+	grid-template-columns: minmax(220px, 2fr) 8px minmax(220px, 3fr);
+	overflow: hidden;
+}
+
+#separator {
+	position: relative;
+	width: 8px;
+	min-width: 8px;
+	cursor: col-resize;
+	background: #d7dde6;
+	z-index: 3;
+}
+
+.viewerPane {
+	position: relative;
+	height: 100%;
+	min-width: 0;
+	display: grid;
+	grid-template-columns: 52px minmax(0, 1fr);
+	background: #f5f7fb;
+	border-right: 1px solid #dde3ea;
+	overflow: hidden;
+}
+
+.paneHeaderVertical {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
+	background: #f5f7fb;
+	padding: 10px 5px;
+	gap: 8px;
+	border-right: 1px solid #dde3ea;
+}
+
+.paneTitle {
+	font-family: Inter, "Segoe UI", Arial, sans-serif;
+	font-weight: 800;
+	font-size: 11px;
+	letter-spacing: 0.05em;
+	color: #39465a;
+	writing-mode: vertical-rl;
+	transform: rotate(180deg);
+	line-height: 1;
+	margin-bottom: 4px;
+	user-select: none;
+}
+
+.paneTabs.vertical {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	width: 100%;
+	align-items: center;
+}
+
+.tabBtn,
+.paneActionBtn {
+	width: 34px;
+	height: 34px;
+	padding: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid #c7d0db;
+	background: #ffffff;
+	border-radius: 8px;
+	cursor: pointer;
+	font-family: Inter, "Segoe UI Symbol", Arial, sans-serif;
+	font-size: 15px;
+	font-weight: 700;
+	color: #4a586b;
+	line-height: 1;
+	transition: background .12s ease, border-color .12s ease, color .12s ease;
+}
+
+.tabBtn:hover,
+.paneActionBtn:hover,
+#Controls button:hover {
+	background: #f7f9fc;
+	border-color: #b9c4d1;
+}
+
+.tabBtn.active {
+	background: #eef2f7;
+	border-color: #98a9bf;
+	color: #2c4c74;
+}
+
+.paneBody {
+	height: 100%;
+	overflow: auto;
+	padding: 12px 14px 28px 14px;
+	background: #ffffff;
+}
+
+
+.paneBody,
+pre,
+textarea,
+.treeNode,
+.treeLine,
+.treeLabel {
+	font-family: Consolas, Monaco, "Courier New", monospace;
+}
+
+.paneView {
+	display: none;
+	min-height: 0;
+}
+
+.paneView.active {
+	display: block;
+	min-height: 100%;
+}
+
+#fhirRawView {
+	height: 100%;
+	min-height: 0;
+}
+
+#fhirRawView.active {
+	display: flex;
+	flex-direction: column;
+	min-height: 100%;
+}
+
+#fhirRawText,
+#sdaRawPre {
+	background: #fff;
+	padding: 10px;
+	border: 1px solid #d9dee6;
+	border-radius: 6px;
+	box-sizing: border-box;
+}
+
+#fhirRawText {
+	width: 100%;
+	flex: 1 1 auto;
+	min-height: 0;
+	resize: none;
+}
+
+#sdaRawPre {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+pre, textarea {
+	margin: 0;
+	font-family: inherit;
+	font-size: 13px;
+	line-height: 1.45;
+}
+
+
+
+.rawActions {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 8px;
+}
+
+.rawActions button {
+	padding: 5px 10px;
+	border: 1px solid #c7d0db;
+	background: #ffffff;
+	border-radius: 8px;
+	cursor: pointer;
+	font-family: Inter, "Segoe UI", Arial, sans-serif;
+	color: #435268;
+}
+
+.treeNode {
+	margin-left: 0;
+}
+
+.treeNode .children {
+	margin-left: 22px;
+	border-left: 1px dotted #dbe3ee;
+	padding-left: 8px;
+}
+
+.treeNode.collapsed > .children {
+	display: none;
+}
+
+.treeLine {
+	display: flex;
+	align-items: flex-start;
+	gap: 6px;
+	padding: 1px 0;
+}
+
+.toggle {
+	display: inline-block;
+	width: 14px;
+	text-align: center;
+	cursor: pointer;
+	color: #6f7c8d;
+	user-select: none;
+}
+
+.toggle.empty {
+	cursor: default;
+	color: #a7adb4;
+}
+
+.treeLabel {
+	display: inline-block;
+	cursor: default;
+	padding: 2px 6px;
+	border-radius: 6px;
+	line-height: 1.35;
+	transition: background-color .12s ease, box-shadow .12s ease;
+}
+
+.tag {
+	color: #9a2d2d;
+	font-weight: 700;
+}
+
+.attrName {
+	color: #8b6508;
+}
+
+.attrValue,
+.xmlText,
+.textValue,
+.jsonString {
+	color: #1e7a8c;
+}
+
+.xmlText,
+.jsonLeaf,
+.attrValue {
+	padding: 0 2px;
+	border-radius: 4px;
+}
+
+.jsonKey {
+	color: #2f5fa8;
+	font-weight: 700;
+}
+
+.jsonType {
+	color: #757575;
+}
+
+.jsonMeta {
+	color: #919191;
+}
+
+.jsonNumber {
+	color: #7d2fa3;
+}
+
+.jsonBool,
+.jsonNull {
+	color: #a14a00;
+}
+
+.colon {
+	color: #555;
+}
+
+.resourceBadges {
+	margin-left: 8px;
+}
+
+.badge {
+	display: inline-block;
+	margin-right: 4px;
+	padding: 2px 8px;
+	font-size: 11px;
+	border-radius: 999px;
+	border: 1px solid #cfd7e2;
+	background: #f6f8fb;
+	color: #566576;
+}
+
+.selectedNode {
+	background: #fff1bf;
+}
+
+.searchHit {
+	background: #fff5a8;
+}
+
+.currentHit {
+	background: #ffd978 !important;
+	outline: 1px solid #d8a12e;
+}
+
+.errorBox {
+	padding: 12px;
+	border: 1px solid #d79a9a;
+	background: #fff1f1;
+	color: #8a2424;
+	border-radius: 8px;
+}
+
+.comment {
+	color: #5a6875;
+}
+
+#Controls {
+	position: fixed;
+	top: 18px;
+	right: 18px;
+	z-index: 20;
+	width: 360px;
+	max-width: calc(100vw - 32px);
+	padding: 10px 12px 12px 12px;
+	background: rgba(245, 247, 251, 0.96);
+	border-radius: 16px;
+	border: 1px solid #cfd7e2;
+	box-shadow: 0 4px 12px rgba(0,0,0,.08);
+	backdrop-filter: blur(3px);
+}
+
+.controlsHeader {
+	display: flex;
+	align-items: center;
+	margin-bottom: 8px;
+}
+
+.controlsTitle {
+	font-family: Inter, "Segoe UI", Arial, sans-serif;
+	font-weight: 700;
+	font-size: 14px;
+	color: #33485f;
+}
+
+#Controls .controlRow {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 8px;
+	flex-wrap: wrap;
+}
+
+#Controls .controlRow.small {
+	font-size: 12px;
+	color: #51606d;
+	margin-bottom: 0;
+}
+
+.searchForm {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	width: 100%;
+	flex-wrap: wrap;
+}
+
+.searchForm input {
+	flex: 1 1 240px;
+	min-width: 180px;
+	width: 100%;
+	box-sizing: border-box;
+	padding: 6px 9px;
+	font-family: Inter, "Segoe UI", Arial, sans-serif;
+	border: 1px solid #bcc9d8;
+	border-radius: 8px;
+	background: #fff;
+}
+
+#Controls button {
+	padding: 5px 10px;
+	border: 1px solid #c3cedc;
+	background: #fff;
+	border-radius: 8px;
+	cursor: pointer;
+	font-family: Inter, "Segoe UI", Arial, sans-serif;
+	color: #435268;
+}
+
+.matchRow {
+	justify-content: flex-start;
+}
+
+.status {
+	color: #405c74;
+}

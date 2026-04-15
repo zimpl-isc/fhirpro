@@ -91,8 +91,17 @@ ClassMethod OnPage() As %Status
 		var groupPage = $("#GroupPage").val();
 		var packageName = $("#PackageName").val();
 		var searchTerm = $("#Search").val();
-		var query = (chgGroup ? 'package=' + packageName : '') + '&search=' + searchTerm;
-		window.open(groupPage + '.cls?' + query, '_self');
+		var params = [];
+
+		if (chgGroup) {
+			params.push('package=' + encodeURIComponent(packageName));
+		}
+		if (searchTerm) {
+			params.push('search=' + encodeURIComponent(searchTerm));
+		}
+
+		var query = params.length ? ('?' + params.join('&')) : '';
+		window.open(groupPage + '.cls' + query, '_self');
 	}
 
 	function wireDTLLinks(scope) {
@@ -206,7 +215,10 @@ ClassMethod OnPage() As %Status
 
 			<div class="fieldGroup">
 				<label for="Search">Search in DTLs</label>
-				<input id="Search" type="text" value="#(tSearchParam)#" title="Case-sensitive search in DTL content">
+				<input id="Search" type="text"
+					value="#(tSearchParam)#"
+					title="Case-sensitive search in DTL content"
+					onkeydown="if(event.key==='Enter'){ openPage(false); return false; }">
 			</div>
 
 			<div class="actionGroup">

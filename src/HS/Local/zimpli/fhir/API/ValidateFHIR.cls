@@ -26,6 +26,8 @@ Class HS.Local.zimpli.fhir.API.ValidateFHIR Extends %CSP.Page
 /// Dispatching Business Service
 Parameter BusinessService = "HS.Local.zimpli.fhir.API.TestService";
 
+Parameter BusinessOperation = "HS.Local.zimpli.fhir.Production.HTTPOperation";
+
 /// Prefix used to discover configured validation endpoints in service registry
 Parameter ValidationEndpointPrefix = "zimpliFHIR:validation:";
 
@@ -228,68 +230,48 @@ ClassMethod ResolveValidationService(pProfile As %String) As %String
 /// Calls backend business service and returns raw validation response JSON as a stream.
 ClassMethod GetValidationOutcomeJSON(pProfile As %String, pServiceName As %String, pBundle As %DynamicObject) As %Stream.Object
 {
-	#dim tInteropRequest As HS.FHIRServer.Interop.Request
-	#dim tFHIRDataRequest As HS.FHIRServer.API.Data.Request
-	#dim tService As %RegisteredObject
-	#dim tResponse As %RegisteredObject
+	#dim tService As Ens.BusinessService
+	#dim tRequest As EnsLib.REST.GenericMessage
+	#dim tResponse As EnsLib.REST.GenericMessage
 	#dim tSC As %Status
+	#dim tBody As %Stream.TmpCharacter
 	#dim tOutStream As %Stream.TmpCharacter
-	#dim tStream As %Stream.Object
-	#dim tQuickStream As HS.SDA3.QuickStream
-	#dim tTmpStream As %Stream.TmpCharacter
 
-	set tInteropRequest = ##class(HS.FHIRServer.Interop.Request).%New()
-	set tFHIRDataRequest = ##class(HS.FHIRServer.API.Data.Request).%New()
-	set tOutStream = ##class(%Stream.TmpCharacter).%New()
+	set tBody = ##class(%Stream.GlobalCharacter).%New()
+	do pBundle.%ToJSON(tBody)
+	do tBody.Rewind()
 
-	set tFHIRDataRequest.RequestMethod = "POST"
-	set tFHIRDataRequest.RequestPath = "/validate"
-	set tFHIRDataRequest.RequestFormatCode = "JSON"
-	set tFHIRDataRequest.ResponseFormatCode = "JSON"
+	set tHeaders("EndPoint") = pServiceName
+	set tHeaders("Method") = "POST"
+	set tHeaders("Location") = "?profile=http://hl7.org/fhir/StructureDefinition/Bundle"
+	set tHeaders("ContentType") = "application/fhir+json"
+	set tHeaders("Accept") = "application/json"
 
-	do tFHIRDataRequest.AdditionalInfo.SetAt(pServiceName, "ServiceName")
-	do tFHIRDataRequest.AdditionalInfo.SetAt("validate", "Operation")
-	do tFHIRDataRequest.AdditionalInfo.SetAt(pProfile, "ValidationProfile")
-	do tFHIRDataRequest.AdditionalInfo.SetAt("http://hl7.org/fhir/StructureDefinition/Bundle", "profile")
-	do tFHIRDataRequest.AdditionalInfo.SetAt("application/fhir+json", "ContentType")
-	do tFHIRDataRequest.AdditionalInfo.SetAt("application/json", "HEADER:Accept")
-
-	/// Static only for current testing; make dynamic later.
-	set tFHIRDataRequest.QueryString = "profile=http://hl7.org/fhir/StructureDefinition/Bundle"
-
-	/// Write request bundle directly to QuickStream to avoid large-string truncation.
-	set tQuickStream = ##class(HS.SDA3.QuickStream).%New()
-	set tTmpStream = ##class(%Stream.TmpCharacter).%New()
-	do pBundle.%ToJSON(tTmpStream)
-	do tTmpStream.Rewind()
-	do tQuickStream.CopyFrom(tTmpStream)
-
-	set tInteropRequest.QuickStreamId = tQuickStream.%Id()
-	set tInteropRequest.Request = tFHIRDataRequest
+	set tRequest = ##class(EnsLib.REST.GenericMessage).%New(tBody)
+	for {
+		set tHeader = $order(tHeaders($get(tHeader)))  quit:(tHeader="")
+		do tRequest.HTTPHeaders.SetAt(tHeaders(tHeader), tHeader)
+	}
+	
 
 	set tSC = ##class(Ens.Director).CreateBusinessService(..#BusinessService, .tService)
 	do:$$$ISERR(tSC) ..ThrowStatus(tSC)
 
-	set tSC = tService.OnProcessInput(tInteropRequest, .tResponse)
+	set tSC = tService.SendRequestSync(..#BusinessOperation, tRequest, .tResponse)
 	do:$$$ISERR(tSC) ..ThrowStatus(tSC)
 
-	if $isobject(tResponse) {
-		if tResponse.QuickStreamId'="" {
-			set tStream = ##class(HS.SDA3.QuickStream).%OpenId(tResponse.QuickStreamId)
-			if $isobject(tStream) {
-				do tStream.Rewind()
-				do tOutStream.CopyFrom(tStream)
-			}
-		} elseif $data(tResponse.ResponseBody) {
-			do tOutStream.Write(tResponse.ResponseBody)
-		} elseif $data(tResponse.Body) {
-			do tOutStream.Write(tResponse.Body)
-		} elseif $isobject(tResponse.AdditionalInfo) {
-			do tOutStream.Write(tResponse.AdditionalInfo.GetAt("ResponseBody"))
-		}
+	if '$isobject(tResponse) {
+		quit ""
 	}
 
-	do tOutStream.Rewind()
+	// GenericMessage response payload is in Stream
+	if $isobject(tResponse.Stream) {
+		do tResponse.Stream.Rewind()
+		quit tResponse.Stream
+	}
+
+	// Fallback: copy empty/other response safely into a tmp stream
+	set tOutStream = ##class(%Stream.TmpCharacter).%New()
 	quit tOutStream
 }
 

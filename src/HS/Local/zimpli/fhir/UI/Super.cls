@@ -174,6 +174,13 @@ ClassMethod XDataJS(pXDataJS)
 	return "<script type=""text/javascript"">"_tStreamOut.Read()_"</script>"
 }
 
+ClassMethod XDataCSS(pXDataCSS)
+{
+	set tJS  = ##class(Ens.Util.URLStream).GetURLStream("xdata://"_..%ClassName(1)_":"_pXDataCSS, .tStreamOut)
+	
+	return "<style>"_tStreamOut.Read()_"</style>"
+}
+
 XData StorageHandler [ MimeType = text/javascript ]
 {
 var storage = window.sessionStorage;

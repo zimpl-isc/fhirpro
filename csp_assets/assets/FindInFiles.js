@@ -114,7 +114,7 @@ function updateTableLinks() {
 
 	$('.dataLink').each(function () {
 		const doc = $(this).parent().data("doc");
-		const href = 'HS.Local.zimpl.fhirpro.UI.FileViewer.cls?doc=' + doc + '&ns=' + namespace + '&st=' + query;
+		const href = 'HS.Local.zimpli.fhir.UI.FileViewer.cls?doc=' + doc + '&ns=' + namespace + '&st=' + query;
 		$(this).attr({
 			href: href,
 			target: '_blank'
@@ -122,7 +122,7 @@ function updateTableLinks() {
 	});
 
 	$('.dataField').off('mouseenter').on('mouseenter', function () {
-		const iframeUrl = 'HS.Local.zimpl.fhirpro.UI.FileViewer.cls?doc=' + $(this).data("doc") + '&ns=' + namespace + '&st=' + query;
+		const iframeUrl = 'HS.Local.zimpli.fhir.UI.FileViewer.cls?doc=' + $(this).data("doc") + '&ns=' + namespace + '&st=' + query;
 		$('#tooltip-iframe').attr('src', iframeUrl);
 		$('#iframe-tooltip-container').css({
 			display: 'block'

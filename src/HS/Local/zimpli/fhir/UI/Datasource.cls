@@ -131,7 +131,7 @@ ClassMethod FHIRServiceSelect()
 
 ClassMethod AssigningAuthSelect()
 {
-	set tSQL = "select Code,Name from HS_AssignAuth.Config where identifiertype='MR'"
+	set tSQL = "select Code,Name from HS_AssignAuth.Config where identifiertype='MR' or identifiertype='KVNR'"
 	set tRS = ##class(%ResultSet).%New()
 	do tRS.Prepare(tSQL)
 	do tRS.Execute()
