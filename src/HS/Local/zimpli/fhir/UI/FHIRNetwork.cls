@@ -61,6 +61,55 @@ ClassMethod GetValidationEndpointURL() As %String
 	quit ..#FHIRValidator
 }
 
+/// Returns JSON array of backend tool links from Service Registry
+/// Query entries like: zimpliFHIR:links:DTLEditor
+ClassMethod GetBackendToolLinksJSON() As %String
+{
+	#dim tStatement As %String
+	#dim tResultSet As %SQL.StatementResult
+	#dim tArray As %DynamicArray
+	#dim tObj As %DynamicObject
+	#dim tName As %String
+	#dim tCode As %String
+	#dim tURL As %String
+
+	Set tPrefix = "zimpliFHIR:links:"
+
+	Set tStatement = "select name, url from HS_Registry_Service.HTTP"
+		_" where type='HTTP' and status=1"
+		_" and name %STARTSWITH '"_tPrefix_"'"
+		_" order by name"
+
+	Set tResultSet = ##class(%SQL.Statement).%ExecDirect(, tStatement)
+
+	Set tArray = ##class(%DynamicArray).%New()
+
+	While tResultSet.%Next() {
+		Set tName = tResultSet.%GetData(1)
+		Set tURL = tResultSet.%GetData(2)
+		Set tCode = $Piece(tName, tPrefix, 2)
+		Continue:tCode=""
+
+		Set tObj = ##class(%DynamicObject).%New()
+		Set tObj.code = tCode
+		Set tObj.url = tURL
+		Set tObj.label = ..BackendToolLabel(tCode)
+		Do tArray.%Push(tObj)
+	}
+
+	Quit tArray.%ToJSON()
+}
+
+/// Returns display label for backend tool code
+ClassMethod BackendToolLabel(pCode As %String) As %String
+{
+	If pCode="DTLEditor" Quit "DTL Editor"
+	If pCode="DTLViewer" Quit "DTL Viewer"
+	If pCode="OIDMap" Quit "OID Map"
+	If pCode="Terminology" Quit "Terminology Viewer"
+	Quit pCode
+}
+
 ClassMethod OnPage() As %Status
 {
 	&html<<!DOCTYPE html>

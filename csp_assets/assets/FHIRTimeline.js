@@ -622,6 +622,7 @@ function processEntry(entry) {
 		Observation: true,
 		Medication: true,
 		MedicationStatement: true,
+		MedicationDispense: true,
 		MedicationAdministration: true,
 		OperationOutcome: true
 	};
@@ -797,6 +798,25 @@ function processEntry(entry) {
 		if (tItem.end !== undefined) {
 			ensureMinimumDuration(tItem, 15);
 		}
+
+		allItems.push(tItem);
+
+	} else if (resource.resourceType == 'MedicationDispense') {
+		// MedicationDispense uses whenHandedOver for the timestamp
+		if (resource.whenHandedOver !== undefined) {
+			tItem.start = resource.whenHandedOver;
+		} else if (resource.whenPrepared !== undefined) {
+			tItem.start = resource.whenPrepared;
+		} else {
+			console.log('No Timestamp, skipping MedicationDispense:', resource);
+			return;
+		}
+
+		tItem.group = 'Medication';
+		tItem.className = 'medication-dispense';
+		tItem.content = '\u{1F48A} ' + getMedicationTimelineLabel(resource);
+		tItem.tooltip = buildMedicationTooltip(resource);
+		tItem.title = getMedicationTimelineLabel(resource);
 
 		allItems.push(tItem);
 
@@ -1129,18 +1149,26 @@ function getMedicationDisplay(resource) {
 }
 
 function getMedicationRoute(resource) {
-	if (!resource || !resource.dosage || !resource.dosage.length) return '';
+	if (!resource) return '';
 
-	var dosage = resource.dosage[0];
+	// Try dosageInstruction first (MedicationDispense, MedicationRequest)
+	var dosageArray = resource.dosageInstruction || resource.dosage;
+	if (!dosageArray || !dosageArray.length) return '';
+
+	var dosage = dosageArray[0];
 	if (!dosage.route) return '';
 
 	return getCodeableConceptDisplay(dosage.route);
 }
 
 function getMedicationDose(resource) {
-	if (!resource || !resource.dosage || !resource.dosage.length) return '';
+	if (!resource) return '';
 
-	var dosage = resource.dosage[0];
+	// Try dosageInstruction first (MedicationDispense, MedicationRequest)
+	var dosageArray = resource.dosageInstruction || resource.dosage;
+	if (!dosageArray || !dosageArray.length) return '';
+
+	var dosage = dosageArray[0];
 	if (!dosage.doseAndRate || !dosage.doseAndRate.length) return '';
 
 	var dose = dosage.doseAndRate[0].doseQuantity;

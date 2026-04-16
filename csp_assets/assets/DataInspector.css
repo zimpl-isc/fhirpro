@@ -28,7 +28,7 @@ body.resizing {
 	position: absolute;
 	inset: 0;
 	display: grid;
-	grid-template-columns: minmax(220px, 2fr) 8px minmax(220px, 3fr);
+	grid-template-columns: minmax(220px, 4fr) 8px minmax(220px, 2fr);
 	overflow: hidden;
 }
 

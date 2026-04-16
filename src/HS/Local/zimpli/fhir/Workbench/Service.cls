@@ -5,6 +5,7 @@ ClassMethod PersistValidationIssues(pMPIID As %String, pValidationConvention As 
 {
     Set tSC = $$$OK
     Set tIssues = ""
+    Set tPersistedCount = 0
 
     If '$IsObject(pValidation) {
         Quit $$$ERROR($$$GeneralError,"Validation payload is not an object")
@@ -13,7 +14,13 @@ ClassMethod PersistValidationIssues(pMPIID As %String, pValidationConvention As 
     If pValidation.%IsDefined("issues") {
         Set tIssues = pValidation.issues
     } Else {
-        Set tIssues = []
+        // Log what fields are actually present
+        Set tKeys = ""
+        Set tIter = pValidation.%GetIterator()
+        While tIter.%GetNext(.tKey, .tVal) {
+            Set tKeys = tKeys_tKey_", "
+        }
+        Quit $$$ERROR($$$GeneralError,"Validation payload missing 'issues' field. Found fields: "_tKeys)
     }
 
     If '$IsObject(tIssues) {
@@ -32,15 +39,26 @@ ClassMethod PersistValidationIssues(pMPIID As %String, pValidationConvention As 
             tNormalized
         )
         Quit:$$$ISERR(tSC)
+        Set tPersistedCount = tPersistedCount + 1
     }
 
     Quit:$$$ISERR(tSC) tSC
 
-    Quit ##class(HS.Local.zimpli.fhir.Workbench.Issue).ResolveMissingIssues(
-        pMPIID,
-        pValidationConvention,
-        pRunId
-    )
+    // Mark issues that disappeared in this validation run as "Resolved"
+    // (only if runId is provided, indicating we're tracking across runs)
+    If pRunId'="" {
+        Set tSC = ##class(HS.Local.zimpli.fhir.Workbench.Issue).ResolveMissingIssues(
+            pMPIID,
+            pValidationConvention,
+            pRunId
+        )
+        Quit:$$$ISERR(tSC) tSC
+    }
+
+    // Log success
+    Do ##class(%SYS.System).WriteToConsoleLog("Workbench: Persisted "_tPersistedCount_" issues for MPIID "_pMPIID)
+
+    Quit $$$OK
 }
 
 ClassMethod NormalizeValidationIssue(pIssue As %DynamicObject) As %DynamicObject
@@ -53,11 +71,44 @@ ClassMethod NormalizeValidationIssue(pIssue As %DynamicObject) As %DynamicObject
     Set tFHIRPath = ""
     Set tMessage = ""
 
+    // Extract severity
     If pIssue.%IsDefined("severity") Set tSeverity = $ZCONVERT(pIssue.severity,"L")
-    If pIssue.%IsDefined("resourceType") Set tResourceType = pIssue.resourceType
-    If pIssue.%IsDefined("resourceId") Set tResourceId = pIssue.resourceId
-    If pIssue.%IsDefined("fhirPath") Set tFHIRPath = pIssue.fhirPath
-    If pIssue.%IsDefined("message") Set tMessage = pIssue.message
+
+    // Extract message from "details" field (validator response format)
+    If pIssue.%IsDefined("details") {
+        Set tMessage = pIssue.details
+    } ElseIf pIssue.%IsDefined("message") {
+        Set tMessage = pIssue.message
+    }
+
+    // Extract FHIRPath from "location" or "expression" field
+    If pIssue.%IsDefined("location") {
+        Set tFHIRPath = pIssue.location
+    } ElseIf pIssue.%IsDefined("fhirPath") {
+        Set tFHIRPath = pIssue.fhirPath
+    } ElseIf pIssue.%IsDefined("expression") {
+        Set tFHIRPath = pIssue.expression
+    }
+
+    // Parse resourceType and resourceId from "resourceKey" field (e.g., "Observation/123")
+    If pIssue.%IsDefined("resourceKey") {
+        Set tResourceKey = pIssue.resourceKey
+        If tResourceKey'="" {
+            Set tSlashPos = $FIND(tResourceKey,"/")
+            If tSlashPos>0 {
+                Set tResourceType = $EXTRACT(tResourceKey,1,tSlashPos-2)
+                Set tResourceId = $EXTRACT(tResourceKey,tSlashPos,*)
+            }
+        }
+    }
+
+    // Fallback: extract from standalone fields if present
+    If tResourceType="", pIssue.%IsDefined("resourceType") {
+        Set tResourceType = pIssue.resourceType
+    }
+    If tResourceId="", pIssue.%IsDefined("resourceId") {
+        Set tResourceId = pIssue.resourceId
+    }
 
     Set o.severity = tSeverity
     Set o.resourceType = tResourceType
@@ -155,8 +206,11 @@ ClassMethod FindCandidateTransformsByFHIRType(pFHIRType As %String) As %DynamicA
     If pFHIRType="" Quit arr
 
     Set tFHIRType = $Get(pFHIRType)
-    Set tSourceClass = ""
+    Set tCustomPkg = ##class(HS.FHIR.DTL.Util.API.ExecDefinition).GetCustomDTLPackage()
+    Set tSeenDTLs = {}  // Track which DTLs we've already added
 
+    // 1. Scan standard transform registry
+    Set tSourceClass = ""
     For {
         Set tSourceClass = $Order(^HS.XF.Transform("SDA3","vR4",tSourceClass))
         Quit:tSourceClass=""
@@ -167,17 +221,109 @@ ClassMethod FindCandidateTransformsByFHIRType(pFHIRType As %String) As %DynamicA
             Quit:tDTL=""
             Continue:'..DTLTargetsFHIRType(tDTL,tFHIRType)
 
+            Set tCondition = $Get(^HS.XF.Transform("SDA3","vR4",tSourceClass,tDTL))
+            Set tEffectiveDTL = ..ResolveEffectiveDTL(tDTL)
+
             Set tItem = {}
             Set tItem.sourceClass = tSourceClass
             Set tItem.baseDTL = tDTL
-            Set tItem.effectiveDTL = ..ResolveEffectiveDTL(tDTL)
-            Set tItem.condition = $Get(^HS.XF.Transform("SDA3","vR4",tSourceClass,tDTL))
-            Set tItem.hasDTLXML = ..HasDTLXML(tItem.effectiveDTL)
+            Set tItem.effectiveDTL = tEffectiveDTL
+            Set tItem.condition = tCondition
+            Set tItem.conditionType = ..InterpretCondition(tCondition)
+            Set tItem.hasDTLXML = ..HasDTLXML(tEffectiveDTL)
+            Set tItem.isCustom = (tCustomPkg '= "") && (tEffectiveDTL '= tDTL)
+            Do arr.%Push(tItem)
+            Do tSeenDTLs.%Set(tEffectiveDTL, 1)
+        }
+    }
+
+    // 2. Scan custom DTL package for additional DTLs not in registry
+    If tCustomPkg '= "" {
+        Set tScanPkg = tCustomPkg_".SDA3.vR4."
+
+        // Query for all DTL classes in the custom package
+        // Use PrimarySuper to check direct inheritance, and also check Super for indirect
+        Set sql = "SELECT Name FROM %Dictionary.ClassDefinition "
+            _"WHERE (PrimarySuper = 'Ens.DataTransformDTL' OR Super [ 'Ens.DataTransformDTL') "
+            _"AND Name %STARTSWITH ?"
+
+        Set stmt = ##class(%SQL.Statement).%New()
+        Set sc = stmt.%Prepare(sql)
+        Quit:$$$ISERR(sc) arr
+
+        Set rs = stmt.%Execute(tScanPkg)
+
+        While rs.%Next() {
+            Set tClassName = rs.%Get("Name")
+
+            // Check if this DTL targets the FHIR type
+            Continue:'..DTLTargetsFHIRType(tClassName, tFHIRType)
+
+            // Skip if we've already seen this DTL (it was in the registry)
+            Continue:tSeenDTLs.%IsDefined(tClassName)
+
+            // Try to determine source class from package structure
+            // e.g., HS.Local.MII.FHIR.DTL.SDA3.vR4.Patient.Patient -> Patient
+            Set tSourceClass = ..ExtractSourceClassFromDTLPath(tClassName, tCustomPkg)
+
+            Set tItem = {}
+            Set tItem.sourceClass = tSourceClass
+            Set tItem.baseDTL = tClassName
+            Set tItem.effectiveDTL = tClassName
+            Set tItem.condition = ""
+            Set tItem.conditionType = "custom-only"
+            Set tItem.hasDTLXML = ..HasDTLXML(tClassName)
+            Set tItem.isCustom = 1
             Do arr.%Push(tItem)
         }
     }
 
     Quit arr
+}
+
+ClassMethod InterpretCondition(pCondition As %String) As %String
+{
+    If pCondition="" Quit "subtransform"
+    If pCondition="1" Quit "top-level"
+    Quit "conditional"
+}
+
+ClassMethod ExtractSourceClassFromDTLPath(pDTLClassName As %String, pCustomPkg As %String = "") As %String
+{
+    // Extract source class from DTL path
+    // e.g., HS.Local.MII.FHIR.DTL.SDA3.vR4.Patient.Patient -> Patient
+    // e.g., HS.FHIR.DTL.SDA3.vR4.Patient.Patient -> Patient
+
+    If pCustomPkg = "" {
+        Set pCustomPkg = ##class(HS.FHIR.DTL.Util.API.ExecDefinition).GetCustomDTLPackage()
+    }
+
+    // Try custom package first if available
+    If pCustomPkg '= "" {
+        Set tPrefix = pCustomPkg_".SDA3.vR4."
+        If $Extract(pDTLClassName, 1, $Length(tPrefix)) = tPrefix {
+            Set tRemainder = $Extract(pDTLClassName, $Length(tPrefix)+1, *)
+            // Get first segment after prefix (e.g., "Patient.Patient" -> "Patient")
+            Set tSourceClass = $Piece(tRemainder, ".", 1)
+            Quit tSourceClass
+        }
+    }
+
+    // Fallback: try standard package
+    Set tPrefix = "HS.FHIR.DTL.SDA3.vR4."
+    If $Extract(pDTLClassName, 1, $Length(tPrefix)) = tPrefix {
+        Set tRemainder = $Extract(pDTLClassName, $Length(tPrefix)+1, *)
+        Set tSourceClass = $Piece(tRemainder, ".", 1)
+        Quit tSourceClass
+    }
+
+    // Last resort: return last segment before target type
+    Set tNumPieces = $Length(pDTLClassName, ".")
+    If tNumPieces >= 2 {
+        Quit $Piece(pDTLClassName, ".", tNumPieces - 1)
+    }
+
+    Quit ""
 }
 
 ClassMethod DTLTargetsFHIRType(pDTL As %String, pFHIRType As %String) As %Boolean
@@ -331,6 +477,232 @@ ClassMethod InvestigateIssue(pIssueId As %Integer) As %DynamicObject
     Set o.causeBucket = issue.CauseBucket
     Set o.candidateTransforms = ..FindCandidateTransformsByFHIRType(issue.ResourceType)
     Quit o
+}
+
+/// Deletes all issues for a given MPIID
+/// Called when ReloadPatient() is triggered to clear stale validation issues
+ClassMethod DeleteIssuesForMPIID(pMPIID As %String) As %Status
+{
+    If pMPIID="" Quit $$$OK
+
+    &sql(DELETE FROM HS_Local_zimpli_fhir_Workbench.Issue WHERE MPIID = :pMPIID)
+
+    If SQLCODE=0 Quit $$$OK
+    If SQLCODE=100 Quit $$$OK  // No rows found is OK
+
+    Quit $$$ERROR($$$GeneralError,"Failed to delete issues for MPIID "_pMPIID_": SQLCODE="_SQLCODE)
+}
+
+/// Returns backend tool links from Service Registry
+/// Queries entries like: zimpliFHIR:links:DTLEditor
+/// Can be called directly or via FHIRNetwork.GetBackendToolLinksJSON()
+ClassMethod GetBackendToolLinks() As %DynamicArray
+{
+    Set tPrefix = "zimpliFHIR:links:"
+
+    Set sql = "SELECT name, url FROM HS_Registry_Service.HTTP"
+        _" WHERE type='HTTP' AND status=1"
+        _" AND name %STARTSWITH '"_tPrefix_"'"
+        _" ORDER BY name"
+
+    Set stmt = ##class(%SQL.Statement).%New()
+    Set sc = stmt.%Prepare(sql)
+
+    Set arr = []
+    Quit:$$$ISERR(sc) arr
+
+    Set rs = stmt.%Execute()
+
+    While rs.%Next() {
+        Set tName = rs.%Get("name")
+        Set tURL = rs.%Get("url")
+        Set tCode = $Piece(tName, tPrefix, 2)
+        Continue:tCode=""
+
+        Do arr.%Push({
+            "code": (tCode),
+            "url": (tURL),
+            "label": (..GetBackendToolLabel(tCode))
+        })
+    }
+
+    Quit arr
+}
+
+/// Returns display label for backend tool code
+ClassMethod GetBackendToolLabel(pCode As %String) As %String
+{
+    If pCode="DTLEditor" Quit "DTL Editor"
+    If pCode="DTLViewer" Quit "DTL Viewer"
+    If pCode="OIDMap" Quit "OID Map"
+    If pCode="Terminology" Quit "Terminology Viewer"
+    Quit pCode
+}
+
+/// Returns grouped resource summary for overview pane
+/// Groups by ResourceType, with Observations further grouped by subtype
+/// Output: {
+///   "groups": [
+///     {
+///       "resourceType": "Patient",
+///       "displayName": "Patient",
+///       "errorCount": 3,
+///       "warningCount": 9,
+///       "resources": [
+///         {"id": "100000037", "errorCount": 3, "warningCount": 9}
+///       ]
+///     },
+///     {
+///       "resourceType": "Observation",
+///       "subType": "vital-signs",
+///       "displayName": "Vital Signs",
+///       "errorCount": 0,
+///       "warningCount": 23,
+///       "resources": [...]
+///     }
+///   ]
+/// }
+ClassMethod GetResourceGroupSummary(pMPIID As %String, pValidationConvention As %String = "") As %DynamicObject
+{
+    Set tResult = {"groups":[]}
+    Set tGroups = {}
+
+    // Query all open issues for this MPIID
+    Set sql = "SELECT ResourceType, ResourceId, Severity, COUNT(*) AS IssueCount"
+        _" FROM HS_Local_zimpli_fhir_Workbench.Issue"
+        _" WHERE MPIID = ? AND Status = 'Open'"
+
+    If pValidationConvention'="" {
+        Set sql = sql_" AND ValidationConvention = ?"
+    }
+
+    Set sql = sql_" GROUP BY ResourceType, ResourceId, Severity"
+
+    Set stmt = ##class(%SQL.Statement).%New()
+    Set sc = stmt.%Prepare(sql)
+    Quit:$$$ISERR(sc) tResult
+
+    If pValidationConvention'="" {
+        Set rs = stmt.%Execute(pMPIID, pValidationConvention)
+    } Else {
+        Set rs = stmt.%Execute(pMPIID)
+    }
+
+    // Aggregate by resource type and resource ID
+    While rs.%Next() {
+        Set tResourceType = rs.%Get("ResourceType")
+        Set tResourceId = rs.%Get("ResourceId")
+        Set tSeverity = $ZCONVERT(rs.%Get("Severity"),"L")
+        Set tIssueCount = rs.%Get("IssueCount")
+
+        Continue:tResourceType=""
+
+        Set tKey = tResourceType
+
+        // Initialize group if not exists
+        If 'tGroups.%IsDefined(tKey) {
+            Set tGroup = {
+                "resourceType": (tResourceType),
+                "subType": "",
+                "displayName": (tResourceType),
+                "errorCount": 0,
+                "warningCount": 0,
+                "informationCount": 0,
+                "totalCount": 0,
+                "resources": []
+            }
+            Do tGroups.%Set(tKey, tGroup)
+        }
+
+        Set tGroup = tGroups.%Get(tKey)
+
+        // Update counts
+        If tSeverity="error" {
+            Set tGroup.errorCount = tGroup.errorCount + tIssueCount
+        } ElseIf tSeverity="warning" {
+            Set tGroup.warningCount = tGroup.warningCount + tIssueCount
+        } Else {
+            Set tGroup.informationCount = tGroup.informationCount + tIssueCount
+        }
+        Set tGroup.totalCount = tGroup.totalCount + tIssueCount
+
+        Do tGroups.%Set(tKey, tGroup)
+    }
+
+    // Convert to array and sort
+    Set tIter = tGroups.%GetIterator()
+    While tIter.%GetNext(.tKey, .tGroup) {
+        Do tResult.groups.%Push(tGroup)
+    }
+
+    Quit tResult
+}
+
+/// Gets detailed resource list for a specific group
+/// Returns array of resources with issue counts
+ClassMethod GetResourcesForGroup(pMPIID As %String, pResourceType As %String, pValidationConvention As %String = "") As %DynamicArray
+{
+    Set tResult = []
+
+    Set sql = "SELECT ResourceId, Severity, COUNT(*) AS IssueCount"
+        _" FROM HS_Local_zimpli_fhir_Workbench.Issue"
+        _" WHERE MPIID = ? AND ResourceType = ? AND Status = 'Open'"
+
+    If pValidationConvention'="" {
+        Set sql = sql_" AND ValidationConvention = ?"
+    }
+
+    Set sql = sql_" GROUP BY ResourceId, Severity"
+
+    Set stmt = ##class(%SQL.Statement).%New()
+    Set sc = stmt.%Prepare(sql)
+    Quit:$$$ISERR(sc) tResult
+
+    If pValidationConvention'="" {
+        Set rs = stmt.%Execute(pMPIID, pResourceType, pValidationConvention)
+    } Else {
+        Set rs = stmt.%Execute(pMPIID, pResourceType)
+    }
+
+    Set tResources = {}
+
+    While rs.%Next() {
+        Set tResourceId = rs.%Get("ResourceId")
+        Set tSeverity = $ZCONVERT(rs.%Get("Severity"),"L")
+        Set tIssueCount = rs.%Get("IssueCount")
+
+        If 'tResources.%IsDefined(tResourceId) {
+            Set tRes = {
+                "id": (tResourceId),
+                "errorCount": 0,
+                "warningCount": 0,
+                "informationCount": 0,
+                "totalCount": 0
+            }
+            Do tResources.%Set(tResourceId, tRes)
+        }
+
+        Set tRes = tResources.%Get(tResourceId)
+
+        If tSeverity="error" {
+            Set tRes.errorCount = tRes.errorCount + tIssueCount
+        } ElseIf tSeverity="warning" {
+            Set tRes.warningCount = tRes.warningCount + tIssueCount
+        } Else {
+            Set tRes.informationCount = tRes.informationCount + tIssueCount
+        }
+        Set tRes.totalCount = tRes.totalCount + tIssueCount
+
+        Do tResources.%Set(tResourceId, tRes)
+    }
+
+    // Convert to array
+    Set tIter = tResources.%GetIterator()
+    While tIter.%GetNext(.tKey, .tRes) {
+        Do tResult.%Push(tRes)
+    }
+
+    Quit tResult
 }
 
 }

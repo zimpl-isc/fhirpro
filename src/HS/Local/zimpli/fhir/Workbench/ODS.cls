@@ -17,11 +17,15 @@ ClassMethod ReloadOnly(pMPIID As %String, Output pResult As %DynamicObject) As %
     Set pResult.runId = ..NewRunId()
 
     Try {
+        // Delete all existing issues for this MPIID before reload
+        Set tSC = ##class(HS.Local.zimpli.fhir.Workbench.Service).DeleteIssuesForMPIID(pMPIID)
+        return:$$$ISERR(tSC) tSC
+
         Set tSC = ..ReloadPatient(pMPIID)
         return:$$$ISERR(tSC) tSC
 
         Set pResult.ok = 1
-        Set pResult.message = "ReloadPatient executed successfully"
+        Set pResult.message = "ReloadPatient executed successfully, previous issues cleared"
         return $$$OK
     }
     Catch ex {

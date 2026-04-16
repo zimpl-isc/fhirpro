@@ -38,6 +38,7 @@ ClassMethod OnPage() As %Status
 			"FHIR_Relationship_Graph": "HS.Local.zimpli.fhir.UI.FHIRNetwork.cls",
 			"FHIR_3d": "HS.Local.zimpli.fhir.UI.FHIRForce3d.cls",
 			"Patient_Journey": "HS.Local.zimpli.fhir.UI.FHIRTimeline.cls",
+			"FHIR_Workbench": "HS.Local.zimpli.fhir.Workbench.Page.cls",
 			"Management_Portal": "EnsPortal.ProductionConfig.zen?$NAMESPACE=ZIMPLIFHIR&ts=" + Date.now(),
 			"FHIR_Tester_Inbound_to_Outbound": "HS.Local.Impl.Test.FHIR.UnitTest.cls",
 			"DTL_Viewer": "#(tViewerClass)#",
@@ -128,7 +129,31 @@ ClassMethod OnPage() As %Status
 					<line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="28" y1="22" x2="13" y2="22"/>
 					<line fill="none" stroke="#000000" stroke-width="2" stroke-miterlimit="10" x1="9" y1="22" x2="5" y2="22"/>
 				</svg></li>
-			
+
+			<li id="FHIR_Workbench" class="list_item">
+				<svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<title>FHIR Workbench</title>
+					<rect x="2" y="4" width="4.5" height="16" stroke="#000000" stroke-width="1.5" fill="none" rx="0.5"/>
+					<rect x="7.5" y="4" width="6" height="16" stroke="#000000" stroke-width="1.5" fill="none" rx="0.5"/>
+					<rect x="14.5" y="4" width="7.5" height="16" stroke="#000000" stroke-width="1.5" fill="none" rx="0.5"/>
+					<line x1="3" y1="6.5" x2="5.5" y2="6.5" stroke="#000000" stroke-width="1" stroke-linecap="round"/>
+					<line x1="3.5" y1="8.5" x2="5.5" y2="8.5" stroke="#000000" stroke-width="0.8" stroke-linecap="round"/>
+					<line x1="3.5" y1="10" x2="5.5" y2="10" stroke="#000000" stroke-width="0.8" stroke-linecap="round"/>
+					<line x1="3" y1="12" x2="5.5" y2="12" stroke="#000000" stroke-width="1" stroke-linecap="round"/>
+					<rect x="8.5" y="6" width="4" height="2.5" fill="#dc2626" opacity="0.15" rx="0.3"/>
+					<rect x="8.5" y="9" width="4" height="2.5" fill="#dc2626" opacity="0.15" rx="0.3"/>
+					<rect x="8.5" y="12" width="4" height="2.5" fill="#f59e0b" opacity="0.15" rx="0.3"/>
+					<circle cx="9.2" cy="7.2" r="0.6" fill="#dc2626"/>
+					<circle cx="9.2" cy="10.2" r="0.6" fill="#dc2626"/>
+					<circle cx="9.2" cy="13.2" r="0.6" fill="#f59e0b"/>
+					<line x1="15.5" y1="6" x2="20.5" y2="6" stroke="#000000" stroke-width="0.8" stroke-linecap="round"/>
+					<line x1="15.5" y1="7.5" x2="19" y2="7.5" stroke="#000000" stroke-width="0.6" stroke-linecap="round"/>
+					<line x1="15.5" y1="8.5" x2="20" y2="8.5" stroke="#000000" stroke-width="0.6" stroke-linecap="round"/>
+					<rect x="15.5" y="10" width="6" height="3" fill="#1f2937" opacity="0.1" rx="0.3"/>
+					<line x1="15.5" y1="14" x2="20.5" y2="14" stroke="#000000" stroke-width="0.8" stroke-linecap="round"/>
+					<line x1="15.5" y1="15.5" x2="18.5" y2="15.5" stroke="#000000" stroke-width="0.6" stroke-linecap="round"/>
+				</svg></li>
+
 			<li class="separator" aria-hidden="true"></li>
 				
 			<li id="DTL_Viewer" class="list_item">

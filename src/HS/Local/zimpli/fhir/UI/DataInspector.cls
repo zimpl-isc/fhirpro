@@ -45,26 +45,6 @@ ClassMethod OnPage() As %Status [ ServerOnly = 1 ]
     </fieldset>
 
 	<div id="container">
-        <div class="viewerPane" id="sdaPane">
-            <div class="paneHeaderVertical">
-                <div class="paneTitle">SDA3</div>
-                <div class="paneTabs vertical">
-                    <button type="button" class="tabBtn active" data-pane="sda" data-view="tree" title="Tree view">&#x2630;</button>
-                    <button type="button" class="tabBtn" data-pane="sda" data-view="raw" title="Raw view">&#123; &#125;</button>
-                    <button type="button" class="paneActionBtn" onclick="expandPane('sda')" title="Expand all">&#x2922;</button>
-                    <button type="button" class="paneActionBtn" onclick="collapsePane('sda')" title="Collapse all">&#x2921;</button>
-                </div>
-            </div>
-            <div class="paneBody">
-                <div class="paneView treeView active" id="sdaTreeView"></div>
-                <div class="paneView rawView" id="sdaRawView">
-                    <pre id="sdaRawPre"></pre>
-                </div>
-            </div>
-        </div>
-
-        <div id="separator"></div>
-
         <div class="viewerPane" id="fhirPane">
             <div class="paneHeaderVertical">
                 <div class="paneTitle">FHIR</div>
@@ -84,6 +64,26 @@ ClassMethod OnPage() As %Status [ ServerOnly = 1 ]
                         <span class="comment" id="fhirRawState">read from sessionStorage</span>
                     </div-->
                     <textarea id="fhirRawText" spellcheck="false"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div id="separator"></div>
+
+        <div class="viewerPane" id="sdaPane">
+            <div class="paneHeaderVertical">
+                <div class="paneTitle">SDA3</div>
+                <div class="paneTabs vertical">
+                    <button type="button" class="tabBtn active" data-pane="sda" data-view="tree" title="Tree view">&#x2630;</button>
+                    <button type="button" class="tabBtn" data-pane="sda" data-view="raw" title="Raw view">&#123; &#125;</button>
+                    <button type="button" class="paneActionBtn" onclick="expandPane('sda')" title="Expand all">&#x2922;</button>
+                    <button type="button" class="paneActionBtn" onclick="collapsePane('sda')" title="Collapse all">&#x2921;</button>
+                </div>
+            </div>
+            <div class="paneBody">
+                <div class="paneView treeView active" id="sdaTreeView"></div>
+                <div class="paneView rawView" id="sdaRawView">
+                    <pre id="sdaRawPre"></pre>
                 </div>
             </div>
         </div>
