@@ -1,5 +1,5 @@
 # zimpliFHIR Profiling Toolkit for HealthShare
-*2026-03-30 • Brandon Thomas*
+*2026-04-16 • Brandon Thomas*
 
 ## Contents
 - [Overview](#overview)
@@ -14,7 +14,7 @@
 
 ## Overview
 
-FHIRPro is a **developer-focused toolkit** for working with FHIR in InterSystems HealthShare and IRIS. This package provides a number of tools which were developed to aid in the implementation of the [German MII FHIR profiles](https://simplifier.net/organization/koordinationsstellemii) in [InterSystems HealthShare](https://www.intersystems.com/interoperability-platform/). These tools are not intended for production use.
+zimpliFHIR is a **developer-focused toolkit** for working with FHIR (and SDA3) in InterSystems HealthShare and IRIS. This package provides a number of tools which were developed to aid in the implementation of the [German MII FHIR profiles](https://simplifier.net/organization/koordinationsstellemii) in [InterSystems HealthShare](https://www.intersystems.com/interoperability-platform/). These tools are not intended for production use.
 
 It supports:
 
@@ -38,15 +38,15 @@ It supports:
 
 ### 🕒 Temporal Visualization
 * Timeline view of FHIR data (encounters, observations, medications, procedures, conditions)
+* Expects the Encounter hierarchy as defined in MII
 
 ### 🧠 Relationship Analysis
 * Graph-based visualization of FHIR resources  
 * Highlight reference chains and integrity issues  
 
 ### ✅ Validation (REST)
-
-The relationship graph view can call external **FHIR validation services** via HTTP.  
-Validators are configured through the **Service Registry** (see below).
+* The relationship graph view can call external **FHIR validation services** via HTTP.  
+* Validators are configured through the **Service Registry** (see below).
 
 ### Screenshots
 
@@ -154,11 +154,8 @@ http://localhost:8080/validateResource
 
 zimpliFHIR discovers validators dynamically via the **Service Registry**.
 
-Define HTTP entries where:
+Define HTTP entries where Name starts with `zimpliFHIR:validation:`
 
-```
-Name starts with: zimpliFHIR:validation:
-```
 
 Example:
 
@@ -170,7 +167,7 @@ Example:
 These entries:
 
 - are used by **HS.Local.zimpli.fhir.Production.HTTPOperation**
-- appear automatically in **FHIR Relationship Graph** validation dropdowns
+- appear automatically in **FHIR Relationship Graph** validation dropdown
 
 ---
 
@@ -192,8 +189,9 @@ HSCUSTOM> do ##class(HS.Local.zimpli.fhir.API.Installer).Install()
 
 - [ ] Configure the *Business Operation* **HS.FHIRServer.Interop.HTTPOperation**:
   - Used for FHIR retrieval **and validation**
-  - Set the **ServiceName** to a FHIR endpoint or validator entry  
-    Example: `FHIR.Service.R4` or `zimpliFHIR:validation:r4core`
+  - Set the **ServiceName** to a default FHIR endpoint or validator entry  
+    Example: `FHIR.ServiceSecure.R4`
+  - The ServiceName can be overridden in the Datasource UI
 
 - [ ] :bulb: Optionally add the *Business Operation* **HS.Util.Trace.Operations**
 
