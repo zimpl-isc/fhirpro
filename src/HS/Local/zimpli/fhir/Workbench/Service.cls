@@ -536,6 +536,7 @@ ClassMethod GetBackendToolLabel(pCode As %String) As %String
     If pCode="DTLViewer" Quit "DTL Viewer"
     If pCode="OIDMap" Quit "OID Map"
     If pCode="Terminology" Quit "Terminology Viewer"
+    If pCode="CodeRegistry" Quit "Code Registry"
     Quit pCode
 }
 

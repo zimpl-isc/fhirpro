@@ -102,6 +102,19 @@ ClassMethod HandleAPI(pAction As %String) As %Status
             Set result.metadata = ##class(HS.Local.zimpli.fhir.Workbench.Service).ExtractDTLMetadata(dtlClass)
         }
 
+        ElseIf pAction="getDTLXML" {
+            Set dtlClass = $Get(%request.Data("dtlClass",1))
+            Set tSC = ##class(HS.Local.zimpli.fhir.Workbench.Service).GetDTLXML(dtlClass, .tXML)
+            If $$$ISOK(tSC) {
+                Set result.ok = 1
+                Set result.xml = tXML
+                Set result.dtlClass = dtlClass
+            } Else {
+                Set result.ok = 0
+                Set result.error = $System.Status.GetErrorText(tSC)
+            }
+        }
+
         ElseIf pAction="resourceGroupSummary" {
             Set mpiid = $Get(%request.Data("mpiid",1))
             Set validationConvention = $Get(%request.Data("validationConvention",1))
@@ -247,7 +260,10 @@ ClassMethod RenderShell()
         <!-- Pane 2: Issue List -->
         <div class="pane issues">
             <div class="section">
-                <h3 style="margin:0 0 8px 0;font-size:14px;">Issues</h3>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                    <h3 style="margin:0;font-size:14px;">Issues</h3>
+                    <button id="aiPromptAllBtn" onclick="openAIPromptAll()" style="padding:4px 8px;font-size:11px;background:#8b5cf6;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:500;display:none;" title="Generate AI prompt with all issues for this resource">🤖 AI All</button>
+                </div>
                 <div class="issue-count" id="issueCount">Select a resource</div>
                 <div id="issueList"></div>
             </div>
@@ -267,10 +283,42 @@ ClassMethod RenderShell()
     <!-- DataInspector Overlay -->
     <div id="dataInspectorOverlay" class="inspector-overlay" style="display:none;">
         <div class="inspector-header">
-            <span class="inspector-title">FHIR & SDA Inspector</span>
             <button onclick="closeDataInspector()" class="inspector-close">✕</button>
+            <span class="inspector-title">FHIR & SDA Inspector</span>
         </div>
         <iframe id="dataInspectorFrame" class="inspector-frame"></iframe>
+    </div>
+
+    <!-- DTL XML Viewer Overlay -->
+    <div id="dtlXmlOverlay" class="inspector-overlay" style="display:none;">
+        <div class="inspector-header">
+            <span class="inspector-title" id="dtlXmlTitle">DTL XML</span>
+            <button onclick="closeDTLXmlViewer()" class="inspector-close">✕</button>
+        </div>
+        <div class="inspector-frame" style="padding:16px;overflow:auto;">
+            <div style="margin-bottom:12px;">
+                <button onclick="copyDTLXmlToClipboard()" style="padding:8px 16px;background:#2563eb;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;">
+                    📋 Copy to Clipboard
+                </button>
+            </div>
+            <pre id="dtlXmlContent" style="background:#1f2937;color:#f9fafb;padding:16px;border-radius:8px;overflow:auto;font-family:Consolas,monospace;font-size:12px;line-height:1.5;margin:0;"></pre>
+        </div>
+    </div>
+
+    <!-- AI Prompt Overlay -->
+    <div id="aiPromptOverlay" class="inspector-overlay" style="display:none;">
+        <div class="inspector-header">
+            <span class="inspector-title" id="aiPromptTitle">AI Troubleshooting Prompt</span>
+            <button onclick="closeAIPrompt()" class="inspector-close">✕</button>
+        </div>
+        <div class="inspector-frame" style="padding:16px;overflow:auto;">
+            <div style="margin-bottom:12px;">
+                <button onclick="copyAIPromptToClipboard()" style="padding:8px 16px;background:#8b5cf6;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;">
+                    📋 Copy to Clipboard
+                </button>
+            </div>
+            <pre id="aiPromptContent" style="background:#1f2937;color:#f9fafb;padding:16px;border-radius:8px;overflow:auto;font-family:Consolas,monospace;font-size:12px;line-height:1.5;margin:0;white-space:pre-wrap;"></pre>
+        </div>
     </div>
 
 </body>
@@ -524,6 +572,37 @@ textarea { width:100%; min-height:220px; box-sizing:border-box; font-family: Con
     font-size:11px;
 }
 
+/* Terminology fields */
+.term-field {
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:6px 10px;
+    background:#f9fafb;
+    border:1px solid #e5e7eb;
+    border-radius:6px;
+}
+.term-label {
+    font-size:11px;
+    font-weight:600;
+    color:#6b7280;
+}
+.term-value {
+    background:#ffffff;
+    border:1px solid #d1d5db;
+    padding:4px 8px;
+    border-radius:4px;
+    font-family:Consolas,monospace;
+    font-size:12px;
+    color:#1f2937;
+    cursor:pointer;
+    transition:all 0.2s;
+}
+.term-value:hover {
+    background:#f3f4f6;
+    border-color:#9ca3af;
+}
+
 /* Tool links */
 .tool-links {
     display:flex;
@@ -609,6 +688,24 @@ textarea { width:100%; min-height:220px; box-sizing:border-box; font-family: Con
 }
 .dtl-action-link.view:hover {
     background:#bfdbfe;
+}
+.dtl-action-link.ai-prompt {
+    color:#8b5cf6;
+    background:#ede9fe;
+    border:none;
+    cursor:pointer;
+}
+.dtl-action-link.ai-prompt:hover {
+    background:#ddd6fe;
+}
+.dtl-action-link.xml {
+    color:#059669;
+    background:#d1fae5;
+    border:none;
+    cursor:pointer;
+}
+.dtl-action-link.xml:hover {
+    background:#a7f3d0;
 }
 .dtl-badges {
     display:flex;
@@ -698,8 +795,9 @@ textarea { width:100%; min-height:220px; box-sizing:border-box; font-family: Con
 }
 .inspector-header {
     display:flex;
-    justify-content:space-between;
+    justify-content:flex-start;
     align-items:center;
+    gap:12px;
     padding:14px 16px;
     background:#ffffff;
     color:#1f2937;
@@ -846,7 +944,7 @@ async function reloadPatient() {
         return false;
     }
 
-    setStatus("Reloading patient from ODS...");
+    setStatus("Reloading patient in ODS...");
 
     const reloadResp = await api("reload", { mpiid: mpiidNumeric });
     if (!reloadResp.ok) {
@@ -856,10 +954,20 @@ async function reloadPatient() {
 
     currentRunId = reloadResp.runId || "";
 
-    // Refresh data and store in namespaced workbench storage
-    await refreshData();
+    // Start countdown timer
+    let countdown = 10;
+    setStatus(`Asyncronous reload started in ODS. Refresh from Server in ${countdown}s...`);
 
-    setStatus("Patient reloaded from ODS");
+    const countdownInterval = setInterval(() => {
+        countdown--;
+        if (countdown > 0) {
+            setStatus(`Asyncronous reload started in ODS. Refresh from Server in ${countdown}s...`);
+        } else {
+            clearInterval(countdownInterval);
+            setStatus("Asyncronous reload complete. Ready to Refresh from Server - GO! 🚀");
+        }
+    }, 1000);
+
     return true;
 }
 
@@ -1035,6 +1143,56 @@ function esc(v) {
         .replaceAll(">", "&gt;");
 }
 
+function extractTerminologyData(message) {
+    if (!message) return {};
+
+    const result = {};
+
+    // Pattern: "for code http://loinc.org#8867-4" or "system http://snomed.info/sct code 12345"
+    const codeSystemPattern = /(https?:\/\/[^\s#`'"]+)#([^\s.`'"]+)/;
+    const match = message.match(codeSystemPattern);
+    if (match) {
+        result.codeSystem = match[1];
+        result.code = match[2].replace(/[`'"]/g, ''); // Strip any backticks/quotes
+
+        // Extract system name (last part of URL)
+        const systemParts = result.codeSystem.split('/');
+        result.codeSystemName = systemParts[systemParts.length - 1] || result.codeSystem;
+    } else {
+        // Try alternate pattern: "code 12345" or "code `12345`"
+        const codeOnlyPattern = /\bcode\s+[`'"]?([A-Za-z0-9\-]+)[`'"]?/i;
+        const codeMatch = message.match(codeOnlyPattern);
+        if (codeMatch) {
+            result.code = codeMatch[1];
+        }
+    }
+
+    // Pattern: "A valid display is Heart rate." or "valid display: Heart rate" or with backticks
+    // Capture everything after "valid display is" until the ending period
+    const displayPattern = /valid display\s+(?:is\s+)?[`'"]?([^`'"\n]+?)[`'"]?\s*\.?\s*$/im;
+    const displayMatch = message.match(displayPattern);
+    if (displayMatch) {
+        let display = displayMatch[1].trim();
+        // Remove all backticks and quotes
+        display = display.replace(/[`'"]/g, '');
+        // Remove "for code..." suffix if present
+        display = display.replace(/\s+for\s+code\s+.*/i, '');
+        // Remove trailing period if present
+        display = display.replace(/\.\s*$/, '');
+        result.display = display.trim();
+    }
+
+    return result;
+}
+
+function copyToClipboard(text, label) {
+    navigator.clipboard.writeText(text).then(() => {
+        setStatus(`✓ ${label} copied: ${text}`);
+    }).catch(() => {
+        setStatus(`Failed to copy ${label}`);
+    });
+}
+
 function formatIssueMessage(message) {
     if (!message) return "";
 
@@ -1077,10 +1235,7 @@ function formatIssueMessage(message) {
 function setStatus(msg) {
     document.getElementById("status").textContent = msg;
 }
-}
 
-XData WorkbenchUI [ MimeType = application/javascript ]
-{
 async function loadIssues() {
     await loadResourceTree();
 }
@@ -1236,7 +1391,10 @@ async function loadResourcesForGroup(groupElement, resourceType) {
         groupElement.appendChild(infoDetails);
     }
 }
+}
 
+XData WorkbenchUI [ MimeType = application/javascript ]
+{
 async function selectResource(resourceType, resourceId, severityFilter) {
     selectedResourceType = resourceType;
     selectedResourceId = resourceId;
@@ -1249,6 +1407,11 @@ async function selectResource(resourceType, resourceId, severityFilter) {
 
     // Clear investigation pane
     document.getElementById("investigationPane").innerHTML = '<p class="muted">Select an issue to investigate</p>';
+
+    // Close any open overlays
+    closeDataInspector();
+    closeDTLXmlViewer();
+    closeAIPrompt();
 
     // Load issues for this resource (use numeric MPIID)
     if (!mpiidNumeric) return;
@@ -1263,10 +1426,12 @@ async function selectResource(resourceType, resourceId, severityFilter) {
 function renderIssueList() {
     const container = document.getElementById("issueList");
     const countEl = document.getElementById("issueCount");
+    const aiPromptAllBtn = document.getElementById("aiPromptAllBtn");
     container.innerHTML = "";
 
     if (!selectedResourceType) {
         countEl.textContent = "Select a resource";
+        aiPromptAllBtn.style.display = "none";
         return;
     }
 
@@ -1278,6 +1443,13 @@ function renderIssueList() {
 
     const severityLabel = selectedSeverityFilter ? ` (${selectedSeverityFilter})` : '';
     countEl.textContent = `${filtered.length} issue${filtered.length !== 1 ? 's' : ''} for ${selectedResourceType}/${selectedResourceId || '?'}${severityLabel}`;
+
+    // Show AI Prompt All button if there are issues
+    if (allIssues.length > 0) {
+        aiPromptAllBtn.style.display = "block";
+    } else {
+        aiPromptAllBtn.style.display = "none";
+    }
 
     filtered.forEach(issue => {
         const div = document.createElement("div");
@@ -1296,7 +1468,13 @@ function renderIssueList() {
             <div class="issue-message">${formatIssueMessage(issue.message || "")}</div>
         `;
 
-        div.onclick = () => investigateIssue(issue.id, issue.severity);
+        div.onclick = (e) => {
+            // Don't navigate if user is selecting text
+            if (window.getSelection().toString().length > 0) {
+                return;
+            }
+            investigateIssue(issue.id, issue.severity);
+        };
         container.appendChild(div);
     });
 }
@@ -1331,14 +1509,67 @@ async function renderInvestigation(data) {
     // Quick actions card
     if (data.resourceType && data.resourceId) {
         html += `<div class="investigation-card">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                <h4 style="margin:0;">Data Inspector</h4>
+            <div style="display:flex;gap:12px;align-items:center;">
                 <button onclick="openDataInspector('${esc(data.resourceType)}', '${esc(data.resourceId)}')" class="inspector-btn">
                     🔍 Open Inspector
                 </button>
+                <p class="muted" style="font-size:11px;margin:0;">View ${esc(data.resourceType)}/${esc(data.resourceId)} FHIR & SDA side-by-side with search</p>
             </div>
-            <p class="muted" style="font-size:11px;margin:0;">View ${esc(data.resourceType)}/${esc(data.resourceId)} FHIR & SDA side-by-side with search</p>
         </div>`;
+    }
+
+    // Code Registry card for terminology issues
+    const msgLower = (data.message || "").toLowerCase();
+    const causeLower = (data.causeBucket || "").toLowerCase();
+    const hasCodingIssue = causeLower === 'terminology' ||
+                           msgLower.includes('value set') || msgLower.includes('code system') ||
+                           msgLower.includes('coding') || msgLower.includes('terminology') ||
+                           msgLower.includes('invalid code') || msgLower.includes('unknown code');
+
+    if (hasCodingIssue) {
+        const codeRegistryURL = BackendTools.buildCodeRegistryLink();
+        if (codeRegistryURL) {
+            // Try to extract code and display from message
+            const termData = extractTerminologyData(data.message || "");
+
+            html += `<div class="investigation-card">
+                <div style="display:flex;gap:12px;align-items:center;margin-bottom:${termData.code || termData.display ? '8px' : '0'};">
+                    <button onclick="window.open('${codeRegistryURL}', '_blank')" class="inspector-btn" style="background:#7c3aed;">
+                        📖 Code Registry
+                    </button>
+                    <p class="muted" style="font-size:11px;margin:0;">Manage terminology codes and value sets</p>
+                </div>`;
+
+            // Show extracted terminology values
+            if (termData.codeSystemName || termData.code || termData.display) {
+                html += `<div style="display:flex;gap:8px;flex-wrap:wrap;">`;
+
+                if (termData.codeSystemName) {
+                    html += `<div class="term-field">
+                        <span class="term-label">Code System:</span>
+                        <code class="term-value" style="cursor:default;" title="${esc(termData.codeSystem || '')}">${esc(termData.codeSystemName)}</code>
+                    </div>`;
+                }
+
+                if (termData.code) {
+                    html += `<div class="term-field">
+                        <span class="term-label">Code:</span>
+                        <code class="term-value" onclick="copyToClipboard('${esc(termData.code)}', 'Code')" title="Click to copy">${esc(termData.code)}</code>
+                    </div>`;
+                }
+
+                if (termData.display) {
+                    html += `<div class="term-field">
+                        <span class="term-label">Valid Display:</span>
+                        <code class="term-value" onclick="copyToClipboard('${esc(termData.display)}', 'Display')" title="Click to copy">${esc(termData.display)}</code>
+                    </div>`;
+                }
+
+                html += `</div>`;
+            }
+
+            html += `</div>`;
+        }
     }
 
     // Candidate DTLs card
@@ -1391,18 +1622,30 @@ async function renderInvestigation(data) {
             // Show custom badge if applicable
             const customBadge = dtl.isCustom ? `<span class="custom-badge">Custom</span>` : "";
 
-            // Action links: Edit for custom, View for standard
+            // Action links: Edit for custom, View for standard, AI Prompt for custom, XML viewer for all
             let actionLinks = "";
             if (dtl.isCustom && editorURL) {
-                actionLinks = `<a href="${editorURL}" target="_blank" class="dtl-action-link edit" title="Edit in DTL Editor">✏️ Edit</a>`;
+                actionLinks += `<a href="${editorURL}" target="_blank" class="dtl-action-link edit" title="Edit in DTL Editor">✏️ Edit</a>`;
             } else if (viewerURL) {
-                actionLinks = `<a href="${viewerURL}" target="_blank" class="dtl-action-link view" title="View DTL">👁️ View</a>`;
+                actionLinks += `<a href="${viewerURL}" target="_blank" class="dtl-action-link view" title="View DTL">👁️ View</a>`;
+            }
+
+            // Add AI Prompt button for custom/editable DTLs
+            if (dtl.isCustom && dtl.hasDTLXML) {
+                actionLinks += `<button onclick="openAIPromptForDTL('${esc(dtl.effectiveDTL)}')" class="dtl-action-link ai-prompt" title="Generate AI troubleshooting prompt">🤖 AI Prompt</button>`;
+            }
+
+            // Add XML viewer button for all DTLs (if they have XML)
+            if (dtl.hasDTLXML) {
+                actionLinks += `<button onclick="openDTLXmlViewer('${esc(dtl.effectiveDTL)}')" class="dtl-action-link xml" title="View DTL XML for AI/copy-paste">🤖 XML</button>`;
             }
 
             html += `<div class="dtl-item ${dtl.isCustom ? 'custom' : 'standard'}">
                 <div class="dtl-header">
                     <div><strong>${esc(dtl.sourceClass || "")}</strong> → ${esc(dtl.effectiveDTL || "")}</div>
-                    ${actionLinks}
+                    <div style="display:flex;gap:6px;">
+                        ${actionLinks}
+                    </div>
                 </div>
                 <div class="dtl-badges">
                     ${conditionBadge}
@@ -1435,7 +1678,6 @@ async function renderInvestigation(data) {
     }
 
     // Terminology for coding/valueset issues
-    const msgLower = (data.message || "").toLowerCase();
     if (msgLower.includes('value set') || msgLower.includes('code system') || msgLower.includes('coding') || msgLower.includes('terminology')) {
         const termURL = BackendTools.buildTerminologyLink();
         if (termURL) {
@@ -1487,6 +1729,209 @@ function closeDataInspector() {
     document.getElementById('dataInspectorOverlay').style.display = 'none';
     document.getElementById('dataInspectorFrame').src = '';
 }
+
+async function openDTLXmlViewer(dtlClass) {
+    setStatus("Loading DTL XML...");
+
+    const resp = await api("getDTLXML", { dtlClass: dtlClass });
+
+    if (!resp.ok) {
+        alert("Failed to load DTL XML: " + (resp.error || "Unknown error"));
+        setStatus("Failed to load DTL XML");
+        return;
+    }
+
+    // Display XML
+    document.getElementById('dtlXmlTitle').textContent = "DTL XML: " + dtlClass;
+    document.getElementById('dtlXmlContent').textContent = resp.xml || "(empty)";
+    document.getElementById('dtlXmlOverlay').style.display = 'flex';
+    document.getElementById('dtlXmlOverlay').dataset.dtlClass = dtlClass;
+
+    setStatus("DTL XML loaded");
+}
+
+function closeDTLXmlViewer() {
+    document.getElementById('dtlXmlOverlay').style.display = 'none';
+    document.getElementById('dtlXmlContent').textContent = '';
+}
+
+async function copyDTLXmlToClipboard() {
+    const xml = document.getElementById('dtlXmlContent').textContent;
+    const dtlClass = document.getElementById('dtlXmlOverlay').dataset.dtlClass || "DTL";
+
+    try {
+        await navigator.clipboard.writeText(xml);
+        setStatus("✓ DTL XML copied to clipboard!");
+    } catch (err) {
+        console.error("Failed to copy:", err);
+        alert("Failed to copy to clipboard. Please select and copy manually.");
+    }
+}
+
+async function openAIPromptForDTL(dtlClass) {
+    if (!selectedResourceType || !selectedResourceId || !selectedIssueId) {
+        alert("No issue selected");
+        return;
+    }
+
+    setStatus("Generating AI prompt for " + dtlClass + "...");
+
+    // Ensure FHIR is loaded
+    if (!currentFHIR && mpiidNumeric) {
+        setStatus("Loading FHIR data...");
+        currentFHIR = await fetchFHIR(mpiidNumeric);
+    }
+
+    // Get the FHIR resource from current data
+    let fhirResource = null;
+    if (currentFHIR && currentFHIR.entry) {
+        const entry = currentFHIR.entry.find(e => {
+            if (!e.resource) return false;
+            const matchType = e.resource.resourceType.toLowerCase() === selectedResourceType.toLowerCase();
+            const matchId = e.resource.id == selectedResourceId;
+            return matchType && matchId;
+        });
+        if (entry) {
+            fhirResource = entry.resource;
+        }
+    }
+
+    if (!fhirResource) {
+        alert(`Could not find FHIR resource ${selectedResourceType}/${selectedResourceId} in current data`);
+        return;
+    }
+
+    // Get the currently selected issue only
+    const currentIssue = allIssues.find(issue => issue.id === selectedIssueId);
+    if (!currentIssue) {
+        alert("Could not find the selected issue");
+        return;
+    }
+
+    // Fetch DTL XML
+    let dtlXml = "";
+    try {
+        const dtlResp = await api("getDTLXML", { dtlClass: dtlClass });
+        if (dtlResp.ok && dtlResp.xml) {
+            dtlXml = dtlResp.xml;
+        } else {
+            alert("Could not load DTL XML for " + dtlClass);
+            return;
+        }
+    } catch (err) {
+        alert("Error loading DTL XML: " + err.message);
+        return;
+    }
+
+    // Build the prompt (single issue context)
+    let prompt = `You are an integration specialist troubleshooting generated FHIR resources in InterSystems IRIS DTL. Analyze the issue and resource and make suggestions to fix. Let me know if this is not likely the correct DTL.\n\n`;
+
+    prompt += `## Issue\n\n`;
+    prompt += `- **Severity**: ${currentIssue.severity || 'unknown'}\n`;
+    if (currentIssue.causeBucket) {
+        prompt += `- **Cause**: ${currentIssue.causeBucket}\n`;
+    }
+    if (currentIssue.fhirPath) {
+        prompt += `- **Location**: ${currentIssue.fhirPath}\n`;
+    }
+    prompt += `- **Message**: ${currentIssue.message || 'No message'}\n\n`;
+
+    prompt += `## FHIR Resource (${selectedResourceType})\n\n`;
+    prompt += `\`\`\`json\n${JSON.stringify(fhirResource, null, 2)}\n\`\`\`\n\n`;
+
+    prompt += `## DTL Transform: ${dtlClass}\n\n`;
+    prompt += `\`\`\`xml\n${dtlXml}\n\`\`\`\n\n`;
+
+    prompt += `## Context\n\n`;
+    prompt += `- Resource Type: ${selectedResourceType}\n`;
+    prompt += `- Resource ID: ${selectedResourceId}\n`;
+    prompt += `- Patient MPIID: ${mpiidNumeric || 'unknown'}\n`;
+    prompt += `- DTL Class: ${dtlClass}\n`;
+
+    document.getElementById('aiPromptTitle').textContent = `AI Prompt: ${dtlClass}`;
+    document.getElementById('aiPromptContent').textContent = prompt;
+    document.getElementById('aiPromptOverlay').style.display = 'flex';
+    setStatus("AI prompt generated");
+}
+
+function closeAIPrompt() {
+    document.getElementById('aiPromptOverlay').style.display = 'none';
+    document.getElementById('aiPromptContent').textContent = '';
+}
+
+async function copyAIPromptToClipboard() {
+    const prompt = document.getElementById('aiPromptContent').textContent;
+    try {
+        await navigator.clipboard.writeText(prompt);
+        setStatus("✓ AI prompt copied to clipboard!");
+    } catch (err) {
+        console.error("Failed to copy:", err);
+        alert("Failed to copy to clipboard. Please select and copy manually.");
+    }
+}
+
+async function openAIPromptAll() {
+    if (!selectedResourceType || !selectedResourceId || !allIssues || allIssues.length === 0) {
+        alert("No issues available for the selected resource");
+        return;
+    }
+
+    setStatus("Generating AI prompt with all issues...");
+
+    // Ensure FHIR is loaded
+    if (!currentFHIR && mpiidNumeric) {
+        setStatus("Loading FHIR data...");
+        currentFHIR = await fetchFHIR(mpiidNumeric);
+    }
+
+    // Get the FHIR resource from current data
+    let fhirResource = null;
+    if (currentFHIR && currentFHIR.entry) {
+        const entry = currentFHIR.entry.find(e => {
+            if (!e.resource) return false;
+            const matchType = e.resource.resourceType.toLowerCase() === selectedResourceType.toLowerCase();
+            const matchId = e.resource.id == selectedResourceId;
+            return matchType && matchId;
+        });
+        if (entry) {
+            fhirResource = entry.resource;
+        }
+    }
+
+    if (!fhirResource) {
+        alert(`Could not find FHIR resource ${selectedResourceType}/${selectedResourceId} in current data`);
+        return;
+    }
+
+    // Build the prompt with all issues
+    let prompt = `You are an integration specialist troubleshooting generated FHIR resources in InterSystems IRIS DTL. Analyze the issues and resource and make suggestions to fix.\n\n`;
+
+    prompt += `## Issues Found (${allIssues.length} total)\n\n`;
+    allIssues.forEach((issue, idx) => {
+        prompt += `### Issue ${idx + 1}\n`;
+        prompt += `- **Severity**: ${issue.severity || 'unknown'}\n`;
+        if (issue.causeBucket) {
+            prompt += `- **Cause**: ${issue.causeBucket}\n`;
+        }
+        if (issue.fhirPath) {
+            prompt += `- **Location**: ${issue.fhirPath}\n`;
+        }
+        prompt += `- **Message**: ${issue.message || 'No message'}\n\n`;
+    });
+
+    prompt += `## FHIR Resource (${selectedResourceType})\n\n`;
+    prompt += `\`\`\`json\n${JSON.stringify(fhirResource, null, 2)}\n\`\`\`\n\n`;
+
+    prompt += `## Context\n\n`;
+    prompt += `- Resource Type: ${selectedResourceType}\n`;
+    prompt += `- Resource ID: ${selectedResourceId}\n`;
+    prompt += `- Patient MPIID: ${mpiidNumeric || 'unknown'}\n`;
+
+    document.getElementById('aiPromptTitle').textContent = `AI Prompt: All Issues for ${selectedResourceType}/${selectedResourceId}`;
+    document.getElementById('aiPromptContent').textContent = prompt;
+    document.getElementById('aiPromptOverlay').style.display = 'flex';
+    setStatus("AI prompt generated with all issues");
+}
 }
 
 XData BackendTools [ MimeType = application/javascript ]
@@ -1527,6 +1972,12 @@ var BackendTools = {
         var baseURL = this.getToolURL('Terminology');
         if (!baseURL) return null;
         return code ? baseURL + '?code=' + encodeURIComponent(code) : baseURL;
+    },
+
+    buildCodeRegistryLink: function() {
+        var baseURL = this.getToolURL('CodeRegistry');
+        if (!baseURL) return null;
+        return baseURL;
     },
 
     getRelevantTools: function(issue) {

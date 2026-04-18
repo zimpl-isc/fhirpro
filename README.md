@@ -1,5 +1,5 @@
 # zimpliFHIR Profiling Toolkit for HealthShare
-*2026-04-16 • Brandon Thomas*
+*2026-04-17 • Brandon Thomas*
 
 ## Contents
 - [Overview](#overview)
@@ -48,6 +48,18 @@ It supports:
 * The relationship graph view can call external **FHIR validation services** via HTTP.  
 * Validators are configured through the **Service Registry** (see below).
 
+### 🔧 FHIR Validation Workbench
+* **Three-pane issue investigation** - resource tree, issue list, and detailed investigation
+* **Issue categorization** - grouped by resource type, severity (errors/warnings), and cause bucket
+* **Candidate DTL analysis** - automatic identification of relevant transformations with custom/standard indicators
+* **Terminology support** - quick access to Code Registry with auto-extracted codes and displays for easy fixes
+* **AI-assisted troubleshooting** - generate comprehensive prompts for AI analysis including:
+  - All issues for a resource or single-issue focus for DTL investigation
+  - Full FHIR resource context and DTL transformation logic
+  - Copy-to-clipboard integration for AI tools
+* **Data Inspector integration** - side-by-side FHIR/SDA3 view with search and deep-linking
+* **Session management** - save/load validation results with automatic MPIID tracking
+
 ### Screenshots
 
 ![Retrieval and viewer of SDA Containers and FHIR Bundles by MRN or MPIID for comparison](README_img/zimpliFHIR-Datasource.png)
@@ -65,6 +77,9 @@ It supports:
 ![DTL Viewer with search and filter capabilities](README_img/zimpliFHIR-DTLViewer.png)
 *Extensible DTL Viewer with search, filter and export capabilities*
 
+---
+![FHIR Validation Workbench](README_img/zimpliFHIR-workbench.png)
+*FHIR Validation Workbench for investigating validation issues with integrated DTL analysis and AI troubleshooting prompts*
 
 ---
 

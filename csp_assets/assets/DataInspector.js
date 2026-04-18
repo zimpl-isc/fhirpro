@@ -152,6 +152,7 @@
 		const root = buildJsonNode("(root)", obj, "$", 0, null);
 		$("#fhirTreeView").empty().append(root);
 		indexBundleEntries(obj);
+		applyDeepLinkFromUrl();
 	}
 
 	function renderFhirRaw(prettyText) {
@@ -430,16 +431,26 @@
 		const resourceId = params.get("resourceId");
 		const fullUrl = params.get("fullUrl");
 
-		if (resourceId && ViewerState.index.byResourceId[resourceId]) {
-			openJsonPath(ViewerState.index.byResourceId[resourceId], { resourceId: resourceId });
-			setStatus("Deep-linked by resource.id=" + resourceId);
-			return;
+		if (resourceId) {
+			console.log("Deep link attempt for resourceId:", resourceId);
+			console.log("Available resourceIds in index:", Object.keys(ViewerState.index.byResourceId));
+
+			if (ViewerState.index.byResourceId[resourceId]) {
+				openJsonPath(ViewerState.index.byResourceId[resourceId], { resourceId: resourceId });
+				setStatus("Deep-linked by resource.id=" + resourceId);
+				return;
+			} else {
+				console.warn("ResourceId not found in index:", resourceId);
+				setStatus("ResourceId not found: " + resourceId);
+			}
 		}
 
-		if (fullUrl && ViewerState.index.byFullUrl[fullUrl]) {
-			openJsonPath(ViewerState.index.byFullUrl[fullUrl], { fullUrl: fullUrl });
-			setStatus("Deep-linked by fullUrl");
-			return;
+		if (fullUrl) {
+			if (ViewerState.index.byFullUrl[fullUrl]) {
+				openJsonPath(ViewerState.index.byFullUrl[fullUrl], { fullUrl: fullUrl });
+				setStatus("Deep-linked by fullUrl");
+				return;
+			}
 		}
 	}
 
@@ -496,8 +507,9 @@
         const paneRect = paneBody.getBoundingClientRect();
 
         const currentScroll = paneBody.scrollTop;
-        const targetScroll =
-            currentScroll + (nodeRect.top - paneRect.top) - (paneRect.height / 2) + (nodeRect.height / 2);
+        // Scroll to put the node at the top of the pane (with a small offset for visibility)
+        const topOffset = 20; // pixels from top
+        const targetScroll = currentScroll + (nodeRect.top - paneRect.top) - topOffset;
 
         paneBody.scrollTo({
             top: Math.max(0, targetScroll),
