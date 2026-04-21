@@ -8,6 +8,11 @@ var edges = null;
 var network = null;
 var colors = null;
 
+var allBundleEntries = [];       // full bundle kept for scope filtering
+var encounterScopes = {};        // ekId -> { label, nodeIds: [] }
+var unlinkedNodeIds = {};        // nodeId -> true, assigned to no scope
+var currentEpisodeFilter = '';   // '' = $everything, else EK resource id
+
 var zoomTimer = null;
 var zoomHoldDelay = null;
 var physicsFreezeTimer = null;
@@ -56,6 +61,8 @@ function parse() {
     var bundle = JSON.parse(tFHIR);
     if (!bundle.entry || !bundle.entry.length) { console.log("FHIR bundle has no entries."); return; }
 
+    allBundleEntries = bundle.entry;
+
     bundle.entry.forEach(processEntry);
     bundle.entry.forEach(processReferences);
 
@@ -63,6 +70,8 @@ function parse() {
     for (var key in resourceTypes) { updateTypeControls(key, resourceTypes[key]); }
 
     populatePresetControls();
+    buildEncounterScopes();
+    populateEpisodeSelector();
 
     network.setOptions({ physics: { enabled: true } });
     network.stabilize(80);
@@ -71,6 +80,12 @@ function parse() {
         pinKeyNodesToCorners();
         network.fit({ animation: { duration: 300, easingFunction: 'easeInOutQuad' } });
         enablePhysicsTemporarily(2000);
+
+        // URL focus: ?focus=ResourceType/id  (only in $everything mode)
+        var focusParam = new URLSearchParams(window.location.search).get('focus');
+        if (focusParam && nodes.get(focusParam)) {
+            focusInspector(focusParam);
+        }
     });
 }
 
@@ -80,6 +95,10 @@ function cleanSession() {
     fhirResource = {};
     fhirResourceUrnUuids = {};
     bundleEntryIndex = {};
+    allBundleEntries = [];
+    encounterScopes = {};
+    unlinkedNodeIds = {};
+    currentEpisodeFilter = '';
 
     if (edges) edges.clear();
     if (nodes) nodes.clear();
@@ -89,6 +108,9 @@ function cleanSession() {
 
     var presetSelector = document.getElementById('PresetSelector');
     if (presetSelector) presetSelector.innerHTML = '';
+
+    var episodeSelector = document.getElementById('EpisodeSelector');
+    if (episodeSelector) { episodeSelector.innerHTML = '<option value="">$everything</option>'; }
 
     closeLeftDrawer();
     unfocusInspector();
@@ -273,6 +295,248 @@ function toggleAllResourceTypes() {
         }
     });
     enablePhysicsTemporarily(1500);
+}
+
+// ─── Episode (EK) scope ───────────────────────────────────────────────────────
+
+function getEncounterLevel(resource) {
+    if (!resource || !resource.type || !resource.type[0]) return 'Einrichtungskontakt';
+    var coding = resource.type[0].coding;
+    return (coding && coding[0] && coding[0].display) || 'Einrichtungskontakt';
+}
+
+function getEncounterParentId(resource) {
+    if (!resource || !resource.partOf || !resource.partOf.reference) return null;
+    var ref = resource.partOf.reference;
+    if (ref.indexOf('Encounter/') === 0) return ref.split('/')[1];
+    return null;
+}
+
+function buildEncounterScopes() {
+    encounterScopes = {};
+
+    // collect all Encounter resources
+    var encounterById = {};
+    allBundleEntries.forEach(function (entry) {
+        var r = entry && entry.resource;
+        if (!r || r.resourceType !== 'Encounter' || !r.id) return;
+        encounterById[r.id] = r;
+    });
+
+    // find EK roots
+    Object.keys(encounterById).forEach(function (id) {
+        var r = encounterById[id];
+        if (getEncounterLevel(r) === 'Einrichtungskontakt') {
+            var identifier = r.identifier && r.identifier[0] ? r.identifier[0].value : id;
+            var start = r.period && r.period.start ? r.period.start : '';
+            var end = r.period && r.period.end ? '  –  ' + new Date(r.period.end).toLocaleDateString('de-DE') : '';
+            var label = '#' + identifier + (start ? '  ' + new Date(start).toLocaleDateString('de-DE') + end : '');
+            encounterScopes[id] = { ekId: id, label: label, ekNodeId: 'Encounter/' + id, nodeIds: [] };
+        }
+    });
+
+    // resolve root EK for any encounter id (walks partOf chain)
+    function resolveRootEkId(id, seen) {
+        if (!id) return null;
+        seen = seen || {};
+        if (seen[id]) return null;
+        seen[id] = true;
+        var r = encounterById[id];
+        if (!r) return null;
+        if (getEncounterLevel(r) === 'Einrichtungskontakt') return id;
+        return resolveRootEkId(getEncounterParentId(r), seen);
+    }
+
+    // assign every node to its EK scope
+    allBundleEntries.forEach(function (entry) {
+        var r = entry && entry.resource;
+        if (!r || !r.id) return;
+        var nodeId = r.resourceType + '/' + r.id;
+
+        if (r.resourceType === 'Encounter') {
+            var ekId = resolveRootEkId(r.id);
+            if (ekId && encounterScopes[ekId]) {
+                encounterScopes[ekId].nodeIds.push(nodeId);
+            }
+            return;
+        }
+
+        // for non-encounter resources: resolve via encounter.reference
+        var encRef = r.encounter && r.encounter.reference;
+        if (encRef) {
+            var encId = encRef.indexOf('Encounter/') === 0 ? encRef.split('/')[1] : null;
+            if (encId) {
+                var ekId2 = resolveRootEkId(encId);
+                if (ekId2 && encounterScopes[ekId2]) {
+                    encounterScopes[ekId2].nodeIds.push(nodeId);
+                    return;
+                }
+            }
+        }
+
+        // Patient belongs to every episode
+        if (r.resourceType === 'Patient') {
+            Object.keys(encounterScopes).forEach(function (ekId) {
+                encounterScopes[ekId].nodeIds.push(nodeId);
+            });
+            return;
+        }
+
+        // fallback: time-overlap with EK period
+        var itemTime = r.period && r.period.start ? new Date(r.period.start).getTime()
+                     : r.effectiveDateTime ? new Date(r.effectiveDateTime).getTime()
+                     : r.recordedDate ? new Date(r.recordedDate).getTime()
+                     : r.performedDateTime ? new Date(r.performedDateTime).getTime()
+                     : r.whenHandedOver ? new Date(r.whenHandedOver).getTime()
+                     : r.whenPrepared ? new Date(r.whenPrepared).getTime()
+                     : r.effectivePeriod && r.effectivePeriod.start ? new Date(r.effectivePeriod.start).getTime()
+                     : null;
+
+        if (!itemTime) return;
+
+        var matching = Object.keys(encounterScopes).filter(function (ekId) {
+            var ekR = encounterById[ekId];
+            if (!ekR || !ekR.period || !ekR.period.start) return false;
+            var s = new Date(ekR.period.start).getTime();
+            var e = ekR.period.end ? new Date(ekR.period.end).getTime() : s;
+            return itemTime >= s && itemTime <= e;
+        });
+
+        if (!matching.length) return;
+
+        matching.sort(function (a, b) {
+            return new Date(encounterById[b].period.start) - new Date(encounterById[a].period.start);
+        });
+
+        encounterScopes[matching[0]].nodeIds.push(nodeId);
+    });
+
+    // pull Medication definitions into every scope that references them
+    var entryByNodeId = {};
+    allBundleEntries.forEach(function (entry) {
+        var r = entry && entry.resource;
+        if (!r || !r.id) return;
+        entryByNodeId[r.resourceType + '/' + r.id] = r;
+    });
+
+    Object.keys(encounterScopes).forEach(function (ekId) {
+        var scope = encounterScopes[ekId];
+        var medNodeIds = {};
+        scope.nodeIds.forEach(function (nid) {
+            var r = entryByNodeId[nid];
+            if (!r || !r.medicationReference || !r.medicationReference.reference) return;
+            var ref = r.medicationReference.reference;
+            // resolve relative ref like "Medication/id" or urn
+            var medNid = ref.indexOf('Medication/') === 0 ? ref : null;
+            if (!medNid && fhirResourceUrnUuids) {
+                // urn:uuid: — look up via the urnUuid map populated during processEntry
+                var parts = ref.split(':');
+                var tail = parts[parts.length - 1];
+                if (fhirResourceUrnUuids[tail]) medNid = fhirResourceUrnUuids[tail] + '/' + tail;
+            }
+            if (medNid) medNodeIds[medNid] = true;
+        });
+        Object.keys(medNodeIds).forEach(function (nid) {
+            if (scope.nodeIds.indexOf(nid) === -1) scope.nodeIds.push(nid);
+        });
+    });
+
+    // flag any resource assigned to no scope as unlinked
+    unlinkedNodeIds = {};
+    var allScopeNodeIds = {};
+    Object.keys(encounterScopes).forEach(function (ekId) {
+        encounterScopes[ekId].nodeIds.forEach(function (nid) { allScopeNodeIds[nid] = true; });
+    });
+    allBundleEntries.forEach(function (entry) {
+        var r = entry && entry.resource;
+        if (!r || !r.id || r.resourceType === 'OperationOutcome') return;
+        var nid = r.resourceType + '/' + r.id;
+        if (!allScopeNodeIds[nid]) unlinkedNodeIds[nid] = true;
+    });
+    console.log('Unlinked nodes:', Object.keys(unlinkedNodeIds));
+}
+
+function populateEpisodeSelector() {
+    var sel = document.getElementById('EpisodeSelector');
+    if (!sel) return;
+
+    sel.innerHTML = '<option value="">$everything</option>';
+
+    var scopes = Object.values(encounterScopes);
+    scopes.sort(function (a, b) {
+        var ra = allBundleEntries.find(function (e) { return e.resource && e.resource.id === a.ekId; });
+        var rb = allBundleEntries.find(function (e) { return e.resource && e.resource.id === b.ekId; });
+        var sa = ra && ra.resource.period ? ra.resource.period.start : '';
+        var sb = rb && rb.resource.period ? rb.resource.period.start : '';
+        return sb < sa ? -1 : sb > sa ? 1 : 0;
+    });
+
+    scopes.forEach(function (scope) {
+        var opt = document.createElement('option');
+        opt.value = scope.ekId;
+        opt.textContent = scope.label;
+        sel.appendChild(opt);
+    });
+}
+
+function rebuildGraph(entryFilter) {
+    // Clear and rebuild nodes + edges from scratch for a subset of entries.
+    resourceTypesHidden = {};
+    resourceTypes = {};
+    fhirResource = {};
+    fhirResourceUrnUuids = {};
+
+    if (edges) edges.clear();
+    if (nodes) nodes.clear();
+    $('#resourceTypeControls ul').empty();
+    $('#HiddenResourceTray').empty();
+
+    var subset = allBundleEntries.filter(entryFilter);
+    subset.forEach(processEntry);
+    subset.forEach(processReferences);
+
+    resourceTypes = Object.fromEntries(Object.entries(resourceTypes).sort());
+    for (var key in resourceTypes) { updateTypeControls(key, resourceTypes[key]); }
+
+    populatePresetControls();
+    unfocusInspector();
+
+    enablePhysicsTemporarily(1800);
+    network.setOptions({ physics: { enabled: true } });
+    network.stabilize(60);
+    network.once('stabilizationIterationsDone', function () {
+        pinKeyNodesToCorners();
+        network.fit({ animation: { duration: 250, easingFunction: 'easeInOutQuad' } });
+    });
+}
+
+function applyEpisodeScope(ekId) {
+    currentEpisodeFilter = ekId;
+
+    if (!ekId) {
+        // $everything — full bundle, checkbox irrelevant
+        rebuildGraph(function (entry) {
+            return entry && entry.resource && entry.resource.resourceType !== 'OperationOutcome';
+        });
+        return;
+    }
+
+    var scope = encounterScopes[ekId];
+    if (!scope) return;
+
+    var keepIds = {};
+    scope.nodeIds.forEach(function (nid) { keepIds[nid] = true; });
+
+    var cb = document.getElementById('ShowUnlinkedCheckbox');
+    var showUnlinked = !cb || cb.checked;
+
+    rebuildGraph(function (entry) {
+        var r = entry && entry.resource;
+        if (!r || !r.id) return false;
+        if (r.resourceType === 'OperationOutcome') return false;
+        var nid = r.resourceType + '/' + r.id;
+        return keepIds[nid] === true || (showUnlinked && unlinkedNodeIds[nid] === true);
+    });
 }
 
 function populatePresetControls() {
@@ -1007,6 +1271,13 @@ function wireZoomButtons() {
     }
 
     if (presetSelector) presetSelector.onchange = function () { applyPreset(this.value); };
+
+    var episodeSelector = document.getElementById('EpisodeSelector');
+    if (episodeSelector) episodeSelector.onchange = function () { applyEpisodeScope(this.value); };
+
+    var showUnlinkedCb = document.getElementById('ShowUnlinkedCheckbox');
+    if (showUnlinkedCb) showUnlinkedCb.onchange = function () { applyEpisodeScope(currentEpisodeFilter); };
+
     if (railToggle) railToggle.onclick = toggleLeftDrawer;
     if (closeInspector) closeInspector.onclick = unfocusInspector;
     if (backdrop) backdrop.onclick = function () { closeLeftDrawer(); unfocusInspector(); };

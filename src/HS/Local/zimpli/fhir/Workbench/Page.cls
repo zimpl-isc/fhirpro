@@ -72,6 +72,15 @@ ClassMethod HandleAPI(pAction As %String) As %Status
             )
         }
 
+        ElseIf pAction="allIssues" {
+            Set mpiid = $Get(%request.Data("mpiid",1))
+            Set validationConvention = $Get(%request.Data("validationConvention",1))
+            Set result.ok = 1
+            Set result.issues = ##class(HS.Local.zimpli.fhir.Workbench.Service).GetAllIssuesForMPIID(
+                mpiid,validationConvention
+            )
+        }
+
         ElseIf pAction="ignoreIssue" {
             Set issueId = +$Get(%request.Data("issueId",1))
             Set reason = $Get(%request.Data("reason",1))
@@ -308,8 +317,8 @@ ClassMethod RenderShell()
     <!-- AI Prompt Overlay -->
     <div id="aiPromptOverlay" class="inspector-overlay" style="display:none;">
         <div class="inspector-header">
-            <span class="inspector-title" id="aiPromptTitle">AI Troubleshooting Prompt</span>
             <button onclick="closeAIPrompt()" class="inspector-close">✕</button>
+            <span class="inspector-title" id="aiPromptTitle">AI Troubleshooting Prompt</span>
         </div>
         <div class="inspector-frame" style="padding:16px;overflow:auto;">
             <div style="margin-bottom:12px;">
@@ -661,12 +670,14 @@ textarea { width:100%; min-height:220px; box-sizing:border-box; font-family: Con
     justify-content:space-between;
     align-items:flex-start;
     gap:8px;
-    margin-bottom:4px;
+    margin-bottom:6px;
     font-family:Consolas,monospace;
 }
-.dtl-header > div {
+.dtl-name {
     flex:1;
-    word-break:break-all;
+    word-break:break-word;
+    overflow-wrap:break-word;
+    min-width:0;
 }
 .dtl-action-link {
     font-size:10px;
@@ -710,8 +721,15 @@ textarea { width:100%; min-height:220px; box-sizing:border-box; font-family: Con
 .dtl-badges {
     display:flex;
     gap:4px;
-    margin-top:4px;
     flex-wrap:wrap;
+    align-items:flex-start;
+    flex-shrink:0;
+}
+.dtl-actions {
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+    margin-top:4px;
 }
 .condition-badge {
     display:inline-block;
@@ -1255,10 +1273,38 @@ async function loadResourceTree() {
         return;
     }
 
-    renderResourceTree(resp.groups);
+    // Calculate clean resources if we have FHIR data
+    let cleanResources = [];
+    if (currentFHIR && currentFHIR.entry) {
+        // Get all issues to build accurate set of resources with problems
+        const allIssuesResp = await api("allIssues", { mpiid: mpiidNumeric, validationConvention: validationConvention });
+        const resourcesWithIssues = new Set();
+
+        if (allIssuesResp.issues) {
+            allIssuesResp.issues.forEach(issue => {
+                if (issue.resourceType && issue.resourceId) {
+                    resourcesWithIssues.add(`${issue.resourceType}/${issue.resourceId}`);
+                }
+            });
+        }
+
+        currentFHIR.entry.forEach(entry => {
+            if (entry.resource && entry.resource.resourceType && entry.resource.id) {
+                const key = `${entry.resource.resourceType}/${entry.resource.id}`;
+                if (!resourcesWithIssues.has(key) && entry.resource.resourceType !== "OperationOutcome") {
+                    cleanResources.push({
+                        resourceType: entry.resource.resourceType,
+                        resourceId: entry.resource.id
+                    });
+                }
+            }
+        });
+    }
+
+    renderResourceTree(resp.groups, cleanResources);
 }
 
-function renderResourceTree(groups) {
+function renderResourceTree(groups, cleanResources = []) {
     const container = document.getElementById("resourceTree");
     container.innerHTML = "";
 
@@ -1306,6 +1352,45 @@ function renderResourceTree(groups) {
 
         container.appendChild(details);
     });
+
+    // Add "Clean Resources" section at the bottom if we have any
+    if (cleanResources.length > 0) {
+        const cleanDetails = document.createElement("details");
+        cleanDetails.className = "resource-group clean";
+
+        const cleanSummary = document.createElement("summary");
+        cleanSummary.innerHTML = `
+            <div class="group-header">
+                <span class="group-name"><span class="clean-check">✓</span> Clean Resources</span>
+                <span class="group-counts">${cleanResources.length} passed validation</span>
+            </div>
+        `;
+        cleanDetails.appendChild(cleanSummary);
+
+        // Group clean resources by type
+        const cleanByType = {};
+        cleanResources.forEach(res => {
+            if (!cleanByType[res.resourceType]) {
+                cleanByType[res.resourceType] = [];
+            }
+            cleanByType[res.resourceType].push(res.resourceId);
+        });
+
+        const cleanList = document.createElement("div");
+        cleanList.style.padding = "8px 12px";
+        cleanList.style.fontSize = "11px";
+        cleanList.style.color = "#6b7280";
+
+        Object.keys(cleanByType).sort().forEach(type => {
+            const typeSection = document.createElement("div");
+            typeSection.style.marginBottom = "6px";
+            typeSection.innerHTML = `<strong>${esc(type)}</strong> (${cleanByType[type].length}): ${cleanByType[type].map(id => esc(id)).join(', ')}`;
+            cleanList.appendChild(typeSection);
+        });
+
+        cleanDetails.appendChild(cleanList);
+        container.appendChild(cleanDetails);
+    }
 }
 
 async function loadResourcesForGroup(groupElement, resourceType) {
@@ -1642,16 +1727,16 @@ async function renderInvestigation(data) {
 
             html += `<div class="dtl-item ${dtl.isCustom ? 'custom' : 'standard'}">
                 <div class="dtl-header">
-                    <div><strong>${esc(dtl.sourceClass || "")}</strong> → ${esc(dtl.effectiveDTL || "")}</div>
-                    <div style="display:flex;gap:6px;">
-                        ${actionLinks}
+                    <div class="dtl-name"><strong>${esc(dtl.sourceClass || "")}</strong> → ${esc(dtl.effectiveDTL || "")}</div>
+                    <div class="dtl-badges">
+                        ${conditionBadge}
+                        ${customBadge}
                     </div>
                 </div>
-                <div class="dtl-badges">
-                    ${conditionBadge}
-                    ${customBadge}
+                ${dtl.conditionType === "conditional" && dtl.condition ? `<div class="muted" style="font-size:10px;margin-top:4px;margin-bottom:6px;">Expression: <code>${esc(dtl.condition)}</code></div>` : ""}
+                <div class="dtl-actions">
+                    ${actionLinks}
                 </div>
-                ${dtl.conditionType === "conditional" && dtl.condition ? `<div class="muted" style="font-size:10px;margin-top:4px;">Expression: <code>${esc(dtl.condition)}</code></div>` : ""}
             </div>`;
         });
 
@@ -1797,7 +1882,9 @@ async function openAIPromptForDTL(dtlClass) {
     }
 
     if (!fhirResource) {
-        alert(`Could not find FHIR resource ${selectedResourceType}/${selectedResourceId} in current data`);
+        console.error("Could not find resource", selectedResourceType, selectedResourceId);
+        console.log("Available resources:", currentFHIR?.entry?.map(e => `${e.resource?.resourceType}/${e.resource?.id}`));
+        alert(`Could not find FHIR resource ${selectedResourceType}/${selectedResourceId} in current data.\n\nThis usually means the validation issues are stale after a "Refresh from Server". Click the "✓ Validate" button to re-validate with current resource IDs.`);
         return;
     }
 
@@ -1899,7 +1986,9 @@ async function openAIPromptAll() {
     }
 
     if (!fhirResource) {
-        alert(`Could not find FHIR resource ${selectedResourceType}/${selectedResourceId} in current data`);
+        console.error("Could not find resource", selectedResourceType, selectedResourceId);
+        console.log("Available resources:", currentFHIR?.entry?.map(e => `${e.resource?.resourceType}/${e.resource?.id}`));
+        alert(`Could not find FHIR resource ${selectedResourceType}/${selectedResourceId} in current data.\n\nThis usually means the validation issues are stale after a "Refresh from Server". Click the "✓ Validate" button to re-validate with current resource IDs.`);
         return;
     }
 

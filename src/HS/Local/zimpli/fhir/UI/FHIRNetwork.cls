@@ -157,23 +157,32 @@ ClassMethod OnPage() As %Status
 			<div id="validationControls" class="card">
 				<div id="validationControlsHeader">
 					<span>Validation</span>
-					<button type="button" id="ToggleValidationPanelButton">Hide</button>
 				</div>
 
 				<div id="validationControlsBody">
-					<div class="formRow">
-						<label for="ValidationProfileSelector">Profile</label>
+					<div class="formRow formRow--inline">
 						<select id="ValidationProfileSelector">
-							<option value="">-- Select validation profile --</option>
+							<option value="">-- Profile --</option>
 						</select>
-					</div>
-
-					<div class="formRow">
-						<button type="button" id="RunValidationButton">Validate visible bundle</button>
+						<button type="button" id="RunValidationButton">Validate</button>
 					</div>
 
 					<div id="ValidationSummary" class="validationSummary is-hidden"></div>
 					<div id="ValidationBundleIssues" class="validationBundleIssues is-hidden"></div>
+				</div>
+			</div>
+
+			<div id="episodeControls" class="card">
+				<div id="episodeControlsHeader">
+					<span>Episode</span>
+				</div>
+				<div id="episodeControlsBody">
+					<select id="EpisodeSelector">
+						<option value="">$everything</option>
+					</select>
+					<label id="showUnlinkedLabel">
+						<input type="checkbox" id="ShowUnlinkedCheckbox" checked> Show unlinked
+					</label>
 				</div>
 			</div>
 

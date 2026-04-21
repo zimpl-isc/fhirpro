@@ -173,7 +173,7 @@ select {
 	bottom: 8px;
 	width: min(360px, calc(100vw - 64px));
 	transform: translateX(calc(-100% - 20px));
-	gap: 12px;
+	gap: 6px;
 	z-index: 50;
 }
 
@@ -404,20 +404,21 @@ code {
 }
 
 #validationControls {
-	margin-bottom: 12px;
+	flex: 0 0 auto;
 }
 
 #validationControlsHeader {
-	padding: 12px 16px 8px 16px;
+	padding: 8px 16px;
 	font-weight: 600;
+	font-size: 13px;
 	border-bottom: 1px solid #e3e6ea;
 }
 
 #validationControlsBody {
-	padding: 12px 16px 16px 16px;
+	padding: 8px 12px 10px 12px;
 	display: flex;
 	flex-direction: column;
-	gap: 12px;
+	gap: 8px;
 }
 
 #validationControls .formRow {
@@ -426,33 +427,74 @@ code {
 	gap: 6px;
 }
 
-#validationControls label {
-	font-size: 0.9rem;
-	font-weight: 500;
-	color: #444;
+#validationControls .formRow--inline {
+	flex-direction: row;
+	align-items: center;
+	gap: 6px;
 }
 
 #ValidationProfileSelector {
-	width: 100%;
-	padding: 8px 10px;
+	flex: 1 1 0;
+	min-width: 0;
+	padding: 5px 8px;
 	border: 1px solid #cfd6dd;
 	border-radius: 6px;
 	background: #fff;
-	font-size: 0.95rem;
+	font-size: 13px;
 }
 
 #RunValidationButton {
-	width: 100%;
-	padding: 9px 12px;
+	flex: 0 0 auto;
+	padding: 5px 10px;
 	border: 1px solid #c7d0d9;
 	border-radius: 6px;
 	background: #f7f9fb;
 	cursor: pointer;
+	font-size: 13px;
 	font-weight: 600;
+	white-space: nowrap;
 }
 
 #RunValidationButton:hover {
 	background: #eef3f7;
+}
+
+/* EPISODE SELECTOR */
+#episodeControls {
+	flex: 0 0 auto;
+}
+
+#episodeControlsHeader {
+	padding: 8px 16px;
+	font-weight: 600;
+	font-size: 13px;
+	border-bottom: 1px solid #e3e6ea;
+}
+
+#episodeControlsBody {
+	padding: 8px 12px 10px 12px;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+#showUnlinkedLabel {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 13px;
+	color: #334155;
+	cursor: pointer;
+}
+
+#EpisodeSelector {
+	width: 100%;
+	padding: 5px 8px;
+	border: 1px solid #cfd6dd;
+	border-radius: 6px;
+	background: #fff;
+	font-size: 13px;
+	cursor: pointer;
 }
 
 .validationSummary {

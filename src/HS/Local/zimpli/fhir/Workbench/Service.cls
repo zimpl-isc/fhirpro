@@ -386,6 +386,35 @@ ClassMethod ExtractDTLMetadata(pDTLClassName As %String) As %DynamicObject
     Quit o
 }
 
+ClassMethod GetAllIssuesForMPIID(pMPIID As %String, pValidationConvention As %String = "") As %DynamicArray
+{
+    Set arr = []
+    Set sql = "SELECT ResourceType, ResourceId FROM HS_Local_zimpli_fhir_Workbench.Issue WHERE MPIID = ? AND Status = 'Open'"
+
+    If pValidationConvention'="" {
+        Set sql = sql_" AND ValidationConvention = ?"
+    }
+
+    Set stmt = ##class(%SQL.Statement).%New()
+    Set sc = stmt.%Prepare(sql)
+    Quit:$$$ISERR(sc) arr
+
+    If pValidationConvention'="" {
+        Set rs = stmt.%Execute(pMPIID, pValidationConvention)
+    } Else {
+        Set rs = stmt.%Execute(pMPIID)
+    }
+
+    While rs.%Next() {
+        Set obj = {}
+        Set obj.resourceType = rs.%Get("ResourceType")
+        Set obj.resourceId = rs.%Get("ResourceId")
+        Do arr.%Push(obj)
+    }
+
+    Quit arr
+}
+
 ClassMethod GetIssueListAsJSON(pMPIID As %String, pValidationConvention As %String = "", pStatus As %String = "Open") As %DynamicArray
 {
     Set arr = []
