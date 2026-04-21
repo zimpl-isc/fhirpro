@@ -298,6 +298,15 @@ ClassMethod RenderShell()
         <iframe id="dataInspectorFrame" class="inspector-frame"></iframe>
     </div>
 
+    <!-- FHIRNetwork Overlay -->
+    <div id="fhirNetworkOverlay" class="inspector-overlay" style="display:none;">
+        <div class="inspector-header">
+            <button onclick="closeFHIRNetwork()" class="inspector-close">✕</button>
+            <span class="inspector-title">Reference Graph</span>
+        </div>
+        <iframe id="fhirNetworkFrame" class="inspector-frame"></iframe>
+    </div>
+
     <!-- DTL XML Viewer Overlay -->
     <div id="dtlXmlOverlay" class="inspector-overlay" style="display:none;">
         <div class="inspector-header">
@@ -1481,6 +1490,13 @@ async function loadResourcesForGroup(groupElement, resourceType) {
 XData WorkbenchUI [ MimeType = application/javascript ]
 {
 async function selectResource(resourceType, resourceId, severityFilter) {
+    // Normalize resourceType casing from FHIR bundle (server may return uppercase from SQL)
+    if (currentFHIR && currentFHIR.entry) {
+        const match = currentFHIR.entry.find(e =>
+            e.resource && e.resource.resourceType.toLowerCase() === resourceType.toLowerCase()
+        );
+        if (match) resourceType = match.resource.resourceType;
+    }
     selectedResourceType = resourceType;
     selectedResourceId = resourceId;
     selectedSeverityFilter = severityFilter || null;
@@ -1594,11 +1610,13 @@ async function renderInvestigation(data) {
     // Quick actions card
     if (data.resourceType && data.resourceId) {
         html += `<div class="investigation-card">
-            <div style="display:flex;gap:12px;align-items:center;">
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
                 <button onclick="openDataInspector('${esc(data.resourceType)}', '${esc(data.resourceId)}')" class="inspector-btn">
-                    🔍 Open Inspector
+                    🔍 FHIR &amp; SDA
                 </button>
-                <p class="muted" style="font-size:11px;margin:0;">View ${esc(data.resourceType)}/${esc(data.resourceId)} FHIR & SDA side-by-side with search</p>
+                <button onclick="openFHIRNetwork('${esc(data.resourceType)}', '${esc(data.resourceId)}')" class="inspector-btn" style="background:#2563eb;">
+                    🕸 Reference Graph
+                </button>
             </div>
         </div>`;
     }
@@ -1813,6 +1831,23 @@ function openDataInspector(resourceType, resourceId) {
 function closeDataInspector() {
     document.getElementById('dataInspectorOverlay').style.display = 'none';
     document.getElementById('dataInspectorFrame').src = '';
+}
+
+function openFHIRNetwork(resourceType, resourceId) {
+    if (currentFHIR) {
+        setFhirData(JSON.stringify(currentFHIR));
+    }
+    const focusParam = resourceType && resourceId
+        ? '&focus=' + encodeURIComponent(resourceType + '/' + resourceId)
+        : '';
+    document.getElementById('fhirNetworkFrame').src =
+        'HS.Local.zimpli.fhir.UI.FHIRNetwork.cls?' + focusParam;
+    document.getElementById('fhirNetworkOverlay').style.display = 'flex';
+}
+
+function closeFHIRNetwork() {
+    document.getElementById('fhirNetworkOverlay').style.display = 'none';
+    document.getElementById('fhirNetworkFrame').src = '';
 }
 
 async function openDTLXmlViewer(dtlClass) {
