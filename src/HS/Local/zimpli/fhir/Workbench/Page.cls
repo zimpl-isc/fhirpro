@@ -292,7 +292,7 @@ ClassMethod RenderShell()
     <!-- DataInspector Overlay -->
     <div id="dataInspectorOverlay" class="inspector-overlay" style="display:none;">
         <div class="inspector-header">
-            <button onclick="closeDataInspector()" class="inspector-close">✕</button>
+            <button onclick="closeDataInspector()" class="inspector-close">&#10005;</button>
             <span class="inspector-title">FHIR & SDA Inspector</span>
         </div>
         <iframe id="dataInspectorFrame" class="inspector-frame"></iframe>
@@ -301,7 +301,7 @@ ClassMethod RenderShell()
     <!-- FHIRNetwork Overlay -->
     <div id="fhirNetworkOverlay" class="inspector-overlay" style="display:none;">
         <div class="inspector-header">
-            <button onclick="closeFHIRNetwork()" class="inspector-close">✕</button>
+            <button onclick="closeFHIRNetwork()" class="inspector-close">&#10005;</button>
             <span class="inspector-title">Reference Graph</span>
         </div>
         <iframe id="fhirNetworkFrame" class="inspector-frame"></iframe>
@@ -310,8 +310,8 @@ ClassMethod RenderShell()
     <!-- DTL XML Viewer Overlay -->
     <div id="dtlXmlOverlay" class="inspector-overlay" style="display:none;">
         <div class="inspector-header">
+            <button onclick="closeDTLXmlViewer()" class="inspector-close">&#10005;</button>
             <span class="inspector-title" id="dtlXmlTitle">DTL XML</span>
-            <button onclick="closeDTLXmlViewer()" class="inspector-close">✕</button>
         </div>
         <div class="inspector-frame" style="padding:16px;overflow:auto;">
             <div style="margin-bottom:12px;">
@@ -326,7 +326,7 @@ ClassMethod RenderShell()
     <!-- AI Prompt Overlay -->
     <div id="aiPromptOverlay" class="inspector-overlay" style="display:none;">
         <div class="inspector-header">
-            <button onclick="closeAIPrompt()" class="inspector-close">✕</button>
+            <button onclick="closeAIPrompt()" class="inspector-close">&#10005;</button>
             <span class="inspector-title" id="aiPromptTitle">AI Troubleshooting Prompt</span>
         </div>
         <div class="inspector-frame" style="padding:16px;overflow:auto;">

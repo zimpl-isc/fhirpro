@@ -43,9 +43,10 @@ body {
 
 .pageTitle {
 	margin: 0;
-	font-size: 20px;
+	font-size: clamp(13px, 2.8vw, 20px);
 	font-weight: 600;
 	color: #1f2937;
+	min-width: 0;
 }
 
 .headerActions {
@@ -483,6 +484,23 @@ a:hover {
 
 .dataLinkEditor:hover {
 	color: #334155;
+}
+
+.dataLinkMap {
+	display: inline-block;
+	margin-right: 8px;
+	width: 14px;
+	height: 14px;
+	vertical-align: middle;
+	opacity: 0.35;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Crect x='9' y='1' width='6' height='4' rx='0.75' stroke='%231e293b' stroke-width='1.5'/%3E%3Cline x1='12' y1='5' x2='12' y2='9' stroke='%231e293b' stroke-width='1.5' stroke-linecap='round'/%3E%3Cline x1='5' y1='9' x2='19' y2='9' stroke='%231e293b' stroke-width='1.5' stroke-linecap='round'/%3E%3Cline x1='5' y1='9' x2='5' y2='13' stroke='%231e293b' stroke-width='1.5' stroke-linecap='round'/%3E%3Cline x1='19' y1='9' x2='19' y2='13' stroke='%231e293b' stroke-width='1.5' stroke-linecap='round'/%3E%3Crect x='2' y='13' width='6' height='4' rx='0.75' stroke='%231e293b' stroke-width='1.5'/%3E%3Crect x='9' y='13' width='6' height='4' rx='0.75' stroke='%231e293b' stroke-width='1.5'/%3E%3Crect x='16' y='13' width='6' height='4' rx='0.75' stroke='%231e293b' stroke-width='1.5'/%3E%3C/svg%3E");
+}
+
+.dataLinkMap:hover {
+	opacity: 1;
 }
 
 .dataLinkViewer {

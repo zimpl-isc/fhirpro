@@ -1,0 +1,210 @@
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+	margin: 0; padding: 0;
+	background: #f5f7fb;
+	font-family: Arial, Helvetica, sans-serif;
+	color: #1f2937; font-size: 14px;
+}
+
+#pageShell { padding: 12px 16px; }
+
+.card {
+	background: #fff;
+	border: 1px solid #e5e7eb;
+	border-radius: 12px;
+	box-shadow: 0 1px 3px rgba(0,0,0,.06);
+	margin-bottom: 12px;
+}
+
+.pageHeader { padding: 14px 18px; display: flex; align-items: center; }
+.pageTitle  { margin: 0; font-size: 20px; font-weight: 600; color: #1f2937; }
+
+.toolbarCard { padding: 10px 14px; }
+.toolbarGrid { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+
+.fieldGroup       { display: flex; align-items: center; gap: 6px; }
+.fieldGroup label { font-size: 12px; color: #64748b; white-space: nowrap; }
+.fieldGroup select {
+	border: 1px solid #d1d5db; border-radius: 6px;
+	padding: 4px 8px; font-size: 13px;
+	background: #fff; color: #1f2937; cursor: pointer;
+}
+
+.legendGroup { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.legendDot {
+	display: inline-block; width: 12px; height: 12px;
+	border-radius: 2px; border: 1px solid transparent;
+}
+.legendDot.entrypoint { background: #3b82f6; border-color: #1d4ed8; }
+.legendDot.custom     { background: #8b5cf6; border-color: #6d28d9; }
+.legendDot.base       { background: #e2e8f0; border-color: #94a3b8; }
+.legendDot.external   { background: #fef3c7; border-color: #d97706; }
+.legendLabel { font-size: 12px; color: #64748b; margin-right: 6px; }
+
+/* Network canvas + inspector layout */
+.networkCard {
+	position: relative;
+	overflow: hidden;
+	padding: 0;
+}
+
+/* TOP-LEFT TOOLBAR: zoom controls + fit */
+#NetworkZoomControls {
+	position: absolute;
+	top: 12px;
+	left: 12px;
+	z-index: 40;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+#NetworkZoomControls button {
+	width: 36px;
+	height: 36px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid #cbd5e1;
+	border-radius: 10px;
+	background: rgba(255,255,255,0.96);
+	color: #334155;
+	font-size: 16px;
+	line-height: 1;
+	cursor: pointer;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+	user-select: none;
+}
+#NetworkZoomControls button:hover { background: #f8fafc; }
+
+#VisNetworkPane {
+	width: 100%;
+	height: calc(100vh - 120px);
+	min-height: 400px;
+}
+
+/* Backdrop */
+#DrawerBackdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(15,23,42,0.18);
+	z-index: 25;
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	transition: opacity 180ms ease, visibility 180ms ease;
+}
+#DrawerBackdrop.open {
+	opacity: 1;
+	visibility: visible;
+	pointer-events: auto;
+}
+
+/* DTL Inspector — right slide-in overlay */
+.dtlInspector {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	bottom: 8px;
+	width: min(480px, calc(100vw - 64px));
+	z-index: 35;
+	display: flex;
+	flex-direction: column;
+	border: 1px solid #e5e7eb;
+	border-radius: 10px;
+	background: #fff;
+	overflow: hidden;
+	box-shadow: 0 8px 32px rgba(15,23,42,0.14);
+	transform: translateX(calc(100% + 20px));
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	transition: transform 180ms ease, opacity 180ms ease, visibility 180ms ease;
+}
+.dtlInspector.open {
+	transform: translateX(0);
+	opacity: 1;
+	visibility: visible;
+	pointer-events: auto;
+}
+
+#DTLInspectorHeader {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	padding: 10px 12px;
+	border-bottom: 1px solid #e5e7eb;
+	flex-shrink: 0;
+	background: #f8fafc;
+}
+
+.dtlInspectorActions {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+#CloseDTLInspector {
+	border: 1px solid #e5e7eb;
+	border-radius: 6px;
+	padding: 3px 10px;
+	font-size: 12px;
+	background: #f8fafc;
+	cursor: pointer;
+	color: #374151;
+}
+#CloseDTLInspector:hover { background: #e0e7ef; }
+
+#DTLViewerLink:disabled {
+	opacity: 0.35;
+	cursor: default;
+}
+
+#DTLInspectorFrame {
+	flex: 1 1 auto;
+	width: 100%;
+	border: none;
+}
+#DTLInspectorExternal {
+	flex: 1 1 auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 13px;
+	color: #92400e;
+	background: #fffbeb;
+	border-top: 1px solid #fde68a;
+}
+#DTLInspectorExternal.is-hidden { display: none; }
+
+.nodeInfoGroup {
+	display: inline-block;
+	align-self: flex-start;
+	padding: 2px 8px; border-radius: 10px;
+	font-size: 11px; font-weight: 600;
+}
+.nodeInfoGroup.entrypoint { background: #dbeafe; color: #1d4ed8; }
+.nodeInfoGroup.custom     { background: #ede9fe; color: #6d28d9; }
+.nodeInfoGroup.base       { background: #f1f5f9; color: #475569; }
+.nodeInfoGroup.external   { background: #fef3c7; color: #92400e; }
+
+.dtlInspectorParentRow {
+	display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+}
+#DTLInspectorParents {
+	display: flex; align-items: center; gap: 4px; flex-wrap: wrap;
+}
+.parentLabel {
+	font-size: 10px; color: #94a3b8; white-space: nowrap;
+}
+.parentChip {
+	display: inline-block;
+	padding: 2px 7px; border-radius: 10px;
+	font-size: 11px; font-weight: 600; cursor: pointer;
+	white-space: nowrap;
+}
+.parentChip:hover { filter: brightness(0.92); }
+.parentChip.entrypoint { background: #dbeafe; color: #1d4ed8; }
+.parentChip.custom     { background: #ede9fe; color: #6d28d9; }
+.parentChip.base       { background: #f1f5f9; color: #475569; }
+.parentChip.external   { background: #fef3c7; color: #92400e; }

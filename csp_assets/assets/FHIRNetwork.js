@@ -1313,7 +1313,10 @@ window.addEventListener("load", function () {
     network = new vis.Network(container, data, options);
 
     network.on('click', function (event) {
-        if (event.nodes[0] === undefined) { unfocusInspector(); } else { focusInspector(event.nodes[0]); }
+        if (event.nodes[0] === undefined) { unfocusInspector(); }
+    });
+    network.on('doubleClick', function (event) {
+        if (event.nodes[0] !== undefined) { focusInspector(event.nodes[0]); }
     });
 
     network.on('dragStart', function (params) {

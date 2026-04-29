@@ -24,6 +24,8 @@ Parameter DisplayOrder = 99;
 /*<------------------------------------ Customizable Parameters for Subclass */
 Parameter SuperClass = "HS.Local.zimpli.fhir.UI.DTLViewer";
 
+Parameter DTLMapPage = "HS.Local.zimpli.fhir.UI.DTLMap.cls";
+
 /// Use of a Work-In-Progress (WIPString) in DTL comments or elsewhere will be displayed as a hint when found
 Parameter WIPString = "TODO:";
 
@@ -71,6 +73,8 @@ ClassMethod OnPage() As %Status
 	<script src="/csp/broker/cspxmlhttp.js"></script>
 
 	<script type="text/javascript">
+	var DTL_MAP_PAGE = '#(..#DTLMapPage)#';
+
 	function exportDTLs() {
 		var tExportSuggestion = '#($replace(##class(%File).NormalizeFilename($system.Util.InstallDirectory()_"/UserDocumentation"), "\", "\\"))#';
 		var serverExportDir = window.prompt('Enter a folder on the server for the export:', tExportSuggestion);
@@ -108,7 +112,6 @@ ClassMethod OnPage() As %Status
 		$(scope).find('.dataLinkEditor').each(function () {
 			const doc = this.parentElement.getAttribute('data-doc');
 			if (!doc) return;
-
 			this.setAttribute('href', 'EnsPortal.DTLEditor.zen?DT=' + encodeURIComponent(doc) + '.dtl');
 			this.setAttribute('target', '_blank');
 		});
@@ -116,8 +119,14 @@ ClassMethod OnPage() As %Status
 		$(scope).find('.dataLinkViewer').each(function () {
 			const doc = this.parentElement.getAttribute('data-doc');
 			if (!doc) return;
-
 			this.setAttribute('href', '?DTL=' + encodeURIComponent(doc));
+			this.setAttribute('target', '_blank');
+		});
+
+		$(scope).find('.dataLinkMap').each(function () {
+			const doc = this.parentElement.getAttribute('data-doc');
+			if (!doc) return;
+			this.setAttribute('href', DTL_MAP_PAGE + '?highlight=' + encodeURIComponent(doc));
 			this.setAttribute('target', '_blank');
 		});
 	}
@@ -141,12 +150,16 @@ ClassMethod OnPage() As %Status
 			e.stopPropagation();
 		});
 
-		// delegated hover
+		// delegated hover — mappable DTLs show the Map, others show the detail view
 		$('#DTLList tbody').on('mouseenter', '.dataField', function () {
 			const doc = this.getAttribute('data-doc');
 			if (!doc) return;
 
-			$('#tooltip-iframe').attr('src', '?DTL=' + encodeURIComponent(doc));
+			var tooltipSrc = this.getAttribute('data-mappable')
+				? DTL_MAP_PAGE + '?highlight=' + encodeURIComponent(doc)
+				: '?DTL=' + encodeURIComponent(doc);
+
+			$('#tooltip-iframe').attr('src', tooltipSrc);
 			$('#iframe-tooltip-container').show();
 		});
 
@@ -241,7 +254,32 @@ ClassMethod OnPage() As %Status
 				</tr>
 			</thead>
 			<tbody>>
-		
+
+			// Build lookup of registered entry-point DTL classes (both directions).
+			// These are the only DTLs that make sense to open in the Map.
+			kill tEntryPoints
+			set tCustomPkg = ##class(HS.FHIR.DTL.Util.API.ExecDefinition).GetCustomDTLPackage()
+			for tDirIdx = 1:1:2 {
+				set tSrcVer = $case(tDirIdx, 1:"SDA3", :"vR4")
+				set tTgtVer = $case(tDirIdx, 1:"vR4", :"SDA3")
+				set tEPSrc = ""
+				for {
+					set tEPSrc = $order(^HS.XF.Transform(tSrcVer, tTgtVer, tEPSrc))
+					quit:tEPSrc=""
+					set tEPDTL = ""
+					for {
+						set tEPDTL = $order(^HS.XF.Transform(tSrcVer, tTgtVer, tEPSrc, tEPDTL))
+						quit:tEPDTL=""
+						set tEffective = tEPDTL
+						if tCustomPkg '= "" {
+							set tResolved = ##class(HS.FHIR.DTL.Util.API.ExecDefinition).GetDTLPackageAndClass(tEPDTL)
+							if tResolved '= "" { set tEffective = tResolved }
+						}
+						set tEntryPoints(tEffective) = 1
+					}
+				}
+			}
+
 			set tRS = ##class(%ResultSet).%New()
 			do tRS.Prepare("select Name as tDTLClass,ClassCompileError,ClassDefinitionError from %Dictionary.CompiledClass "_
 							"where Name like ? and PrimarySuper like '%Ens.DataTransformDTL%'")
@@ -271,10 +309,12 @@ ClassMethod OnPage() As %Status
 				#dim tTargetType	= $classmethod(tDTLClass, "GetTargetType")
 				#dim tTargetDocType	= $classmethod(tDTLClass, "GetTargetDocType")
 				
+				#dim tMappable = $data(tEntryPoints(tDTLClass))
 				&html<
 				<tr class="result">
-					<td class="dataField" data-doc="#(tDTLClass)#">
+					<td class="dataField" data-doc="#(tDTLClass)#" #($select(tMappable:"data-mappable=""1""",1:""))#>
 						<a class="dataLinkEditor">&#9998;</a>
+						#($select(tMappable:"<a class=""dataLinkMap"" title=""Open in DTL Map""></a>",1:""))#
 						<a class="dataLinkViewer">#(tDTLClass)#</a>
 					</td>
 					<td class="sourcetype">#(tSourceType)#>

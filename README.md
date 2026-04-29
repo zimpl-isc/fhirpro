@@ -1,5 +1,5 @@
 # zimpliFHIR Profiling Toolkit for HealthShare
-*2026-04-17 • Brandon Thomas*
+*2026-04-29 • Brandon Thomas*
 
 ## Contents
 - [Overview](#overview)
@@ -35,6 +35,7 @@ It supports:
 ### 🔄 Transformation Support
 * Compare SDA3 and FHIR representations  
 * Inspect and debug DTL transformations  
+* Visualise the full subtransform call chain for any entry-point DTL  
 
 ### 🕒 Temporal Visualization
 * Timeline view of FHIR data (encounters, observations, medications, procedures, conditions)
@@ -75,7 +76,11 @@ It supports:
 
 ---
 ![DTL Viewer with search and filter capabilities](README_img/zimpliFHIR-DTLViewer.png)
-*Extensible DTL Viewer with search, filter and export capabilities*
+*Extensible DTL Viewer with search, filter and export capabilities. Entry-point DTLs show a map icon — click it to open the DTL Map.*
+
+---
+![DTL Map — interactive call-chain graph for a DTL transformation](README_img/zimpliFHIR-DTLMap.png)
+*DTL Map — interactive graph showing the full subtransform call chain for a selected SDA type. Entry-point, custom, base, and external classes are colour-coded. Click any node to open an inline inspector.*
 
 ---
 ![FHIR Validation Workbench](README_img/zimpliFHIR-workbench.png)
@@ -259,6 +264,10 @@ Use at your own risk.
 - Extended **FHIR Relationship Graph**:
   - resource-type grouping
   - support for external FHIR validation services (REST)
+- New **DTL Map** — interactive call-chain graph for DTL transformations:
+  - supports outbound (SDA→FHIR) and inbound (FHIR→SDA) directions
+  - colour-coded node groups: entry-point, custom, base, external
+  - inline inspector with parent-chip navigation; entry-point DTLs link directly from DTL Viewer
 - Various usability and interaction improvements
 
 ### Roadmap
