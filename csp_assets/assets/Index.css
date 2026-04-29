@@ -259,13 +259,70 @@ body {
 
 #LoadingMessage {
 	display: none;
-	background: rgba(248, 250, 252, 0.92);
+	background: rgba(248, 250, 252, 0.88);
 	z-index: 180;
-	color: #334155;
-	font-size: 18px;
-	font-weight: 600;
 	align-items: center;
 	justify-content: center;
+}
+
+#LoadingContent {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 20px;
+	top: 42%;
+  	position: relative;
+}
+
+#LoadingLogo {
+	width: 72px;
+	height: 72px;
+	opacity: 0.28;
+}
+
+#LoadingLogo .lc-center {
+	fill: #333695;
+}
+
+#LoadingLogo .lc-outer {
+	fill: #333695;
+	animation: lc-pulse 1.2s ease-in-out infinite;
+}
+
+#LoadingLogo .lc-line {
+	stroke: #94a3b8;
+	stroke-width: 2.4;
+	fill: none;
+}
+
+#LoadingLogo .lc-o1 { animation-delay: 0.0s; }
+#LoadingLogo .lc-o2 { animation-delay: 0.2s; }
+#LoadingLogo .lc-o3 { animation-delay: 0.4s; }
+#LoadingLogo .lc-o4 { animation-delay: 0.6s; }
+#LoadingLogo .lc-o5 { animation-delay: 0.8s; }
+#LoadingLogo .lc-o6 { animation-delay: 1.0s; }
+
+@keyframes lc-pulse {
+	0%, 100% { opacity: 0.25; }
+	50%       { opacity: 1;    }
+}
+
+#LoadingStatus {
+	font-size: 13px;
+	font-weight: 500;
+	color: #94a3b8;
+	text-align: center;
+	min-height: 1.4em;
+}
+
+#LoadingStatus.is-slow {
+	color: #c2410c;
+}
+
+#LoadingStatus a {
+	color: #3b82f6;
+	text-decoration: underline;
+	cursor: pointer;
 }
 
 #PatientButton {
@@ -291,10 +348,6 @@ body {
 	color: #64748b;
 }
 
-.blink {
-	animation: blink 1s linear infinite;
-}
-
 /* Adds a shell to external pages, in line with general styling*/
 .extShell {
 	padding: 16px;
@@ -305,8 +358,3 @@ body {
   	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
-@keyframes blink {
-	50% {
-		opacity: 0.45;
-	}
-}

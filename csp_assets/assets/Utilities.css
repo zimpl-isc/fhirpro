@@ -1,0 +1,174 @@
+html, body {
+	margin: 0; padding: 0;
+	background: #f5f7fb;
+	box-sizing: border-box;
+	font-family: Arial, Helvetica, sans-serif;
+	color: #1f2937;
+}
+*, *::before, *::after { box-sizing: inherit; }
+
+#pageShell { padding: 16px; }
+
+.card {
+	background: #fff;
+	border: 1px solid #e5e7eb;
+	border-radius: 12px;
+	box-shadow: 0 1px 3px rgba(0,0,0,.06);
+	margin-bottom: 12px;
+}
+
+.pageHeader { padding: 14px 18px; }
+.pageTitle  { margin: 0; font-size: 20px; font-weight: 600; color: #1f2937; }
+
+/* Tool tab bar */
+.toolbarCard { padding: 8px 14px; }
+.toolTabs    { display: flex; gap: 4px; }
+
+.toolTab {
+	padding: 6px 16px;
+	border: 1px solid transparent;
+	border-radius: 8px;
+	background: none;
+	font-size: 13px; font-weight: 600;
+	color: #64748b;
+	cursor: pointer;
+}
+.toolTab:hover  { background: #f1f5f9; color: #334155; }
+.toolTab.active {
+	background: #eff6ff;
+	border-color: #bfdbfe;
+	color: #1d4ed8;
+}
+
+/* Tool panel */
+.toolPanel { padding: 0; overflow: hidden; }
+
+.toolPanelInner {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	height: calc(100vh - 210px);
+	min-height: 320px;
+}
+
+/* Panes */
+.inputPane,
+.outputPane {
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+}
+
+.inputPane  { border-right: 1px solid #e5e7eb; }
+
+.paneHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 10px 14px;
+	border-bottom: 1px solid #e5e7eb;
+	background: #f8fafc;
+	flex-shrink: 0;
+}
+
+.paneTitle {
+	font-size: 12px; font-weight: 700;
+	text-transform: uppercase; letter-spacing: 0.04em;
+	color: #64748b;
+}
+
+.paneActions {
+	display: flex; align-items: center; gap: 6px;
+}
+
+.paneActions button {
+	border: 1px solid #d1d5db; border-radius: 6px;
+	padding: 4px 10px; font-size: 12px;
+	background: #fff; color: #374151; cursor: pointer;
+}
+.paneActions button:hover { background: #f1f5f9; }
+.paneActions button.primaryButton {
+	background: #3b82f6; border-color: #2563eb; color: #fff;
+}
+.paneActions button.primaryButton:hover { background: #2563eb; }
+
+/* Input textarea */
+#InputArea {
+	flex: 1 1 auto;
+	width: 100%;
+	resize: none;
+	border: none;
+	outline: none;
+	padding: 12px 14px;
+	font-family: Consolas, Monaco, monospace;
+	font-size: 12px;
+	line-height: 1.5;
+	color: #1e293b;
+	background: #fff;
+}
+
+/* Output area */
+#OutputArea {
+	flex: 1 1 auto;
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	overflow: auto;
+	position: relative;
+}
+
+.outputEmpty {
+	flex: 1 1 auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 13px;
+	color: #94a3b8;
+}
+
+.outputText {
+	flex: 1 1 auto;
+	padding: 12px 14px;
+	font-family: Consolas, Monaco, monospace;
+	font-size: 12px;
+	line-height: 1.5;
+	color: #1e293b;
+	white-space: pre-wrap;
+	word-break: break-word;
+	overflow: auto;
+}
+
+.outputImage {
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
+	padding: 12px;
+	margin: auto;
+}
+
+.outputPdf {
+	flex: 1 1 auto;
+	width: 100%;
+	height: 100%;
+	border: none;
+}
+
+/* Detected type badge */
+.detectedBadge {
+	font-size: 11px; font-weight: 700;
+	padding: 2px 8px; border-radius: 10px;
+	background: #f1f5f9; color: #475569;
+}
+.detectedBadge.is-text  { background: #dcfce7; color: #166534; }
+.detectedBadge.is-image { background: #ede9fe; color: #6d28d9; }
+.detectedBadge.is-pdf   { background: #fef3c7; color: #92400e; }
+.detectedBadge.is-error { background: #fee2e2; color: #991b1b; }
+
+.downloadLink {
+	font-size: 12px; color: #3b82f6;
+	text-decoration: none; white-space: nowrap;
+	border: 1px solid #bfdbfe; border-radius: 6px;
+	padding: 4px 10px; background: #eff6ff;
+}
+.downloadLink:hover { background: #dbeafe; text-decoration: none; }
+
+.is-hidden { display: none !important; }

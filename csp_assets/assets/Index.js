@@ -1,5 +1,5 @@
 $(document).ready(function () {
-	setCurrentItemInTitle(getMpiid());
+	setCurrentItemInTitle();
 	refreshPatientNav();
 	$('.list_item').on('click', function () { toggle(this.id); });
 
@@ -11,16 +11,78 @@ $(document).ready(function () {
 	$(document).on('click', function () {
 		$('#PatientDropdown').hide();
 	});
+
+	window.addEventListener('message', function (e) {
+		if (e.data && e.data.type === 'patientLoaded' && _pendingPage) {
+			var dest = _pendingPage;
+			_pendingPage = null;
+			toggle(dest);
+		}
+	});
 });
 
 
+var _loadingTimer = null;
+var _loadingTarget = null;
+var _pendingPage = null;
+
+var PATIENT_GATED = {
+	'Compare_SDA3_to_FHIR': true,
+	'FHIR_Relationship_Graph': true,
+	'Patient_Journey': true
+};
+
 function mainFrameReady() {
+	clearLoadingTimer();
 	$('#LoadingMessage').hide();
+	$('#LoadingStatus').text('').removeClass('is-slow');
 	refreshPatientNav();
 }
 
+function clearLoadingTimer() {
+	if (_loadingTimer) { clearTimeout(_loadingTimer); _loadingTimer = null; }
+}
+
+function startLoadingTimer(targetUrl) {
+	clearLoadingTimer();
+	_loadingTarget = targetUrl;
+	_loadingTimer = setTimeout(function () {
+		_loadingTimer = null;
+		$('#LoadingStatus')
+			.addClass('is-slow')
+			.html('Taking a while \u2014 the server may be busy. <a onclick="retryLoad()">Retry</a>');
+	}, 10000);
+}
+
+window.retryLoad = function () {
+	if (_loadingTarget) {
+		$('#LoadingStatus').text('').removeClass('is-slow');
+		startLoadingTimer(_loadingTarget);
+		$('#MainFrame').attr('src', _loadingTarget);
+	}
+};
+
 function toggle(activeElementId, queryParams) {
+	if (PATIENT_GATED[activeElementId] && !getMpiid()) {
+		_pendingPage = activeElementId;
+		toggle('Configure_Datasource');
+		var frame = document.getElementById('MainFrame');
+		var send = function () {
+			frame.contentWindow.postMessage({ type: 'needPatient', page: activeElementId }, '*');
+		};
+		if (frame.contentDocument && frame.contentDocument.readyState === 'complete') {
+			send();
+		} else {
+			frame.addEventListener('load', function onLoad() {
+				frame.removeEventListener('load', onLoad);
+				send();
+			});
+		}
+		return;
+	}
+
 	$('#LoadingMessage').css('display', 'flex');
+	$('#LoadingStatus').text('').removeClass('is-slow');
 
 	$('.list_item').removeClass('active');
 	$('#' + activeElementId).addClass('active');
@@ -35,6 +97,7 @@ function toggle(activeElementId, queryParams) {
 	}
 
 	$('#MainFrame').attr('src', targetUrl);
+	startLoadingTimer(targetUrl);
 
 	if (
 		activeElementId === 'Management_Portal' ||
@@ -50,7 +113,7 @@ function toggle(activeElementId, queryParams) {
 
 	$('#PageName').html(activeElementId.replace(/\_/g, ' '));
 	refreshPatientNav();
-	setCurrentItemInTitle(getMpiid());
+	setCurrentItemInTitle();
 }
 
 function openAbout() {
@@ -58,7 +121,7 @@ function openAbout() {
 	$('#PatientDropdown').hide();
 }
 
-function setCurrentItemInTitle(mpiid) {
+function setCurrentItemInTitle() {
 	refreshPatientNav();
 }
 

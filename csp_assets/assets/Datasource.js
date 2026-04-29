@@ -12,6 +12,12 @@ $(document).ready(function () {
 		showCurrent(getMpiid());
 	}
 
+	window.addEventListener('message', function (e) {
+		if (e.data && e.data.type === 'needPatient') {
+			$('#NeedPatientBanner').removeClass('is-hidden');
+		}
+	});
+
 	$('textarea').on('mousedown', function () {
 		$('#CurrentMPIID').html('NEW');
 		$('#CurrentSource').html('textarea');
@@ -120,14 +126,19 @@ function listStorages() {
 		}
 	});
 }
+function notifyPatientLoaded() {
+	$('#NeedPatientBanner').addClass('is-hidden');
+	window.parent.postMessage({ type: 'patientLoaded' }, '*');
+}
+
 function setCurrent(storageType, mpiid) {
 
 	console.log("setCurrent(" + storageType + ',' + mpiid + ')');
 	setStorage(storageType);
 	setMpiid(mpiid);
 
-	var parentWindow = window.parent;
-	parentWindow.setCurrentItemInTitle(mpiid);
+	window.parent.setCurrentItemInTitle();
+	if (mpiid) { notifyPatientLoaded(); }
 
 	showCurrent(mpiid);
 }

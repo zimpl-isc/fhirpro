@@ -33,6 +33,14 @@ ClassMethod OnPage() As %Status
 <body>
 <div id="pageShell">
 
+    <div id="NeedPatientBanner" class="needPatientBanner is-hidden">
+        <div class="needPatientText">
+            <strong>No patient selected.</strong>
+            Choose a patient from session or local storage, search by MRN/MPIID above, or paste data directly into the preview boxes.
+        </div>
+        <button class="needPatientClose" onclick="document.getElementById('NeedPatientBanner').classList.add('is-hidden')" aria-label="Dismiss">&#10005;</button>
+    </div>
+
     <div id="fetchCard" class="card">
         <div class="cardTitle">Fetch patient data</div>
         <form id="fetchForm" onsubmit="fetchData(); return false;">

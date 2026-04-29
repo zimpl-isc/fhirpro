@@ -44,6 +44,7 @@ ClassMethod OnPage() As %Status
 			"DTL_Viewer": "#(tViewerClass)#",
 			"DTL_Map": "HS.Local.zimpli.fhir.UI.DTLMap.cls",
 			"Find_In_Files": "HS.Local.zimpli.fhir.UI.FindInFiles.cls",
+			"Utilities": "HS.Local.zimpli.fhir.UI.Utilities.cls",
 			"CodeSystem_Importer": "HS.Local.zimpli.fhir.UI.CodeSystemImporter.cls",
 			"HL7_Annotations": "HS.UI.HL7.cls",
 			"Registry": "../hsregistry/HS.UI.Home.cls"
@@ -94,7 +95,26 @@ ClassMethod OnPage() As %Status
 </div>
 
 <iframe id="MainFrame" class="frame" src="HS.Local.zimpli.fhir.UI.Datasource.cls" onload="mainFrameReady()"></iframe>
-<div id="LoadingMessage" class="frame"><span class="blink">Loading...</span></div>
+<div id="LoadingMessage" class="frame">
+	<div id="LoadingContent">
+		<svg id="LoadingLogo" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+			<circle cx="24" cy="24" r="4.2" class="lc-center"/>
+			<circle cx="24" cy="8"  r="4" class="lc-outer lc-o1"/>
+			<circle cx="37.9" cy="16" r="4" class="lc-outer lc-o2"/>
+			<circle cx="37.9" cy="32" r="4" class="lc-outer lc-o3"/>
+			<circle cx="24" cy="40" r="4" class="lc-outer lc-o4"/>
+			<circle cx="10.1" cy="32" r="4" class="lc-outer lc-o5"/>
+			<circle cx="10.1" cy="16" r="4" class="lc-outer lc-o6"/>
+			<line x1="24" y1="12.5" x2="24" y2="19"     class="lc-line" stroke-linecap="round"/>
+			<line x1="34.1" y1="18.3" x2="27.8" y2="21.8" class="lc-line" stroke-linecap="round"/>
+			<line x1="34.1" y1="29.7" x2="27.8" y2="26.2" class="lc-line" stroke-linecap="round"/>
+			<line x1="24" y1="35.5" x2="24" y2="29"     class="lc-line" stroke-linecap="round"/>
+			<line x1="13.9" y1="29.7" x2="20.2" y2="26.2" class="lc-line" stroke-linecap="round"/>
+			<line x1="13.9" y1="18.3" x2="20.2" y2="21.8" class="lc-line" stroke-linecap="round"/>
+		</svg>
+		<div id="LoadingStatus"></div>
+	</div>
+</div>
 
 <div class="side_menu">
 	<div class="container">
@@ -200,9 +220,16 @@ ClassMethod OnPage() As %Status
 					<path d="M17.5986 13.6868C17.2639 13.4428 16.7947 13.5165 16.5508 13.8513C16.3069 14.1861 16.3806 14.6552 16.7154 14.8991L17.5986 13.6868ZM19.0584 16.6061C19.3931 16.85 19.8623 16.7764 20.1062 16.4416C20.3501 16.1068 20.2764 15.6377 19.9416 15.3938L19.0584 16.6061ZM7.5 12.7499C7.91421 12.7499 8.25 12.4142 8.25 11.9999C8.25 11.5857 7.91421 11.2499 7.5 11.2499V12.7499ZM5.5 11.2499C5.08579 11.2499 4.75 11.5857 4.75 11.9999C4.75 12.4142 5.08579 12.7499 5.5 12.7499V11.2499ZM7.5 15.7499C7.91421 15.7499 8.25 15.4142 8.25 14.9999C8.25 14.5857 7.91421 14.2499 7.5 14.2499V15.7499ZM5.5 14.2499C5.08579 14.2499 4.75 14.5857 4.75 14.9999C4.75 15.4142 5.08579 15.7499 5.5 15.7499V14.2499ZM8.5 9.74994C8.91421 9.74994 9.25 9.41415 9.25 8.99994C9.25 8.58573 8.91421 8.24994 8.5 8.24994V9.74994ZM5.5 8.24994C5.08579 8.24994 4.75 8.58573 4.75 8.99994C4.75 9.41415 5.08579 9.74994 5.5 9.74994V8.24994ZM16.7154 14.8991L19.0584 16.6061L19.9416 15.3938L17.5986 13.6868L16.7154 14.8991ZM7.5 11.2499H5.5V12.7499H7.5V11.2499ZM7.5 14.2499H5.5V15.7499H7.5V14.2499ZM8.5 8.24994H5.5V9.74994H8.5V8.24994Z" fill="#000000"/>
 				</svg></li>
 
+			<li id="Utilities" class="list_item">
+				<svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<title>Utilities</title>
+					<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+				</svg>
+			</li>
+
 			<li class="separator" aria-hidden="true"></li>
 
-			<li id="Management_Portal" class="list_item">		
+			<li id="Management_Portal" class="list_item">
 				<svg width="25px" height="25px" id="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 160.3">
 					<title>zimpliFHIR Production</title>
 					<defs><style>.cls-1{fill:#333695;}.cls-2{fill:#00b5af;}</style></defs>
