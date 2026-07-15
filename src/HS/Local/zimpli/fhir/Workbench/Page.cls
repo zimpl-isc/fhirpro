@@ -21,12 +21,7 @@ ClassMethod HandleAPI(pAction As %String) As %Status
     Set sc = $$$OK
 
     Try {
-        If pAction="reload" {
-            Set mpiid = $Get(%request.Data("mpiid",1))
-            Set sc = ##class(HS.Local.zimpli.fhir.Workbench.ODS).ReloadOnly(mpiid,.result)
-        }
-
-        ElseIf pAction="persistIssues" {
+        If pAction="persistIssues" {
             Set mpiid = $Get(%request.Data("mpiid",1))
             Set validationConvention = $Get(%request.Data("validationConvention",1))
             Set runId = $Get(%request.Data("runId",1))
@@ -250,8 +245,6 @@ ClassMethod RenderShell()
         <label>Validation Profile
             <select id="validationConvention"></select>
         </label>
-        <button onclick="reloadPatient()" title="Trigger async ODS reload job and clear all validation issues for this patient">🔄 Reload in ODS (async)</button>
-        <button onclick="refreshData()" title="Fetch latest FHIR/SDA from server and save as new timestamped workbench session">📥 Refresh from Server</button>
         <button onclick="validateCurrentData()" title="Send current FHIR to validator and persist results">✓ Validate</button>
         <button onclick="loadIssues()" title="Reload validation issues from database">🔍 Refresh Issues</button>
         <span id="status"></span>
@@ -965,100 +958,6 @@ async function api(action, params = {}, body = null) {
 }
 
 // Workflow functions
-async function reloadPatient() {
-    if (!mpiidNumeric) {
-        setStatus("No patient selected");
-        return false;
-    }
-
-    setStatus("Reloading patient in ODS...");
-
-    const reloadResp = await api("reload", { mpiid: mpiidNumeric });
-    if (!reloadResp.ok) {
-        setStatus("Reload failed: " + (reloadResp.error || "unknown error"));
-        return false;
-    }
-
-    currentRunId = reloadResp.runId || "";
-
-    // Start countdown timer
-    let countdown = 10;
-    setStatus(`Asyncronous reload started in ODS. Refresh from Server in ${countdown}s...`);
-
-    const countdownInterval = setInterval(() => {
-        countdown--;
-        if (countdown > 0) {
-            setStatus(`Asyncronous reload started in ODS. Refresh from Server in ${countdown}s...`);
-        } else {
-            clearInterval(countdownInterval);
-            setStatus("Asyncronous reload complete. Ready to Refresh from Server - GO! 🚀");
-        }
-    }, 1000);
-
-    return true;
-}
-
-async function refreshData() {
-    if (!mpiidNumeric) {
-        setStatus("No numeric MPIID available - load FHIR data first");
-        return false;
-    }
-
-    setStatus("Fetching FHIR from server...");
-    currentFHIR = await fetchFHIR(mpiidNumeric);
-
-    setStatus("Fetching SDA from server...");
-    currentSDA = await fetchSDA(mpiidNumeric);
-
-    // Re-extract numeric MPIID in case data changed
-    if (currentFHIR) {
-        mpiidNumeric = extractMpiidFromFHIR(currentFHIR);
-    }
-
-    // Create a new timestamped workbench session label (compact format: MMDD_HHMM)
-    const now = new Date();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const timestamp = `${month}${day}_${hours}${minutes}`;
-    const newLabel = mpiidNumeric + "_wb_" + timestamp;
-
-    // Update the current label to point to this new session
-    mpiidLabel = newLabel;
-    document.getElementById('mpiidDisplay').textContent = newLabel;
-
-    // Update shared storage to use this new label
-    setMpiid(newLabel);
-
-    // Store using StorageHandler functions (uses FHIR#<mpiid> and SDA#<mpiid> format)
-    if (currentFHIR) {
-        setFhirData(JSON.stringify(currentFHIR));
-    }
-    if (currentSDA) {
-        setSdaData(currentSDA);
-    }
-
-    // Reset workbench view - clear selections and show old issues with warning
-    selectedResourceType = null;
-    selectedResourceId = null;
-    selectedIssueId = null;
-    document.getElementById("issueList").innerHTML = '<p class="muted">Select a resource to view issues</p>';
-    document.getElementById("issueCount").textContent = "Select a resource";
-    document.getElementById("investigationPane").innerHTML = '<p class="muted">Select an issue to investigate</p>';
-
-    // Load existing issues for this numeric MPIID (they're still valid)
-    await loadIssues();
-
-    if (hasIncompleteResult(currentFHIR)) {
-        setStatus("⚠️ Data refreshed (incomplete). Showing OLD validation issues. Re-validate to update!");
-    } else {
-        setStatus("✓ Data refreshed. Saved as: " + newLabel + ". Showing OLD validation issues - re-validate to update!");
-    }
-
-    return true;
-}
-
 async function validateCurrentData() {
     // Use numeric MPIID for persisting issues (so they're shared across all snapshots)
     if (!mpiidNumeric) {
@@ -1131,12 +1030,6 @@ async function fetchFHIR(mpiid) {
     const url = window.FHIRWorkbenchConfig.fhirStreamServer + "?MPIID=" + encodeURIComponent(mpiid);
     const resp = await fetch(url, { cache: "no-cache" });
     return await resp.json();
-}
-
-async function fetchSDA(mpiid) {
-    const querystr = "?MPIID=" + encodeURIComponent(mpiid);
-    const resp = await fetch(window.FHIRWorkbenchConfig.sdaStreamServer + querystr, { cache: "no-cache" });
-    return await resp.text();
 }
 
 async function validateFHIR(profile, bundle) {
@@ -1919,7 +1812,7 @@ async function openAIPromptForDTL(dtlClass) {
     if (!fhirResource) {
         console.error("Could not find resource", selectedResourceType, selectedResourceId);
         console.log("Available resources:", currentFHIR?.entry?.map(e => `${e.resource?.resourceType}/${e.resource?.id}`));
-        alert(`Could not find FHIR resource ${selectedResourceType}/${selectedResourceId} in current data.\n\nThis usually means the validation issues are stale after a "Refresh from Server". Click the "✓ Validate" button to re-validate with current resource IDs.`);
+        alert(`Could not find FHIR resource ${selectedResourceType}/${selectedResourceId} in current data.\n\nThis usually means the validation issues are stale. Click the "✓ Validate" button to re-validate with current resource IDs.`);
         return;
     }
 
@@ -2023,7 +1916,7 @@ async function openAIPromptAll() {
     if (!fhirResource) {
         console.error("Could not find resource", selectedResourceType, selectedResourceId);
         console.log("Available resources:", currentFHIR?.entry?.map(e => `${e.resource?.resourceType}/${e.resource?.id}`));
-        alert(`Could not find FHIR resource ${selectedResourceType}/${selectedResourceId} in current data.\n\nThis usually means the validation issues are stale after a "Refresh from Server". Click the "✓ Validate" button to re-validate with current resource IDs.`);
+        alert(`Could not find FHIR resource ${selectedResourceType}/${selectedResourceId} in current data.\n\nThis usually means the validation issues are stale. Click the "✓ Validate" button to re-validate with current resource IDs.`);
         return;
     }
 
@@ -2073,11 +1966,22 @@ var BackendTools = {
         return tool ? tool.url : null;
     },
 
+    getToolNS: function(toolCode) {
+        var tool = this.config.find(function(t) { return t.code === toolCode; });
+        return tool ? (tool.ns || '') : '';
+    },
+
     buildDTLEditorLink: function(dtlClass) {
-        var baseURL = this.getToolURL('DTLEditor');
-        if (!baseURL) return null;
+        var tool = this.config.find(function(t) { return t.code === 'DTLEditor'; });
+        if (!tool) return null;
+        var prefs = {};
+        try { prefs = JSON.parse(localStorage.getItem('zimplifhir.prefs') || '{}'); } catch(e) {}
+        var ns = tool.ns || '';
+        if (prefs.dtlEditorUI === 'new' && tool.urlNew) {
+            return tool.urlNew + '#/?' + (ns ? '$NAMESPACE=' + encodeURIComponent(ns) + '&' : '') + 'DTL=' + encodeURIComponent(dtlClass);
+        }
         var dtlFile = dtlClass.endsWith('.dtl') ? dtlClass : dtlClass + '.dtl';
-        return baseURL + '?DT=' + encodeURIComponent(dtlFile);
+        return tool.url + (ns ? '?$NAMESPACE=' + encodeURIComponent(ns) + '&DT=' : '?DT=') + encodeURIComponent(dtlFile);
     },
 
     buildDTLViewerLink: function(dtlClass) {
@@ -2119,6 +2023,7 @@ var BackendTools = {
                         icon: '🛠️'
                     });
                 }
+
 
                 var viewURL = self.buildDTLViewerLink(dtl.effectiveDTL);
                 if (viewURL) {

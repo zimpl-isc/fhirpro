@@ -265,22 +265,10 @@ function wireTimelineEvents() {
 	timeline.on('doubleClick', function (props) {
 		if (!props || !props.item) return;
 
-		var id = props.item;
-		var resource = fhirResource[fhirRef[id]];
-		if (!resource) return;
+		var item = allItems.find(function (i) { return i.id === props.item; });
+		if (!item || !item.fullUrl) return;
 
-		var fullUrl = resource.fullUrl || "";
-		var resourceId = resource.resource && resource.resource.id;
-
-		if (fullUrl) {
-			window.parent.toggle("Compare_SDA3_to_FHIR", {
-				fullUrl: fullUrl
-			});
-		} else if (resourceId) {
-			window.parent.toggle("Compare_SDA3_to_FHIR", {
-				resourceId: resourceId
-			});
-		}
+		window.parent.toggle("Compare_SDA3_to_FHIR", { fullUrl: item.fullUrl });
 	});
 
 	timeline.on('rangechange', function () {
@@ -500,6 +488,7 @@ function parse() {
 	selectedEncounterId = null;
 	initialWindowSet = false;
 
+	bundle.entry.forEach(cacheEntry);
 	bundle.entry.forEach(processEntry);
 
 	console.log("Total timeline items:", allItems.length);
@@ -582,19 +571,17 @@ function calculateAge(birthdate) {
 }
 
 function cacheEntry(entry) {
-	if (fhirResource[entry.resource.id] !== undefined) {
-		console.log(
-			'<WARNING> Duplicate resource ID found in ',
-			'1. ' + fhirResource[entry.resource.id].resourceType + '/' + entry.resource.id,
-			'2. ' + entry.resource.resourceType + '/' + entry.resource.id
-		);
+	var key = entry.resource.resourceType + '/' + entry.resource.id;
+
+	if (fhirResource[key] !== undefined) {
+		console.log('<WARNING> Duplicate resource found: ' + key);
 	}
 
 	if (entry.fullUrl) {
 		entry.resource.fullUrl = entry.fullUrl;
 	}
 
-	fhirResource[entry.resource.id] = entry.resource;
+	fhirResource[key] = entry.resource;
 }
 
 function ensureMinimumDuration(tItem, minutes) {
@@ -631,21 +618,21 @@ function processEntry(entry) {
 		return;
 	}
 
-	cacheEntry(entry);
 	var resource = entry.resource;
 
 	var tItemId = allItems.length + 1;
 	var tItem = {
 		id: tItemId,
-		resourceId: resource.id,
-		resourceType: resource.resourceType
+		resourceId: resource.resourceType + '/' + resource.id,
+		resourceType: resource.resourceType,
+		fullUrl: entry.fullUrl || (resource.resourceType + '/' + resource.id)
 	};
 
 	if (resource.encounter && resource.encounter.reference) {
 		tItem.encounterRef = resource.encounter.reference;
 	}
 
-	fhirRef[tItemId] = resource.id;
+	fhirRef[tItemId] = resource.resourceType + '/' + resource.id;
 
 	if (resource.resourceType == 'Patient') {
 		// patient identity shown elsewhere
@@ -701,7 +688,8 @@ function processEntry(entry) {
 		} else if (encounterType == 'Einrichtungskontakt') {
 			tItem.group = 'EncounterFall';
 			tItem.className = 'enc-fall';
-			tItem.content = '\u{1F3E2} Episode #' + resource.identifier[0].value + ' status:' + resource.status;
+			tItem.encounterNo = (resource.identifier && resource.identifier[0]) ? resource.identifier[0].value : resource.id;
+			tItem.content = '\u{1F3E2} Episode #' + tItem.encounterNo + ' status:' + resource.status;
 
 			var startText = formatDateTime(tItem.start);
 			var endText = formatDateTime(tItem.end);
@@ -716,7 +704,7 @@ function processEntry(entry) {
 		} else if (encounterType == 'Abteilungskontakt') {
 			tItem.group = 'EncounterAK';
 			tItem.className = 'enc-ak';
-			tItem.content = (resource.serviceProvider ? resource.serviceProvider.display : 'AK') +
+			tItem.content = '\uD83C\uDFE5 ' + (resource.serviceProvider ? resource.serviceProvider.display : 'AK') +   // 🏥
 				(resource.serviceType ? ' (' + resource.serviceType.coding[0].display + ')' : '');
 
 		} else if (encounterType == 'Versorgungsstellenkontakt') {
@@ -749,19 +737,30 @@ function processEntry(entry) {
 	} else if (resource.resourceType == 'Condition') {
 		tItem.start = resource.recordedDate;
 		tItem.group = 'Condition';
-		tItem.content = resource.code.coding[0].display;
+		tItem.content = '\uD83E\uDE7A ' + resource.code.coding[0].display;   // 🩺
 		tItem.title = '[' + resource.code.coding[0].code + '] ' + resource.code.coding[0].display;
 		allItems.push(tItem);
 
 	} else if (resource.resourceType == 'Procedure') {
 		tItem.start = resource.performedDateTime;
 		tItem.group = 'Procedure';
-		tItem.content = resource.code.coding[0].display;
+		tItem.content = '\u2695\uFE0F ' + resource.code.coding[0].display;   // ⚕️
 		tItem.title = '[' + resource.code.coding[0].code + '] ' + resource.code.coding[0].display;
 		allItems.push(tItem);
 
 	} else if (resource.resourceType == 'Observation') {
-		tItem.start = resource.effectiveDateTime;
+		var isVitalstatusObs = resource.meta && resource.meta.profile &&
+			resource.meta.profile.some(function (p) { return p.indexOf('Vitalstatus') !== -1; });
+
+		if (isVitalstatusObs && resource.encounter && resource.encounter.reference) {
+			var ekResource = fhirResource[resource.encounter.reference];
+			tItem.start = (ekResource && ekResource.period && ekResource.period.end)
+				? ekResource.period.end
+				: resource.effectiveDateTime;
+		} else {
+			tItem.start = resource.effectiveDateTime;
+		}
+
 		tItem.group = 'Observation';
 		tItem.content = getObservationString(resource);
 
@@ -965,7 +964,7 @@ function getEncounterParentId(resource) {
 
 	var ref = resource.partOf.reference;
 	if (ref.indexOf('Encounter/') === 0) {
-		return ref.split('/')[1];
+		return ref; // already "Encounter/uuid"
 	}
 
 	return null;
@@ -975,7 +974,7 @@ function normalizeEncounterReference(ref) {
 	if (!ref) return null;
 
 	if (ref.indexOf('Encounter/') === 0) {
-		return ref.split('/')[1];
+		return ref; // already "Encounter/uuid"
 	}
 
 	return null;
@@ -1015,10 +1014,7 @@ function getLatestEncounterScopeId() {
 }
 
 function buildEncounterLabel(ekItem) {
-	var resource = fhirResource[ekItem.resourceId];
-	var encounterNo = resource && resource.identifier && resource.identifier[0]
-		? resource.identifier[0].value
-		: ekItem.resourceId;
+	var encounterNo = ekItem.encounterNo || ekItem.resourceId;
 
 	var start = formatDateShort(ekItem.start);
 	var end = formatDateShort(ekItem.end);
@@ -1048,6 +1044,10 @@ function getObservationString(resource) {
 		categoryCode = resource.category[0].coding[0].code;
 	}
 
+	var loincCode = (resource.code && resource.code.coding && resource.code.coding[0])
+		? (resource.code.coding[0].code || '')
+		: '';
+
 	var display = '';
 	if (
 		resource.code &&
@@ -1060,8 +1060,35 @@ function getObservationString(resource) {
 		display = 'Observation';
 	}
 
-	//prefix = categoryCode ? '[' + categoryCode + '] ' : '';
-	prefix = categoryCode ? (categoryCode === 'vital-signs' ? '\u{1FA7A} ' : '[' + categoryCode + '] ') : '';
+	// Specific LOINC → icon mapping (vital signs)
+	var loincIcons = {
+		'8867-4':  '\u2764\uFE0F ',   // ❤️  Heart Rate
+		'8310-5':  '\uD83C\uDF21\uFE0F ', // 🌡️ Body Temperature
+		'55284-4': '\uD83E\uDE78 ',   // 🩸 Blood Pressure (panel)
+		'8480-6':  '\uD83E\uDE78 ',   // 🩸 Systolic BP
+		'8462-4':  '\uD83E\uDE78 ',   // 🩸 Diastolic BP
+		'9279-1':  '\uD83E\uDEC1 ',   // 🫁 Respiratory Rate
+		'59408-5': '\uD83E\uDEC1 ',   // 🫁 SpO₂
+		'29463-7': '\u2696\uFE0F ',   // ⚖️ Body Weight
+		'8302-2':  '\uD83D\uDCCF ',   // 📏 Body Height
+		'67162-8': '\u{1FAC0} ',      // 🫀 Vitalstatus (LOINC)
+	};
+
+	// Determine prefix: profile check → LOINC code → category
+	var isVitalstatus = resource.meta && resource.meta.profile &&
+		resource.meta.profile.some(function (p) { return p.indexOf('Vitalstatus') !== -1; });
+
+	if (isVitalstatus) {
+		prefix = '\u{1FAC0} ';   // 🫀
+	} else if (loincIcons[loincCode]) {
+		prefix = loincIcons[loincCode];
+	} else if (categoryCode === 'vital-signs') {
+		prefix = '\u{1FA7A} ';   // 🩺
+	} else if (categoryCode === 'laboratory') {
+		prefix = '\uD83E\uDDEA '; // 🧪
+	} else if (categoryCode) {
+		prefix = '\uD83D\uDD2C '; // 🔬 generic observation
+	}
 
 	if (resource.valueQuantity !== undefined) {
 		if (resource.valueQuantity.unit !== undefined) {
@@ -1104,8 +1131,8 @@ function getReferencedResource(reference) {
 
 	var parts = reference.split('/');
 	if (parts.length >= 2) {
-		var id = parts[parts.length - 1];
-		return fhirResource[id] || null;
+		var qualifiedKey = parts[parts.length - 2] + '/' + parts[parts.length - 1];
+		return fhirResource[qualifiedKey] || null;
 	}
 
 	return null;

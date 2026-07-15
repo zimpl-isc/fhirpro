@@ -155,9 +155,77 @@ body {
 }
 #CloseDTLInspector:hover { background: #e0e7ef; }
 
-#DTLViewerLink:disabled {
+#DTLViewerLink:disabled,
+#DTLXMLBtn:disabled {
 	opacity: 0.35;
 	cursor: default;
+}
+
+#DTLXMLBtn {
+	border: 1px solid #cbd5e1;
+	border-radius: 6px;
+	padding: 3px 10px;
+	font-size: 12px;
+	background: #f8fafc;
+	cursor: pointer;
+	color: #334155;
+	font-weight: 500;
+}
+#DTLXMLBtn:not(:disabled):hover { background: #e2e8f0; }
+
+/* XML overlay — matches Workbench inspector-overlay style */
+.dtlXmlOverlay {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	bottom: 8px;
+	width: min(480px, calc(100vw - 64px));
+	z-index: 45;
+	display: flex;
+	flex-direction: column;
+	background: #ffffff;
+	border: 1px solid #d9e2f2;
+	border-radius: 12px;
+	box-shadow: -2px 0 10px rgba(0,0,0,0.15), 0 4px 6px rgba(0,0,0,0.1);
+	overflow: hidden;
+}
+.dtlXmlOverlay.is-hidden { display: none; }
+
+.dtlXmlOverlayHeader {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 14px 16px;
+	background: #ffffff;
+	border-bottom: 1px solid #e2e8f0;
+	flex-shrink: 0;
+}
+.dtlXmlCloseBtn {
+	background: #f8fafc;
+	border: 1px solid #cbd5e1;
+	color: #334155;
+	font-size: 18px;
+	cursor: pointer;
+	padding: 4px 10px;
+	line-height: 1;
+	border-radius: 8px;
+	font-weight: 600;
+}
+.dtlXmlCloseBtn:hover { background: #e2e8f0; }
+
+.dtlXmlOverlayTitle {
+	font-weight: 600;
+	font-size: 13px;
+	color: #1f2937;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.dtlXmlBody {
+	flex: 1 1 auto;
+	padding: 16px;
+	overflow: auto;
 }
 
 #DTLInspectorFrame {

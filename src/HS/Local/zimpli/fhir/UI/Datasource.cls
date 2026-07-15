@@ -52,6 +52,10 @@ ClassMethod OnPage() As %Status
                 #(..FHIRServiceSelect())#
                 <button type="submit" class="primaryButton">Fetch</button>
             </div>
+            <div class="formRow formRow--path">
+                <span class="pathPrefix">FHIR path</span>
+                <input id="fhirPath" name="fhirPath" placeholder="Patient/{mpiid}/$everything" spellcheck="false" autocomplete="off">
+            </div>
         </form>
     </div>
 

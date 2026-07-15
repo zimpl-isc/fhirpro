@@ -522,38 +522,59 @@ ClassMethod DeleteIssuesForMPIID(pMPIID As %String) As %Status
     Quit $$$ERROR($$$GeneralError,"Failed to delete issues for MPIID "_pMPIID_": SQLCODE="_SQLCODE)
 }
 
-/// Returns backend tool links from Service Registry
-/// Queries entries like: zimpliFHIR:links:DTLEditor
-/// Can be called directly or via FHIRNetwork.GetBackendToolLinksJSON()
+/// Returns backend tool links derived from the Gateway Registry (Flash/ODS gateway).
+/// Tool URLs are constructed from the ODS base URL — no Service Registry entries needed.
 ClassMethod GetBackendToolLinks() As %DynamicArray
 {
-    Set tPrefix = "zimpliFHIR:links:"
-
-    Set sql = "SELECT name, url FROM HS_Registry_Service.HTTP"
-        _" WHERE type='HTTP' AND status=1"
-        _" AND name %STARTSWITH '"_tPrefix_"'"
-        _" ORDER BY name"
-
-    Set stmt = ##class(%SQL.Statement).%New()
-    Set sc = stmt.%Prepare(sql)
-
     Set arr = []
-    Quit:$$$ISERR(sc) arr
 
-    Set rs = stmt.%Execute()
+    // Resolve ODS base URL from Gateway Registry
+    Set tBaseURL = ##class(HS.Local.zimpli.fhir.API.InstanceProxy).GatewayBaseURL("F")
+    Quit:tBaseURL="" arr
 
-    While rs.%Next() {
-        Set tName = rs.%Get("name")
-        Set tURL = rs.%Get("url")
-        Set tCode = $Piece(tName, tPrefix, 2)
-        Continue:tCode=""
-
-        Do arr.%Push({
-            "code": (tCode),
-            "url": (tURL),
-            "label": (..GetBackendToolLabel(tCode))
-        })
+    // Derive the ODS namespace from the gateway Name
+    Set tSQL = "SELECT TOP 1 Name, GatewayNamespace FROM HS_Gateway.Config WHERE Type='Flash Gateway' AND Status='Registered' ORDER BY ID"
+    Set tRS = ##class(%SQL.Statement).%ExecDirect(, tSQL)
+    if tRS.%Next() {
+        Set tNS = tRS.%Get("GatewayNamespace")
+        if tNS = "" { Set tNS = $piece(tRS.%Get("Name"), ":", 2) }
+        if tNS = "" { Set tNS = "HSODS" }
+    } else {
+        Set tNS = "HSODS"
     }
+
+    // DTL Editor — both URLs provided; client picks based on zimplifhir.prefs.dtlEditorUI
+    Do arr.%Push({
+        "code":   "DTLEditor",
+        "url":    (tBaseURL _ "EnsPortal.DTLEditor.zen"),
+        "urlNew": (tBaseURL _ "ui/interop/dtl-editor/index.html"),
+        "ns":     (tNS),
+        "label":  "DTL Editor"
+    })
+
+    // DTL Viewer (zimpliFHIR internal)
+    Do arr.%Push({
+        "code":  "DTLViewer",
+        "url":   "HS.Local.zimpli.fhir.UI.DTLViewer.cls",
+        "ns":    "",
+        "label": "DTL Viewer"
+    })
+
+    // OID Map
+    Do arr.%Push({
+        "code":  "OIDMap",
+        "url":   (tBaseURL _ "EnsPortal.HS.OIDMap.zen"),
+        "ns":    (tNS),
+        "label": "OID Map"
+    })
+
+    // Terminology Viewer
+    Do arr.%Push({
+        "code":  "Terminology",
+        "url":   (tBaseURL _ "HS.UI.Portal.Terminology.cls"),
+        "ns":    (tNS),
+        "label": "Terminology Viewer"
+    })
 
     Quit arr
 }

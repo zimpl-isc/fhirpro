@@ -140,7 +140,28 @@ function processEntry(entry) {
     var resourceId = resourceType + '/' + rsc.id;
     var title = resourceType;
     var display = '';
-    var label = '<b>' + resourceType + '</b>';
+
+    var resourceIcons = {
+        'Patient':                  '\uD83D\uDC64',   // 👤
+        'Practitioner':             '\uD83D\uDC68\u200D\u2695\uFE0F', // 👨‍⚕️
+        'Organization':             '\uD83C\uDFE2',   // 🏢
+        'Encounter':                '\uD83C\uDFE5',   // 🏥
+        'Location':                 '\uD83D\uDCCD',   // 📍
+        'Condition':                '\uD83E\uDE7A',   // 🩺
+        'Observation':              '\uD83E\uDEA7',   // 🩺 (default, overridden below)
+        'Procedure':                '\u2695\uFE0F',   // ⚕️
+        'Medication':               '\uD83D\uDC8A',   // 💊
+        'MedicationStatement':      '\uD83D\uDC8A',   // 💊
+        'MedicationAdministration': '\uD83D\uDC89',   // 💉
+        'MedicationRequest':        '\uD83D\uDC8A',   // 💊
+        'DiagnosticReport':         '\uD83E\uDDEA',   // 🧪
+        'DocumentReference':        '\uD83D\uDCC4',   // 📄
+        'Appointment':              '\uD83D\uDCC5',   // 📅
+        'Provenance':               '\uD83D\uDD12',   // 🔒
+        'Device':                   '\uD83D\uDDA5',   // 🖥
+    };
+    var typeIcon = resourceIcons[resourceType] || '\uD83D\uDCCB'; // 📋 fallback
+    var label = typeIcon + ' <b>' + resourceType + '</b>';
 
     if (resourceType === 'Condition') {
         display = rsc.code.coding[0].code + ' ' + rsc.code.coding[0].display.substr(0, 50) + '...';
@@ -155,10 +176,17 @@ function processEntry(entry) {
             displayText = rsc.code.coding[0].display || displayText;
         }
 
-        // Detect category
+        // Detect category / profile
         var isVital = false;
+        var isVitalstatus = false;
 
-        if (rsc.category && rsc.category.length) {
+        if (rsc.meta && rsc.meta.profile) {
+            isVitalstatus = rsc.meta.profile.some(function (p) {
+                return p.indexOf('Vitalstatus') !== -1;
+            });
+        }
+
+        if (!isVitalstatus && rsc.category && rsc.category.length) {
             isVital = rsc.category.some(function (cat) {
                 return cat.coding && cat.coding.some(function (c) {
                     return c.code === 'vital-signs';
@@ -166,11 +194,14 @@ function processEntry(entry) {
             });
         }
 
-        // Choose icon
-        var icon = isVital ? '\u{1FA7A}' : '\u{1F9EA}'; // 🩺 : 🧪
+        // Override node icon for specialised observation types
+        if (isVitalstatus) {
+            label = '\u{1FAC0} <b>Observation</b>';   // 🫀
+        } else if (isVital) {
+            label = '\u{1FA7A} <b>Observation</b>';   // 🩺
+        }
 
-        // Build label
-        display = icon + ' ' + code.substr(0, 10) + ' ' + displayText.substr(0, 50) + '...';
+        display = code.substr(0, 10) + ' ' + displayText.substr(0, 50);
         title = displayText;
 
     } else if (resourceType === 'Procedure') {
@@ -206,11 +237,13 @@ function processEntry(entry) {
             type === 'Bed' ? '\u{1F6CF}' :       // 🛏️
             '\u{1F4CD}';                         // 📍 fallback
 
+        label = symbol + ' <b>Location</b>';
+
         var idVal = (rsc.identifier && rsc.identifier[0])
             ? rsc.identifier[0].value
             : '';
 
-        display = symbol + ' ' + (idVal || type);
+        display = idVal || type;
         title = type + (idVal ? ' ' + idVal : '');
 
     } else if (resourceType === 'Device') {

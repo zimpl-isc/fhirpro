@@ -9,12 +9,19 @@ $(document).ready(function () {
 
 	let mpiid = getMpiid();
 	if (mpiid !== null) {
-		showCurrent(getMpiid());
+		showCurrent(mpiid);
+		var base = sessionStorage.getItem('mpiid.base') || mpiid;
+		if (base) { $('#mpiid').val(base); updateFHIRPath(); }
 	}
+
+	$('#mpiid').on('input', updateFHIRPath);
 
 	window.addEventListener('message', function (e) {
 		if (e.data && e.data.type === 'needPatient') {
 			$('#NeedPatientBanner').removeClass('is-hidden');
+		}
+		if (e.data && e.data.type === 'setCurrent' && e.data.mpiid) {
+			setCurrent('sessionStorage', e.data.mpiid);
 		}
 	});
 
@@ -32,57 +39,85 @@ $(document).ready(function () {
 	});
 });
 
+function defaultFHIRPath(mpiid) {
+	return mpiid ? 'Patient/' + mpiid + '/$everything' : '';
+}
+
+function updateFHIRPath() {
+	var mpiid = $('#mpiid').val().trim();
+	var current = $('#fhirPath').val().trim();
+	// Only overwrite if the field is empty or still matches the default pattern
+	if (current === '' || /^Patient\/\d+\/\$everything$/.test(current)) {
+		$('#fhirPath').val(defaultFHIRPath(mpiid));
+	}
+}
+
 async function fetchData() {
-	$('#LoadingMessage', window.parent.document).toggle(true);
+	$('#LoadingMessage', window.parent.document).css('display', 'flex');
 
-	let prettyPrint = new String();
-	let pMPIID = $('#mpiid').val();
-	const FHIRService = $('#FHIRService').val();
-	let querystr = '?MPIID=' + pMPIID + '&FHIRSvc=' + FHIRService;
+	try {
+		let prettyPrint = new String();
+		let pMPIID = $('#mpiid').val().trim();
+		const FHIRService = $('#FHIRService').val();
+		const fhirPath = $('#fhirPath').val().trim() || defaultFHIRPath(pMPIID);
+		const isEverything = /\$everything/.test(fhirPath);
 
-	if (pMPIID == "") {
-		querystr += '&MRN=' + $('#mrn').val() + '&AA=' + $('#aa').val();
+		//// Get SDA (only for $everything queries)
+		if (isEverything) {
+			let sdaQuerystr = '?MPIID=' + pMPIID + '&FHIRSvc=' + FHIRService;
+			if (pMPIID === '') {
+				sdaQuerystr += '&MRN=' + $('#mrn').val() + '&AA=' + $('#aa').val();
+			}
+
+			const sdaResp = await fetch(App.config.SDAStreamServer + sdaQuerystr, { cache: "no-cache" });
+			const sda = await sdaResp.text();
+
+			if (!sdaResp.ok) {
+				prettyPrint = 'SDA Fetch failed with status code: ' + sdaResp.status;
+				console.log(prettyPrint);
+			} else {
+				prettyPrint = vkbeautify.xml(sda, ' ');
+			}
+
+			if (pMPIID === '') {
+				var parser = new DOMParser();
+				var xmlDoc = parser.parseFromString(sda, "text/xml");
+				pMPIID = xmlDoc.getElementsByTagName('Patient')[0].getElementsByTagName('MPIID')[0].childNodes[0].nodeValue;
+			}
+
+			setSdaData(prettyPrint);
+		}
+
+		setMpiid(pMPIID);
+		sessionStorage.setItem("mpiid.base", pMPIID);
+		sessionStorage.setItem("fhirSvc", FHIRService);
+
+		//// Get FHIR
+		const fhirUrl = App.config.FHIRStreamServer
+			+ '?FHIRPath=' + encodeURIComponent(fhirPath)
+			+ '&FHIRSvc=' + encodeURIComponent(FHIRService);
+
+		const fhirResp = await fetch(fhirUrl, { cache: "no-cache" });
+
+		if (!fhirResp.ok) {
+			prettyPrint = 'FHIR Fetch failed with status ' + fhirResp.status + ': ' + fhirPath;
+			console.log(prettyPrint);
+			$('#PreviewFHIR').val(prettyPrint);
+		} else {
+			const fhir = await fhirResp.json();
+			prettyPrint = vkbeautify.json(JSON.stringify(fhir), ' ');
+			setFhirData(prettyPrint);
+		}
+
+		setCurrent('sessionStorage', pMPIID);
+		listStorages();
+
+	} catch (err) {
+		console.error('fetchData error:', err);
+		$('#PreviewFHIR').val('Fetch error: ' + err.message);
+	} finally {
+		$('#LoadingMessage', window.parent.document).css('display', 'none');
 	}
-
-	//// Get SDA and place in a textarea						
-	const sda = await fetch(App.config.SDAStreamServer + querystr, { cache: "no-cache" })
-		.then(response => response.text()
-			.then(status = response.status));
-
-	if (parseInt(status) !== 200) {
-		prettyPrint = 'SDA Fetch failed with status code: ' + status;
-		console.log(prettyPrint);
-	} else {
-		prettyPrint = vkbeautify.xml(sda, ' ');
-	}
-
-
-	if (pMPIID == "") {
-		var parser = new DOMParser();
-		var xmlDoc = parser.parseFromString(sda, "text/xml");
-		pMPIID = xmlDoc.getElementsByTagName('Patient')[0].getElementsByTagName('MPIID')[0].childNodes[0].nodeValue;
-	}
-	setMpiid(pMPIID);
-
-	setSdaData(prettyPrint);
-
-	//// Get FHIR
-	const fhir = await fetch(App.config.FHIRStreamServer + '?MPIID=' + pMPIID + '&FHIRSvc=' + FHIRService, { cache: "no-cache" })
-		.then(response => response.json()
-			.then(status = response.status));
-
-	if (parseInt(status) !== 200) {
-		prettyPrint = 'FHIR Fetch failed with status code: ' + status;
-		console.log(prettyPrint);
-	} else {
-		prettyPrint = vkbeautify.json(JSON.stringify(fhir), ' ');
-	}
-
-	setFhirData(prettyPrint);
-	setCurrent('sessionStorage', pMPIID);
-	listStorages();
-
-	$('#LoadingMessage', window.parent.document).toggle(false);
 }
 function listStorages() {
 
@@ -136,6 +171,8 @@ function setCurrent(storageType, mpiid) {
 	console.log("setCurrent(" + storageType + ',' + mpiid + ')');
 	setStorage(storageType);
 	setMpiid(mpiid);
+	var m = mpiid && mpiid.match(/^\d+/);
+	if (m) { sessionStorage.setItem('mpiid.base', m[0]); $('#mpiid').val(m[0]); updateFHIRPath(); }
 
 	window.parent.setCurrentItemInTitle();
 	if (mpiid) { notifyPatientLoaded(); }

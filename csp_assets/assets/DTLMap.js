@@ -244,6 +244,8 @@
 		});
 	});
 
+	var currentInspectorNodeId = null;
+
 	function openDTLInspector(nodeId) {
 		var node = null;
 		for (var i = 0; i < GRAPH_DATA.nodes.length; i++) {
@@ -251,45 +253,106 @@
 		}
 		if (!node) return;
 
+		currentInspectorNodeId = nodeId;
+
 		$('#DTLInspectorGroup')
 			.text(node.group.charAt(0).toUpperCase() + node.group.slice(1))
 			.attr('class', 'nodeInfoGroup ' + node.group);
 
-		var parents = [];
-		for (var i = 0; i < GRAPH_DATA.edges.length; i++) {
-			if (GRAPH_DATA.edges[i].to === nodeId) parents.push(GRAPH_DATA.edges[i].from);
-		}
-		var $parents = $('#DTLInspectorParents').empty();
-		if (parents.length > 0) {
-			$parents.append($('<span>').addClass('parentLabel').text('called by'));
-			parents.forEach(function (pid) {
-				var parentNode = null;
-				for (var j = 0; j < GRAPH_DATA.nodes.length; j++) {
-					if (GRAPH_DATA.nodes[j].id === pid) { parentNode = GRAPH_DATA.nodes[j]; break; }
-				}
-				var grp = parentNode ? parentNode.group : 'base';
-				$('<span>')
-					.addClass('parentChip ' + grp)
-					.text(parentNode ? parentNode.label : pid)
-					.attr('title', pid)
-					.on('click', function () { openDTLInspector(pid); network.selectNodes([pid]); })
-					.appendTo($parents);
-			});
-		}
+		var $parents = $('#DTLInspectorParents').empty().text('loading callers…');
+		fetch(window.location.pathname + '?action=getCallers&dtlClass=' + encodeURIComponent(nodeId))
+			.then(function (r) { return r.json(); })
+			.then(function (data) {
+				$parents.empty();
+				if (!data.ok || !data.callers || data.callers.length === 0) return;
+				$parents.append($('<span>').addClass('parentLabel').text('called by'));
+				data.callers.forEach(function (caller) {
+					var shortLabel = caller.cls.split('.').slice(-2).join('.');
+					$('<span>')
+						.addClass('parentChip ' + caller.group)
+						.text(shortLabel)
+						.attr('title', caller.cls)
+						.on('click', function () {
+							openDTLInspector(caller.cls);
+							if (nodes.get(caller.cls)) network.selectNodes([caller.cls]);
+						})
+						.appendTo($parents);
+				});
+			})
+			.catch(function () { $parents.empty(); });
 
 		if (node.group === 'external') {
 			$('#DTLViewerLink').removeAttr('data-href').prop('disabled', true);
+			$('#DTLEditorLink').removeAttr('data-href').prop('disabled', true);
+			$('#DTLXMLBtn').prop('disabled', true);
 			$('#DTLInspectorFrame').attr('src', 'about:blank').addClass('is-hidden');
 			$('#DTLInspectorExternal').removeClass('is-hidden');
 		} else {
 			var viewerURL = DTL_VIEWER_PAGE + '?DTL=' + encodeURIComponent(node.id);
 			$('#DTLViewerLink').attr('data-href', viewerURL).prop('disabled', false);
+			$('#DTLXMLBtn').prop('disabled', false);
 			$('#DTLInspectorExternal').addClass('is-hidden');
 			$('#DTLInspectorFrame').removeClass('is-hidden').attr('src', viewerURL);
+
+			if (typeof DTL_EDITOR_URL !== 'undefined' && DTL_EDITOR_URL) {
+				var ns = (typeof DTL_EDITOR_NS !== 'undefined' && DTL_EDITOR_NS) ? DTL_EDITOR_NS : '';
+				var prefs = {};
+				try { prefs = JSON.parse(localStorage.getItem('zimplifhir.prefs') || '{}'); } catch(e) {}
+				var useNew = prefs.dtlEditorUI === 'new';
+				var editorURL;
+				if (useNew && typeof DTL_EDITOR_NEW_URL !== 'undefined' && DTL_EDITOR_NEW_URL) {
+					editorURL = DTL_EDITOR_NEW_URL + '#/?' + (ns ? '$NAMESPACE=' + encodeURIComponent(ns) + '&' : '') + 'DTL=' + encodeURIComponent(node.id);
+				} else {
+					var dtlFile = node.id.endsWith('.dtl') ? node.id : node.id + '.dtl';
+					editorURL = DTL_EDITOR_URL + (ns ? '?$NAMESPACE=' + encodeURIComponent(ns) + '&DT=' : '?DT=') + encodeURIComponent(dtlFile);
+				}
+				$('#DTLEditorLink').attr('data-href', editorURL).prop('disabled', false);
+			} else {
+				$('#DTLEditorLink').removeAttr('data-href').prop('disabled', true);
+			}
 		}
 		$('#DTLInspector').addClass('open');
 		syncBackdrop();
 	}
+
+	window.openDTLXMLOverlay = function () {
+		if (!currentInspectorNodeId) return;
+		var nodeId = currentInspectorNodeId;
+
+		$('#DTLXMLOverlayTitle').text(nodeId);
+		$('#DTLXMLContent').text('Loading…');
+		$('#DTLXMLOverlay').removeClass('is-hidden');
+
+		fetch(window.location.pathname + '?action=getDTLXML&dtlClass=' + encodeURIComponent(nodeId))
+			.then(function (r) { return r.json(); })
+			.then(function (data) {
+				if (data.ok) {
+					$('#DTLXMLContent').text(data.xml || '(empty)');
+				} else {
+					$('#DTLXMLContent').text('Error: ' + (data.error || 'unknown'));
+				}
+			})
+			.catch(function (err) {
+				$('#DTLXMLContent').text('Fetch error: ' + err.message);
+			});
+	};
+
+	window.closeDTLXMLOverlay = function () {
+		$('#DTLXMLOverlay').addClass('is-hidden');
+		$('#DTLXMLContent').text('');
+	};
+
+	window.copyDTLXML = function () {
+		var xml = document.getElementById('DTLXMLContent').textContent;
+		navigator.clipboard.writeText(xml).then(function () {
+			var btn = document.getElementById('DTLXMLCopyBtn');
+			var orig = btn.textContent;
+			btn.textContent = '✓ Copied!';
+			setTimeout(function () { btn.textContent = orig; }, 1800);
+		}).catch(function () {
+			alert('Copy failed — please select and copy manually.');
+		});
+	};
 
 	window.closeDTLInspector = function () {
 		$('#DTLInspector').removeClass('open');

@@ -1,16 +1,49 @@
 # zimpliFHIR Profiling Toolkit for HealthShare
-*2026-04-29 • Brandon Thomas*
+*2026-07-15 • Brandon Thomas*
 
 ## Contents
+- [Quick Start](#quick-start)
 - [Overview](#overview)
+- [Core Capabilities](#core-capabilities)
 - [Installation](#installation)
     - [Classes and Dependencies](#classes-and-dependencies)
+    - [InstanceProxy and Reload](#instanceproxy-and-reload)
     - [FHIR Validators](#fhir-validators)
+    - [Blaze Terminology Server](#blaze-terminology-server)
+    - [Service Registry Integration](#service-registry-integration)
     - [Configure Production](#configure-production)
     - [Navigate to the Startpage](#navigate-to-the-startpage)
     - [Disclaimer](#disclaimer)
 - [Changelog](#changelog)
 - [License](#license)
+
+## Quick Start
+
+New here? Read this first.
+
+**What this is:** A developer CSP application running inside HealthShare that lets you inspect, compare, and validate FHIR data produced by the MII KDS transformation pipeline.
+
+**What you need before anything works:**
+1. An InterSystems HealthShare installation with the MII KDS DTL package deployed in `HSCUSTOM`
+2. Docker (for the FHIR validators)
+3. A running HealthShare production that ingests HL7v2/SDA3 and generates FHIR (the toolkit reads from it, it does not generate anything itself)
+
+**Typical first-run checklist:**
+1. Import classes into `HSCUSTOM` and compile
+2. Run `##class(HS.Local.zimpli.fhir.API.Installer).Install()` from a terminal in `HSCUSTOM`
+3. Copy `csp_assets/` to `{HS install}/csp/healthshare/zimplifhir/`
+4. Start the `r4core-fhir-validator` Docker container (see [FHIR Validators](#fhir-validators))
+5. If validating against MII profiles: clone and start the MII validator **and** load the required terminology into Blaze (see [Blaze Terminology Server](#blaze-terminology-server))
+6. Register validators in the Service Registry (entries starting with `zimpliFHIR:validation:`)
+7. Navigate to the start page and enter an MRN or MPIID to pull data
+
+**The main views, in order of usefulness when debugging a transformation:**
+- **Data Inspector** — side-by-side FHIR JSON / SDA3 for a patient; use this first to see what data is flowing
+- **FHIR Relationship Graph** — network diagram of a bundle; trigger validation from here
+- **Validation Workbench** — detailed issue investigation after a validator run (saves sessions to `%Persistent` `Issue` table — data persists across restarts)
+- **DTL Viewer / DTL Map** — find which custom DTL class handles a given resource type and trace the full subtransform chain
+
+---
 
 ## Overview
 
@@ -95,6 +128,31 @@ It supports:
 
 ---
 
+### InstanceProxy and Reload
+
+`HS.Local.zimpli.fhir.API.InstanceProxy` is a CSP page that exposes a small REST-style API. It must be compiled in **two namespaces**:
+
+- **zimpliFHIR namespace** — used at page load (`config.gateways` to discover gateway URLs), by the Configuration page (`status.productions`, `status.interop`, `config.srEntries`), and server-side by DTLMap, DTLViewer, and Workbench to embed Flash Gateway base URLs via `GatewayBaseURL("F")`.
+- **ODS namespace** — used exclusively for the `reload` action. On page load the frontend resolves the Flash Gateway base URL from `HS_Gateway.Config` and stores it in sessionStorage. When Reload is clicked the request goes directly to that ODS base URL, so `InstanceProxy` executes in the ODS namespace and calls `##class(HS.Local.Impl.Utils.ODS).ReloadPatient()` without any namespace switch. Without this class in the ODS namespace the Reload button will silently fail.
+
+Endpoint pattern:
+```
+HS.Local.zimpli.fhir.API.InstanceProxy.cls?action=<action>&<params>
+```
+
+Available actions:
+
+| Action | Description | Required params |
+|---|---|---|
+| `reload` | Re-triggers the ODS ReloadPatient for an MPIID | `mpiid=<MPIID>` |
+| `config.gateways` | Lists all `HS_Gateway.Config` entries with derived base URLs | — |
+| `config.srEntries` | Lists all Service Registry HTTP entries prefixed `zimpliFHIR:` | — |
+| `status.productions` | Production run state for all namespaces on this instance | — |
+| `status.interop` | Message counts and recent errors for a namespace | `ns=<namespace>`, `hours=<1-24>` |
+
+
+---
+
 ## FHIR Validators
 
 The repository includes a `validators/` directory with a ready-to-run setup and an optional MII validator:
@@ -167,6 +225,86 @@ Default endpoint (typically):
 ```
 http://localhost:8080/validateResource
 ```
+
+---
+
+### 🔹 Blaze Terminology Server
+
+The MII validator uses an internal **Blaze** FHIR server as its terminology backend (typically `blaze-terminology:8080` inside the Docker network, mapped to host port `8082`). Out of the box, Blaze only contains a small set of core FHIR CodeSystems. Many MII-specific and German-national CodeSystems (ATC, ICD-10-GM, kontaktart-de, Vitalstatus, etc.) must be loaded manually before validation results are meaningful.
+
+#### What happens without it
+
+Validation will pass structurally but every coded value will produce errors like:
+```
+The code system `http://fhir.de/CodeSystem/bfarm/atc` was not found.
+Unknown code 'L' in https://www.medizininformatik-initiative.de/fhir/core/modul-person/CodeSystem/Vitalstatus
+```
+
+#### Step 1 — Load base profiles and MII packages
+
+```bash
+# Download the German base profiles package
+curl -L -o /tmp/de.basisprofil.r4-1.5.4.tgz \
+  https://packages.simplifier.net/de.basisprofil.r4/1.5.4
+
+# Extract and PUT each CodeSystem / ValueSet into Blaze
+cd /tmp && tar -xzf de.basisprofil.r4-1.5.4.tgz
+for f in package/CodeSystem-*.json package/ValueSet-*.json; do
+  id=$(python3 -c "import json,sys; d=json.load(open('$f')); print(d['resourceType']+'/'+d['id'])" 2>/dev/null)
+  [ -n "$id" ] && curl -sS -X PUT "http://localhost:8082/fhir/$id" \
+    -H "Content-Type: application/fhir+json" -d @"$f" -o /dev/null
+done
+
+# Repeat for MII packages (extract from validator container's /tmp/tx-cache or package cache)
+```
+
+After loading, verify:
+```bash
+curl -s "http://localhost:8082/fhir/CodeSystem?_count=1&_summary=count" | python3 -c \
+  "import json,sys; print(json.load(sys.stdin)['total'], 'CodeSystems')"
+```
+
+A fully loaded Blaze will report ~80+ CodeSystems and ~80+ ValueSets.
+
+#### Step 2 — BfArM-licensed CodeSystems (ATC, OPS)
+
+ATC and OPS CodeSystems cannot be distributed in FHIR npm packages due to licensing restrictions. The packages only contain a metadata stub with `content: not-present`. Blaze refuses to validate against `not-present` systems, producing "code system not found" errors even when the resource is structurally correct.
+
+**Fix:** upgrade each stub to `content: fragment` and seed it with the codes that appear in your data:
+
+```python
+import json, urllib.request
+
+# Codes from your data — extend as needed
+known_atc_codes = ["A10AB05", "N02BE01", "A", "A10", "A10A", "A10AB", "N", "N02", "N02B", "N02BE"]
+
+# The mii-vs-medikation-atc ValueSet references ATC versions 2018–2025 — seed them all
+for res_id, ver in [("atc","2025")] + [(f"atc-{v}",v) for v in ["2018","2019","2020","2021","2022","2023","2024","2025"]]:
+    resp = urllib.request.urlopen(f"http://localhost:8082/fhir/CodeSystem/{res_id}")
+    d = json.loads(resp.read())
+    d["content"] = "fragment"
+    d["version"] = ver
+    d["concept"] = [{"code": c} for c in known_atc_codes]  # no displays — avoids display-mismatch errors
+    body = json.dumps(d).encode()
+    req = urllib.request.Request(f"http://localhost:8082/fhir/CodeSystem/{res_id}",
+        data=body, headers={"Content-Type": "application/fhir+json"}, method="PUT")
+    urllib.request.urlopen(req)
+    print(f"{res_id} seeded")
+```
+
+Do the same for `ops` / `ops-{year}` with the OPS codes appearing in your data.
+
+> **Note:** Fragment semantics mean any code *not* in the seed list will produce a "code not in fragment" warning. Add codes as they appear, or use a licensed BfArM terminology server for complete coverage.
+
+#### Step 3 — Flush the validator's terminology cache
+
+The MII validator caches terminology lookups in memory and on disk (`/tmp/tx-cache/` in the container). After changing Blaze content, restart the validator to flush both:
+
+```bash
+docker restart fhir-validator
+```
+
+> **Persistence note:** Resources PUT into Blaze are stored in the running container. If Blaze restarts without a persistent volume mapping for its data directory, all loaded resources must be reloaded. Check whether your `docker-compose.yml` mounts a volume for Blaze.
 
 ---
 
@@ -256,8 +394,15 @@ Use at your own risk.
 
 ## Changelog
 
-### Current Release
-- Renamed Class structure (!)
+### 2026-07-15
+- **Patient Journey timeline**: episode dropdown now shows visit number (identifier.value) instead of FHIR resource UUID
+- **Patient Journey timeline**: double-click on any item navigates directly to that resource type+id in the Data Inspector; fixed collision where Encounter and Observation could share the same bare id
+- `fhirResource` cache is now keyed by `ResourceType/id` (fully-qualified) throughout the timeline, preventing cross-type id collisions
+- **InstanceProxy**: new `status.productions` and `status.interop` actions for production monitoring
+- **InstanceProxy**: `config.gateways` now derives base URLs and management portal links for all registered gateways
+
+### Previous Release
+- Renamed class structure (!)
 - UI cleanup and consolidation across all components
 - Improved SDA3 and FHIR Inspector
 - Improved encounter-centric visualization in **Patient Journey** timeline
@@ -268,11 +413,12 @@ Use at your own risk.
   - supports outbound (SDA→FHIR) and inbound (FHIR→SDA) directions
   - colour-coded node groups: entry-point, custom, base, external
   - inline inspector with parent-chip navigation; entry-point DTLs link directly from DTL Viewer
+- New **InstanceProxy** API class with `reload`, `config.gateways`, `config.srEntries` actions
 - Various usability and interaction improvements
 
 ### Roadmap
-- Add REST API in ODS to handle ReloadPatient(), etc from this tool
-- Add tools for managing ^ISCSOAP,^FSLOG; verify custom DTL package; Extension Mapping; FHIR validation
+- **DTL Viewer** — instance and namespace context (open DTL directly on the correct instance)
+- Add tools for managing ^ISCSOAP, ^FSLOG; verify custom DTL package; Extension Mapping; FHIR validation
 
 ---
 

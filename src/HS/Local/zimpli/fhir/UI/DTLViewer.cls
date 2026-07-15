@@ -74,6 +74,9 @@ ClassMethod OnPage() As %Status
 
 	<script type="text/javascript">
 	var DTL_MAP_PAGE = '#(..#DTLMapPage)#';
+	var DTL_EDITOR_URL     = '#(##class(HS.Local.zimpli.fhir.API.InstanceProxy).GatewayBaseURL("F"))#EnsPortal.DTLEditor.zen';
+	var DTL_EDITOR_NEW_URL = '#(##class(HS.Local.zimpli.fhir.API.InstanceProxy).GatewayBaseURL("F"))#ui/interop/dtl-editor/index.html';
+	var DTL_EDITOR_NS      = '#(..GetODSNamespace())#';
 
 	function exportDTLs() {
 		var tExportSuggestion = '#($replace(##class(%File).NormalizeFilename($system.Util.InstallDirectory()_"/UserDocumentation"), "\", "\\"))#';
@@ -112,7 +115,17 @@ ClassMethod OnPage() As %Status
 		$(scope).find('.dataLinkEditor').each(function () {
 			const doc = this.parentElement.getAttribute('data-doc');
 			if (!doc) return;
-			this.setAttribute('href', 'EnsPortal.DTLEditor.zen?DT=' + encodeURIComponent(doc) + '.dtl');
+			var prefs = {};
+			try { prefs = JSON.parse(localStorage.getItem('zimplifhir.prefs') || '{}'); } catch(e) {}
+			var useNew = prefs.dtlEditorUI === 'new';
+			var href;
+			if (useNew && typeof DTL_EDITOR_NEW_URL !== 'undefined' && DTL_EDITOR_NEW_URL) {
+				href = DTL_EDITOR_NEW_URL + '#/?' + (DTL_EDITOR_NS ? '$NAMESPACE=' + encodeURIComponent(DTL_EDITOR_NS) + '&' : '') + 'DTL=' + encodeURIComponent(doc);
+			} else {
+				var dtlFile = doc.endsWith('.dtl') ? doc : doc + '.dtl';
+				href = DTL_EDITOR_URL + (DTL_EDITOR_NS ? '?$NAMESPACE=' + encodeURIComponent(DTL_EDITOR_NS) + '&DT=' : '?DT=') + encodeURIComponent(dtlFile);
+			}
+			this.setAttribute('href', href);
 			this.setAttribute('target', '_blank');
 		});
 
@@ -569,6 +582,19 @@ ClassMethod CopyExportCollateral(pTargetDirectory) As %Status
 	}
 
 	quit tSc
+}
+
+/// Returns the namespace of the Flash (ODS) gateway, used to build DTL editor URLs.
+ClassMethod GetODSNamespace() As %String
+{
+    set tSQL = "SELECT TOP 1 Name, GatewayNamespace FROM HS_Gateway.Config WHERE Type='Flash Gateway' AND Status='Registered' ORDER BY ID"
+    set tRS = ##class(%SQL.Statement).%ExecDirect(, tSQL)
+    if tRS.%Next() {
+        set tNS = tRS.%Get("GatewayNamespace")
+        if tNS = "" { set tNS = $piece(tRS.%Get("Name"), ":", 2) }
+        if tNS '= "" { return tNS }
+    }
+    return "HSODS"
 }
 
 ClassMethod EscapeJS(pText As %String) As %String

@@ -19,13 +19,18 @@ Parameter BusinessService = "HS.Local.zimpli.fhir.API.TestService";
 /// in the <method>OnPage()</method>.
 ClassMethod OnPreHTTP() As %Boolean
 {
-	set tMPIID = $get(%request.Data("MPIID",1))
+	set tMPIID   = $get(%request.Data("MPIID",1))
 	set tFHIRSvc = $get(%request.Data("FHIRSvc",1))
-	
-	if (tMPIID'="") {
-		set %request.Data("STREAMOID",1) = ..GetStreamOID(tMPIID, tFHIRSvc)
+	set tPath    = $get(%request.Data("FHIRPath",1))
+
+	if tPath = "" && (tMPIID '= "") {
+		set tPath = "/Patient/" _ tMPIID _ "/$everything"
 	}
-			
+
+	if tPath '= "" {
+		set %request.Data("STREAMOID",1) = ..GetStreamOID(tPath, tFHIRSvc)
+	}
+
 	return ##super()
 }
 
@@ -40,13 +45,16 @@ ClassMethod OnPostHTTP() [ ServerOnly = 1 ]
 	return $$$OK
 }
 
-ClassMethod GetStreamOID(pMPIID, pFHIRSvc = "") As %String
+ClassMethod GetStreamOID(pFHIRPath As %String, pFHIRSvc = "") As %String
 {
 	#dim tInteropRequest = ##class(HS.FHIRServer.Interop.Request).%New()
 	#dim tFHIRDataRequest = ##class(HS.FHIRServer.API.Data.Request).%New()
-	
+
+	// Ensure path starts with /
+	if $extract(pFHIRPath, 1) '= "/" { set pFHIRPath = "/" _ pFHIRPath }
+
 	set tFHIRDataRequest.RequestMethod = "GET"
-	set tFHIRDataRequest.RequestPath = "/Patient/"_ pMPIID _"/$everything"
+	set tFHIRDataRequest.RequestPath = pFHIRPath
 	set tFHIRDataRequest.RequestFormatCode = "JSON"
 	set tFHIRDataRequest.ResponseFormatCode = "JSON"
 	do:(pFHIRSvc'="") tFHIRDataRequest.AdditionalInfo.SetAt(pFHIRSvc,"ServiceName")
@@ -59,7 +67,7 @@ ClassMethod GetStreamOID(pMPIID, pFHIRSvc = "") As %String
 	set tCSPStream = ##class(%CSP.BinaryStream).%New()
 	do tCSPStream.CopyFrom(##class(HS.SDA3.QuickStream).%OpenId(tResponse.QuickStreamId))
 	do tCSPStream.SetAttribute("ContentType","text/json")
-	do tCSPStream.SetAttribute("Content-Disposition","inline; filename="_pMPIID_".json")
+	do tCSPStream.SetAttribute("Content-Disposition","inline; filename=fhir.json")
 	do tCSPStream.SetAttribute("CharSet","UTF-8")
 	
 	do tCSPStream.%Save()

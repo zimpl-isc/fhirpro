@@ -1,0 +1,13 @@
+.DS_Store
+.vscode
+validators/mii-fhir-validator/
+deploy.sh
+src/%Api/
+src/%CSP/
+src/%SYSTEM/
+src/HS/FHIR/
+src/HS/SDA3/
+src/HS/Local/zimpli/fhir/UI/GAPAnalysis.cls
+src/HS/Local/zimpli/fhir/UI/GAPAnalysis/
+csp_assets/assets/GAPAnalysis.js
+csp_assets/assets/GAPAnalysis.css

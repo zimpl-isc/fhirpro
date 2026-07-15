@@ -31,6 +31,10 @@ Parameter FHIRVersion = "vR4";
 
 Parameter DisplayOrder = 98;
 
+/// Default SDA source type shown on first load (no ?type= param).
+/// Must match an entry in ^HS.XF.Transform for the configured SDA/FHIR versions.
+Parameter DefaultSrcType = "HS.SDA3.Patient";
+
 /*<------------------------------------ Customizable Parameters for Subclass */
 Parameter SuperClass = "HS.Local.zimpli.fhir.UI.DTLViewer";
 
@@ -44,6 +48,83 @@ Parameter DTLViewerPage = "HS.Local.zimpli.fhir.UI.DTLViewer.cls";
 
 ClassMethod OnPage() As %Status
 {
+	// API: getCallers — scans all DTL classes and returns every class that calls pTargetClass
+	if $get(%request.Data("action",1)) = "getCallers" {
+		set %response.ContentType = "application/json; charset=utf-8"
+		set tTargetClass = $get(%request.Data("dtlClass",1))
+		set tCustomPkg   = ##class(HS.FHIR.DTL.Util.API.ExecDefinition).GetCustomDTLPackage()
+
+		// Build entry-point set across both directions for classification
+		kill tEntryPoints
+		for tDirIdx = 1:1:2 {
+			set tSV = $case(tDirIdx, 1:..#SDAVersion, :..#FHIRVersion)
+			set tTV = $case(tDirIdx, 1:..#FHIRVersion, :..#SDAVersion)
+			set tSrc = ""
+			for {
+				set tSrc = $order(^HS.XF.Transform(tSV, tTV, tSrc))
+				quit:tSrc=""
+				set tDTL = ""
+				for {
+					set tDTL = $order(^HS.XF.Transform(tSV, tTV, tSrc, tDTL))
+					quit:tDTL=""
+					set tEff = ..ResolveEffectiveDTL(tDTL)
+					if tEff '= "" { set tEntryPoints(tEff) = 1 }
+				}
+			}
+		}
+
+		// Scan every DTL class in HS.FHIR.DTL and the custom package
+		set tStmt = ##class(%SQL.Statement).%New()
+		if tCustomPkg '= "" {
+			set tSQL = "SELECT Name FROM %Dictionary.CompiledClass WHERE PrimarySuper LIKE '%Ens.DataTransformDTL%' AND (Name %STARTSWITH 'HS.FHIR.DTL.' OR Name %STARTSWITH ?)"
+			$$$ThrowOnError(tStmt.%Prepare(tSQL))
+			set tRS = tStmt.%Execute(tCustomPkg)
+		} else {
+			set tSQL = "SELECT Name FROM %Dictionary.CompiledClass WHERE PrimarySuper LIKE '%Ens.DataTransformDTL%' AND Name %STARTSWITH 'HS.FHIR.DTL.'"
+			$$$ThrowOnError(tStmt.%Prepare(tSQL))
+			set tRS = tStmt.%Execute()
+		}
+
+		set tCallers = ##class(%DynamicArray).%New()
+		while tRS.%Next() {
+			set tClass = tRS.%Get("Name")
+			continue:(tClass = tTargetClass)
+			do ..ExtractSubtransforms(tClass, .tSubList)
+			continue:'$data(tSubList(tTargetClass))
+			set tGroup = $case(1,
+				$data(tEntryPoints(tClass)):"entrypoint",
+				(tCustomPkg'="")&&($extract(tClass,1,$length(tCustomPkg))=tCustomPkg):"custom",
+				:"base")
+			set tCaller      = ##class(%DynamicObject).%New()
+			set tCaller.cls  = tClass
+			set tCaller.group = tGroup
+			do tCallers.%Push(tCaller)
+		}
+
+		set tResult         = {}
+		set tResult.ok      = 1
+		set tResult.callers = tCallers
+		write tResult.%ToJSON()
+		return $$$OK
+	}
+
+	// API: getDTLXML — returns the raw DTL XData block as JSON
+	if $get(%request.Data("action",1)) = "getDTLXML" {
+		set %response.ContentType = "application/json; charset=utf-8"
+		set tDTLClass  = $get(%request.Data("dtlClass",1))
+		set tResult    = {}
+		set tXDataDef  = ##class(%Dictionary.XDataDefinition).IDKEYOpen(tDTLClass, "DTL")
+		if $isobject(tXDataDef) {
+			set tResult.ok  = 1
+			set tResult.xml = tXDataDef.Data.Read()
+		} else {
+			set tResult.ok    = 0
+			set tResult.error = "DTL XData not found for: "_tDTLClass
+		}
+		write tResult.%ToJSON()
+		return $$$OK
+	}
+
 	#dim tSuperClass = ..#SuperClass
 
 	#dim tHighlightClass = $get(%request.Data("highlight",1))
@@ -116,7 +197,12 @@ ClassMethod OnPage() As %Status
 			}
 		}
 		if (tSelectedSrc="") || '$data(tSrcClasses(tSelectedSrc)) {
-			set tSelectedSrc = $order(tSrcClasses(""))
+			set tDefault = ..#DefaultSrcType
+			if (tDefault '= "") && $data(tSrcClasses(tDefault)) {
+				set tSelectedSrc = tDefault
+			} else {
+				set tSelectedSrc = $order(tSrcClasses(""))
+			}
 		}
 	}
 
@@ -195,6 +281,8 @@ ClassMethod OnPage() As %Status
 				<div class="dtlInspectorActions">
 					<button id="CloseDTLInspector" onclick="closeDTLInspector()">&#10005;</button>
 					<button id="DTLViewerLink" onclick="window.open(this.dataset.href,'_blank')">&#8599; Full view</button>
+					<button id="DTLEditorLink" onclick="window.open(this.dataset.href,'_blank')" disabled>&#9998; Edit</button>
+					<button id="DTLXMLBtn" onclick="openDTLXMLOverlay()">&#60;/&#62; XML</button>
 				</div>
 				<div class="dtlInspectorParentRow">
 					<span id="DTLInspectorGroup" class="nodeInfoGroup"></span>
@@ -206,11 +294,29 @@ ClassMethod OnPage() As %Status
 		</div>
 	</div>
 
+	<div id="DTLXMLOverlay" class="dtlXmlOverlay is-hidden">
+		<div class="dtlXmlOverlayHeader">
+			<button onclick="closeDTLXMLOverlay()" class="dtlXmlCloseBtn">&#10005;</button>
+			<span id="DTLXMLOverlayTitle" class="dtlXmlOverlayTitle"></span>
+		</div>
+		<div class="dtlXmlBody">
+			<div style="margin-bottom:12px;">
+				<button id="DTLXMLCopyBtn" onclick="copyDTLXML()" style="padding:8px 16px;background:#2563eb;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;">
+					&#128203; Copy to Clipboard
+				</button>
+			</div>
+			<pre id="DTLXMLContent" style="background:#1f2937;color:#f9fafb;padding:16px;border-radius:8px;overflow:auto;font-family:Consolas,monospace;font-size:12px;line-height:1.5;margin:0;"></pre>
+		</div>
+	</div>
+
 </div>
 <script type="text/javascript">
-	var DTL_VIEWER_PAGE  = '#(..#DTLViewerPage)#';
-	var HIGHLIGHT_CLASS  = '#(tHighlightClass)#';
-	var MAP_DIR          = '#(tDir)#';
+	var DTL_VIEWER_PAGE    = '#(..#DTLViewerPage)#';
+	var HIGHLIGHT_CLASS    = '#(tHighlightClass)#';
+	var MAP_DIR            = '#(tDir)#';
+	var DTL_EDITOR_URL     = '#(##class(HS.Local.zimpli.fhir.API.InstanceProxy).GatewayBaseURL("F"))#EnsPortal.DTLEditor.zen';
+	var DTL_EDITOR_NEW_URL = '#(##class(HS.Local.zimpli.fhir.API.InstanceProxy).GatewayBaseURL("F"))#ui/interop/dtl-editor/index.html';
+	var DTL_EDITOR_NS      = '#(##class(HS.Local.zimpli.fhir.UI.DTLViewer).GetODSNamespace())#';
 	var GRAPH_DATA = #(..GetTreeJSON(tSelectedSrc, tSrcVersion, tTgtVersion))#;
 </script>
 #(..LinkJS("assets/DTLMap.js"))#

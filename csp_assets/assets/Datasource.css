@@ -85,6 +85,27 @@ body {
     align-items: center;
 }
 
+#fetchForm .formRow + .formRow {
+    margin-top: 8px;
+}
+
+.formRow--path {
+    align-items: center;
+}
+
+.pathPrefix {
+    font-size: 12px;
+    color: #64748b;
+    white-space: nowrap;
+}
+
+#fhirPath {
+    flex: 1 1 300px;
+    font-family: Consolas, Monaco, monospace;
+    font-size: 12px;
+    color: #334155;
+}
+
 input,
 select,
 button,

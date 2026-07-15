@@ -133,7 +133,7 @@ body {
 
 .vis-item.vis-box {
     border-radius: 3px;
-    z-index: 100;
+    z-index: 5;
 }
 
 .vis-item.vis-box .vis-item-content {
