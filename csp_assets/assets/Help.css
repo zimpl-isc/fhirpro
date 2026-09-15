@@ -1,0 +1,323 @@
+html,
+body {
+	margin: 0;
+	padding: 0;
+	background: #f5f7fb;
+	box-sizing: border-box;
+	font-family: Arial, Helvetica, sans-serif;
+	color: #1f2937;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: inherit;
+}
+
+body {
+	padding: 16px;
+}
+
+#pageShell {
+	max-width: 980px;
+	margin: 0 auto;
+}
+
+.card {
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 12px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+	margin-bottom: 12px;
+}
+
+.pageHeader {
+	padding: 16px 18px 14px 18px;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.pageTitle {
+	margin: 0;
+	font-size: 20px;
+	font-weight: 600;
+	color: #1f2937;
+}
+
+.pageSubtitle {
+	font-size: 13px;
+	color: #64748b;
+	margin-top: 4px;
+}
+
+.logoRow {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.logoMark {
+	width: 38px;
+	height: 38px;
+	flex: 0 0 auto;
+}
+
+/* ── Tab bar ── */
+
+.tabBar {
+	display: flex;
+	gap: 0;
+	padding: 0 18px;
+	border-bottom: 1px solid #e5e7eb;
+	background: #ffffff;
+	border-radius: 12px 12px 0 0;
+	overflow-x: auto;
+	scrollbar-width: none;
+}
+
+.tabBar::-webkit-scrollbar {
+	display: none;
+}
+
+.tabBtn {
+	background: none;
+	border: none;
+	border-bottom: 2px solid transparent;
+	padding: 12px 16px 10px 16px;
+	font-size: 13px;
+	font-weight: 600;
+	color: #64748b;
+	cursor: pointer;
+	white-space: nowrap;
+	transition: color 0.15s, border-color 0.15s;
+	margin-bottom: -1px;
+}
+
+.tabBtn:hover {
+	color: #1f2937;
+}
+
+.tabBtn.active {
+	color: #333695;
+	border-bottom-color: #333695;
+}
+
+/* ── Tab panels ── */
+
+.tabPanel {
+	display: none;
+	padding: 20px 18px 24px 18px;
+}
+
+.tabPanel.active {
+	display: block;
+}
+
+/* ── Content elements ── */
+
+.sectionTitle {
+	margin: 0 0 4px 0;
+	font-size: 15px;
+	font-weight: 700;
+	color: #1f2937;
+}
+
+.sectionSubtitle {
+	font-size: 13px;
+	color: #64748b;
+	margin: 0 0 14px 0;
+}
+
+.sectionDivider {
+	height: 1px;
+	background: #e5e7eb;
+	margin: 22px 0;
+}
+
+p {
+	font-size: 14px;
+	line-height: 1.65;
+	color: #334155;
+	margin: 0 0 12px 0;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+
+.stepList {
+	margin: 10px 0 14px 0;
+	padding-left: 0;
+	list-style: none;
+	counter-reset: step-counter;
+}
+
+.stepList li {
+	counter-increment: step-counter;
+	display: flex;
+	gap: 12px;
+	align-items: flex-start;
+	font-size: 14px;
+	line-height: 1.6;
+	color: #334155;
+	margin-bottom: 8px;
+}
+
+.stepList li::before {
+	content: counter(step-counter);
+	flex: 0 0 24px;
+	height: 24px;
+	background: #333695;
+	color: #ffffff;
+	border-radius: 50%;
+	font-size: 12px;
+	font-weight: 700;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-top: 1px;
+}
+
+.featureList {
+	margin: 10px 0 14px 0;
+	padding-left: 0;
+	list-style: none;
+}
+
+.featureList li {
+	font-size: 14px;
+	line-height: 1.6;
+	color: #334155;
+	margin-bottom: 6px;
+	padding-left: 18px;
+	position: relative;
+}
+
+.featureList li::before {
+	content: "–";
+	position: absolute;
+	left: 0;
+	color: #44c7c2;
+	font-weight: 700;
+}
+
+.tipBox {
+	background: #eff6ff;
+	border: 1px solid #bfdbfe;
+	border-radius: 8px;
+	padding: 12px 14px;
+	margin: 14px 0;
+	font-size: 13px;
+	line-height: 1.6;
+	color: #1e40af;
+}
+
+.tipBox strong {
+	display: block;
+	margin-bottom: 4px;
+	font-size: 12px;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: #1d4ed8;
+}
+
+.warnBox {
+	background: #fffbeb;
+	border: 1px solid #fcd34d;
+	border-radius: 8px;
+	padding: 12px 14px;
+	margin: 14px 0;
+	font-size: 13px;
+	line-height: 1.6;
+	color: #92400e;
+}
+
+.warnBox strong {
+	display: block;
+	margin-bottom: 4px;
+	font-size: 12px;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.subsection {
+	margin-bottom: 24px;
+}
+
+.subsection:last-child {
+	margin-bottom: 0;
+}
+
+.badge {
+	display: inline-block;
+	padding: 2px 8px;
+	border-radius: 999px;
+	background: #eef2ff;
+	color: #4338ca;
+	font-size: 11px;
+	font-weight: 600;
+	vertical-align: middle;
+	margin-left: 6px;
+}
+
+.badge.green {
+	background: #dcfce7;
+	color: #166534;
+}
+
+.badge.amber {
+	background: #fef9c3;
+	color: #854d0e;
+}
+
+kbd {
+	display: inline-block;
+	padding: 2px 6px;
+	background: #f3f4f6;
+	border: 1px solid #d1d5db;
+	border-radius: 4px;
+	font-family: monospace;
+	font-size: 12px;
+	color: #374151;
+}
+
+a, a:link, a:visited, a:active {
+	color: #333695;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+.flowDiagram {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	flex-wrap: wrap;
+	margin: 12px 0;
+	font-size: 13px;
+	color: #334155;
+}
+
+.flowNode {
+	background: #f1f5f9;
+	border: 1px solid #cbd5e1;
+	border-radius: 6px;
+	padding: 5px 10px;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.flowArrow {
+	color: #94a3b8;
+	font-size: 16px;
+}
+
+@media (max-width: 700px) {
+	.tabBtn {
+		padding: 10px 10px 8px 10px;
+		font-size: 12px;
+	}
+}

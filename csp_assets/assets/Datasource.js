@@ -85,6 +85,7 @@ async function fetchData() {
 				pMPIID = xmlDoc.getElementsByTagName('Patient')[0].getElementsByTagName('MPIID')[0].childNodes[0].nodeValue;
 			}
 
+			setMpiid(pMPIID);
 			setSdaData(prettyPrint);
 		}
 

@@ -47,6 +47,7 @@ ClassMethod OnPage() As %Status
 			"Import_Export": "HS.Local.zimpli.fhir.UI.ImportExport.cls",
 			"Utilities": "HS.Local.zimpli.fhir.UI.Utilities.cls",
 			"CodeSystem_Importer": "HS.Local.zimpli.fhir.UI.CodeSystemImporter.cls",
+			"Help": "HS.Local.zimpli.fhir.UI.Help.cls",
 		};
 
 		// Cache the ODS (Flash gateway) base URL for the reload button
@@ -274,6 +275,15 @@ ClassMethod OnPage() As %Status
 					<line class="cls-11" x1="14.86" y1="9.14" x2="18.68" y2="9.14"/>
 				</svg></li-->
 			
+			<li id="Help" class="list_item">
+				<svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<title>User Guide</title>
+					<circle cx="12" cy="12" r="10" stroke="#000000" stroke-width="1.5" fill="none"/>
+					<path d="M9.5 9.5C9.5 8.12 10.62 7 12 7s2.5 1.12 2.5 2.5c0 1.74-2.5 3-2.5 3" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+					<circle cx="12" cy="16.5" r="0.75" fill="#000000"/>
+				</svg>
+			</li>
+
 			<!--li id="CodeSystem_Importer" class="list_item">
 				<svg width="25px" height="25px" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 				    <title>import</title>

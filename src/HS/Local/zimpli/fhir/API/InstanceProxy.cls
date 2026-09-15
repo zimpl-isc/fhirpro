@@ -26,8 +26,18 @@ Parameter SRPrefix = "zimpliFHIR:";
 
 ClassMethod OnPage() As %Status
 {
-    set action = $get(%request.Data("action", 1))
+    set tOrigin = %request.GetCgiEnv("HTTP_ORIGIN")
+    do %response.SetHeader("Access-Control-Allow-Origin", $select(tOrigin'="":tOrigin, 1:"*"))
+    do %response.SetHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+    do %response.SetHeader("Access-Control-Allow-Headers", "Content-Type")
 
+    // Handle CORS preflight
+    if %request.Method = "OPTIONS" {
+        set %response.Status = "204 No Content"
+        return $$$OK
+    }
+
+    set action = $get(%request.Data("action", 1))
     do %response.SetHeader("Content-Type", "application/json")
 
     if action = "reload" {

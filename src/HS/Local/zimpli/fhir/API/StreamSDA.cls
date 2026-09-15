@@ -42,6 +42,88 @@ ClassMethod OnPostHTTP() [ ServerOnly = 1 ]
 	return $$$OK
 }
 
+/// Diagnostic: retrieve SDA for a patient via the access gateway and parse every
+/// object with GetNextSDA(), reporting type counts and any errors to the current device.
+/// Call from a terminal: do ##class(HS.Local.zimpli.fhir.API.StreamSDA).DiagnoseSDA(mpiid)
+ClassMethod DiagnoseSDA(pMPIID As %String = "", pMRN As %String = "", pAA As %String = "") As %Status
+{
+	set tSC = $$$OK
+
+	write !,"=== SDA Diagnostic  MPIID="""_pMPIID_"""  MRN="""_pMRN_"""  AA="""_pAA_"""",!
+
+	// --- fetch ---
+	set tRequest = ##class(HS.Message.SearchAndFetchRequest).%New()
+	set tRequest.MPIID = pMPIID
+	set tRequest.MRN   = pMRN
+	set tRequest.AssigningAuthority = pAA
+
+	set tSC = ##class(Ens.Director).CreateBusinessService(..#BusinessService, .tService)
+	if $$$ISERR(tSC) {
+		write !,"[ERROR] CreateBusinessService: ", $system.Status.GetErrorText(tSC), !
+		return tSC
+	}
+
+	set tSC = tService.OnProcessInput(tRequest, .tResponse)
+	if $$$ISERR(tSC) {
+		write !,"[ERROR] OnProcessInput: ", $system.Status.GetErrorText(tSC), !
+		return tSC
+	}
+
+	if '$IsObject(tResponse) {
+		write !,"[ERROR] No response object returned", !
+		return $$$ERROR($$$GeneralError, "No response from SearchAndFetch")
+	}
+	if '$IsObject(tResponse.XMLData) {
+		write !,"[ERROR] Response.XMLData is empty — no SDA on file for this patient", !
+		return $$$ERROR($$$GeneralError, "Response.XMLData is not an object")
+	}
+
+	write "[OK] SDA stream retrieved — size: "_tResponse.XMLData.Size_" bytes",!
+
+	// --- parse ---
+	set tContainer = ##class(HS.SDA3.Container).%New()
+	set tSC = tContainer.InitializeXMLParse(tResponse.XMLData)
+	if $$$ISERR(tSC) {
+		write !,"[ERROR] InitializeXMLParse: ", $system.Status.GetErrorText(tSC), !
+		return tSC
+	}
+	write "[OK] InitializeXMLParse succeeded",!
+
+	set tTotal = 0, tErrors = 0
+	for {
+		set tGot = tContainer.GetNextSDA(.tType, .tSDA, .tItemSC, .tDate)
+		if $$$ISERR(tItemSC) {
+			set tErrors = tErrors + 1
+			write "[ERROR] item "_tTotal_" (type="_tType_"): ", $system.Status.GetErrorText(tItemSC), !
+			set tSC = $$$ADDSC(tSC, tItemSC)
+		}
+		quit:'tGot
+		set tTotal = tTotal + 1
+		set tCounts(tType) = $get(tCounts(tType), 0) + 1
+		if (tType = "Patient") && $IsObject(tSDA) {
+			write "    Patient MPIID="""_tSDA.MPIID_"""",!
+		}
+	}
+
+	// --- summary ---
+	write !,"=== Summary ===",!
+	write "Total objects : "_tTotal, !
+	write "Parse errors  : "_tErrors, !
+	write "By type:", !
+	set tType = ""
+	for {
+		set tType = $order(tCounts(tType))
+		quit:tType=""
+		write "  "_$justify(tCounts(tType),5)_"  "_tType, !
+	}
+	if $$$ISOK(tSC) {
+		write "[OK] No errors",!
+	} else {
+		write "[WARN] Completed with errors — see above",!
+	}
+	return tSC
+}
+
 ClassMethod GetSDAStreamOID(pMPIID = "", pMRN = "", pAA = "", pFilters = "") As %String
 {
 	#dim tRequest as HS.Message.SearchAndFetchRequest = ##class(HS.Message.SearchAndFetchRequest).%New()

@@ -772,7 +772,8 @@ function processEntry(entry) {
 			obsDisplay = resource.code.coding[0].display || obsDisplay;
 		}
 
-		tItem.title = (obsCode ? '[' + obsCode + '] ' : '') + obsDisplay;
+		tItem.title = (obsCode ? '[' + obsCode + '] ' : '') + obsDisplay +
+			(resource.valueString !== undefined ? ': ' + resource.valueString : '');
 		allItems.push(tItem);
 
 	} else if (resource.resourceType == 'MedicationStatement') {
@@ -1106,7 +1107,7 @@ function getObservationString(resource) {
 		unit = ' mmHg';
 		content = prefix + value + unit;
 	} else if (resource.valueString !== undefined) {
-		content = prefix + display + ': ' + resource.valueString;
+		content = prefix + display;
 	} else {
 		content = prefix + display;
 		console.log('Observation value not found in:', resource);
